@@ -3,7 +3,7 @@ import React from 'react';
 import { format, isWithinInterval, isSameDay } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Delivery } from 'lucide-react';
+import { Package } from 'lucide-react';
 
 interface ProjectCalendarProps {
   startDate: string | null | undefined;
@@ -19,7 +19,7 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
   
   // Custom day rendering to highlight the project period
   const dayClassNames = (date: Date) => {
-    if (!start || !end) return "border border-gray-200";
+    if (!start || !end) return "border border-gray-200 rounded-lg";
     
     // Check if the date is the start or end date
     if (isSameDay(date, start)) {
@@ -35,7 +35,7 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
       return "rounded-lg border-0 bg-[#4E90FF]/20 text-[#4E90FF] hover:bg-[#4E90FF]/30 hover:text-[#4E90FF] focus:bg-[#4E90FF]/30 focus:text-[#4E90FF]";
     }
     
-    return "border border-gray-200";
+    return "border border-gray-200 rounded-lg";
   };
   
   const formatDate = (date: Date | null) => {
@@ -68,11 +68,11 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
             selected: "",
           }}
           components={{
-            Day: (props) => {
-              const customClasses = dayClassNames(props.date);
+            Day: ({ date, ...props }) => {
+              const customClasses = dayClassNames(date);
               
-              // Add delivery icon to the end date
-              const isEndDate = end && isSameDay(props.date, end);
+              // Add package icon to the end date
+              const isEndDate = end && isSameDay(date, end);
               
               return (
                 <button
@@ -80,10 +80,10 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
                   className={`h-9 w-9 p-0 font-normal aria-selected:opacity-100 relative ${customClasses}`}
                   disabled={true} // Make calendar read-only
                 >
-                  {props.day}
+                  {props.children}
                   {isEndDate && (
                     <span className="absolute -top-1 -right-1 bg-white rounded-full">
-                      <Delivery className="h-3.5 w-3.5 text-[#4E90FF]" />
+                      <Package className="h-3.5 w-3.5 text-[#4E90FF]" />
                     </span>
                   )}
                 </button>
