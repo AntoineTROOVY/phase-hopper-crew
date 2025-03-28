@@ -68,9 +68,10 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
             row: "flex w-full mt-3", // Increased row spacing
             caption: "flex justify-center pt-1 relative items-center mb-4", // Add more space below the month caption and center it
             table: "w-full border-collapse space-y-2", // Increased table spacing
-            nav_button_previous: "absolute left-1", // Position left arrow
-            nav_button_next: "absolute right-1", // Position right arrow
-            nav: "space-x-1 flex items-center w-full justify-between px-2", // Full width nav with padding
+            caption_label: "text-sm font-medium px-6", // Add horizontal padding to month label
+            nav_button_previous: "absolute left-2", // Position left arrow with more space
+            nav_button_next: "absolute right-2", // Position right arrow with more space
+            nav: "space-x-1 flex items-center w-full justify-between", // Full width nav with padding
           }}
           modifiersClassNames={{
             selected: "",

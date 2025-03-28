@@ -78,7 +78,7 @@ const CollapsiblePreview = ({
   return (
     <Card className="mt-6">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <CardHeader className="pb-2">
+        <CardHeader className="py-4">
           <CollapsibleTrigger className="flex items-center justify-between w-full text-left">
             <div className="flex items-center gap-2 justify-between w-full">
               <CardTitle className="text-lg flex items-center gap-2">
@@ -99,7 +99,7 @@ const CollapsiblePreview = ({
           </CollapsibleTrigger>
         </CardHeader>
         <CollapsibleContent className="transition-all duration-300 ease-in-out">
-          <CardContent className="py-4">
+          <CardContent className="py-6">
             {children}
           </CardContent>
         </CollapsibleContent>
