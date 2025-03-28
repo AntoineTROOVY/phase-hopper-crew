@@ -169,6 +169,7 @@ const ProjectDetails = () => {
                 currentPhase={project["Phase"] || ''}
                 relevantPhase="Storyboard"
                 projectStatus={project["Status"]}
+                externalUrl={project["Storyboard"]}
               >
                 <StoryboardPreview storyboardUrl={project["Storyboard"]} />
               </CollapsiblePreview>
@@ -181,6 +182,7 @@ const ProjectDetails = () => {
                 currentPhase={project["Phase"] || ''}
                 relevantPhase="Copywriting"
                 projectStatus={project["Status"]}
+                externalUrl={project["Script"]}
               >
                 <ScriptPreview scriptUrl={project["Script"]} />
               </CollapsiblePreview>
@@ -193,6 +195,7 @@ const ProjectDetails = () => {
                 currentPhase={project["Phase"] || ''}
                 relevantPhase="Animation"
                 projectStatus={project["Status"]}
+                externalUrl={project["Animation"]}
               >
                 <AnimationPreview animationUrl={project["Animation"]} />
               </CollapsiblePreview>

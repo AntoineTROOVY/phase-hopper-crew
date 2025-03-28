@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronDown, ChevronUp, Check } from 'lucide-react';
+import { ChevronDown, ChevronUp, Check, ExternalLink } from 'lucide-react';
 import { 
   Collapsible, 
   CollapsibleContent, 
@@ -28,6 +28,7 @@ interface CollapsiblePreviewProps {
   currentPhase: string;
   relevantPhase: string;
   projectStatus?: string | null;
+  externalUrl?: string;
 }
 
 const CollapsiblePreview = ({ 
@@ -36,13 +37,14 @@ const CollapsiblePreview = ({
   children, 
   currentPhase, 
   relevantPhase,
-  projectStatus
+  projectStatus,
+  externalUrl
 }: CollapsiblePreviewProps) => {
   // Check if this preview is relevant to the current phase
   const isCurrentPhasePreview = currentPhase.includes(relevantPhase);
   
-  // State to track if the preview is open or closed
-  const [isOpen, setIsOpen] = useState(isCurrentPhasePreview);
+  // State to track if the preview is open or closed (collapsed by default)
+  const [isOpen, setIsOpen] = useState(false);
   // State to track if the component is approved
   const [isApproved, setIsApproved] = useState(false);
   // State for the hold-to-confirm button
@@ -144,44 +146,55 @@ const CollapsiblePreview = ({
       }
     };
   }, []);
-  
-  // Update open state if current phase changes
-  useEffect(() => {
-    setIsOpen(isCurrentPhasePreview);
-  }, [currentPhase, isCurrentPhasePreview]);
 
   return (
     <Card className={`mt-6 ${isToReview ? 'border-2 border-amber-500' : ''}`}>
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CardHeader className="py-4">
-          <CollapsibleTrigger className="flex items-center justify-between w-full text-left">
-            <div className="flex items-center gap-2 justify-between w-full">
+          <div className="flex items-center justify-between w-full">
+            <CollapsibleTrigger className="flex items-center gap-2 text-left">
               <CardTitle className="text-lg flex items-center gap-2">
                 {icon}
                 {title}
               </CardTitle>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className={statusStyles[previewStatus]}>
-                  {previewStatus}
-                </Badge>
+              <div className="flex items-center ml-2">
                 {isOpen ? (
                   <ChevronUp className="h-5 w-5 text-muted-foreground" />
                 ) : (
                   <ChevronDown className="h-5 w-5 text-muted-foreground" />
                 )}
               </div>
+            </CollapsibleTrigger>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className={statusStyles[previewStatus]}>
+                {previewStatus}
+              </Badge>
+              {externalUrl && (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(externalUrl, '_blank', 'noopener,noreferrer');
+                  }}
+                  title="Open in new tab"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                </Button>
+              )}
             </div>
-          </CollapsibleTrigger>
+          </div>
         </CardHeader>
         <CollapsibleContent className="transition-all duration-300 ease-in-out">
-          <CardContent className="py-6">
+          <CardContent className={`py-6 ${isToReview ? 'pb-16' : 'pb-6'}`}>
             {children}
           </CardContent>
           {isToReview && !isApproved && (
             <CardFooter className="pt-0 pb-6">
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="outline" className="border-green-500 text-green-600 hover:bg-green-50">
+                  <Button className="bg-green-500 hover:bg-green-600 text-white w-full">
                     <Check className="mr-2 h-4 w-4" />
                     Approve
                   </Button>
