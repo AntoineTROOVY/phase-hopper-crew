@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Check, ExternalLink } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
@@ -35,26 +34,20 @@ const CollapsiblePreview = ({
   projectStatus,
   externalUrl
 }: CollapsiblePreviewProps) => {
-  // Check if this preview is relevant to the current phase
   const isCurrentPhasePreview = currentPhase.includes(relevantPhase);
   
-  // State to track if the component is approved
   const [isApproved, setIsApproved] = useState(false);
-  // State for the hold-to-confirm button
   const [holdProgress, setHoldProgress] = useState(0);
   const [isHolding, setIsHolding] = useState(false);
   const holdTimerRef = useRef<number | null>(null);
-  const requiredHoldTime = 5000; // 5 seconds in milliseconds
+  const requiredHoldTime = 5000;
 
-  // Determine the status of this preview based on phases and project status
   const determinePreviewStatus = () => {
     const lowerCurrentPhase = currentPhase.toLowerCase();
     const lowerRelevantPhase = relevantPhase.toLowerCase();
     const lowerProjectStatus = projectStatus?.toLowerCase() || '';
     
-    // If the relevant phase is the current one
     if (lowerCurrentPhase.includes(lowerRelevantPhase)) {
-      // Use project status for the current phase
       if (lowerProjectStatus.includes('review')) {
         return 'To Review';
       } else {
@@ -62,7 +55,6 @@ const CollapsiblePreview = ({
       }
     }
     
-    // If the relevant phase comes before the current phase, it should be Approved
     const phases = ['copywriting', 'storyboard', 'animation'];
     const relevantPhaseIndex = phases.findIndex(p => lowerRelevantPhase.includes(p));
     const currentPhaseIndex = phases.findIndex(p => lowerCurrentPhase.includes(p));
@@ -71,47 +63,37 @@ const CollapsiblePreview = ({
       return 'Approved';
     }
     
-    // Default to In Progress
     return 'In Progress';
   };
   
   const previewStatus = determinePreviewStatus();
   const isToReview = previewStatus === 'To Review';
   
-  // Styles for different statuses
   const statusStyles = {
     'In Progress': 'bg-blue-100 text-blue-800 border-blue-200',
     'To Review': 'bg-amber-100 text-amber-800 border-amber-200',
     'Approved': 'bg-green-100 text-green-800 border-green-200'
   };
 
-  // Function to handle approval
   const handleApprove = () => {
     console.log(`Approved ${relevantPhase}`);
     setIsApproved(true);
-    // Reset hold progress
     setHoldProgress(0);
-    // Here we would normally send a request to update the project status
-    // This will be implemented later
   };
 
-  // Hold to confirm logic
   const startHolding = () => {
     setIsHolding(true);
     const startTime = Date.now();
     
-    // Clear any existing timer
     if (holdTimerRef.current) {
       window.clearInterval(holdTimerRef.current);
     }
     
-    // Set up progress update interval
     holdTimerRef.current = window.setInterval(() => {
       const elapsedTime = Date.now() - startTime;
       const progress = Math.min(100, (elapsedTime / requiredHoldTime) * 100);
       setHoldProgress(progress);
       
-      // If completed holding for required time
       if (progress >= 100) {
         stopHolding();
         handleApprove();
@@ -125,13 +107,11 @@ const CollapsiblePreview = ({
       holdTimerRef.current = null;
     }
     setIsHolding(false);
-    // Only reset progress if not completed
     if (holdProgress < 100) {
       setHoldProgress(0);
     }
   };
   
-  // Cleanup timer on unmount
   React.useEffect(() => {
     return () => {
       if (holdTimerRef.current) {
@@ -163,20 +143,23 @@ const CollapsiblePreview = ({
                       window.open(externalUrl, '_blank', 'noopener,noreferrer');
                     }}
                   >
+                    <ExternalLink className="h-4 w-4 mr-1" />
                     Review
                   </Button>
                 )}
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-8 w-8" 
-                  onClick={() => {
-                    window.open(externalUrl, '_blank', 'noopener,noreferrer');
-                  }}
-                  title="Open in new tab"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                </Button>
+                {!isToReview && (
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8" 
+                    onClick={() => {
+                      window.open(externalUrl, '_blank', 'noopener,noreferrer');
+                    }}
+                    title="Open in new tab"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
             )}
           </div>
@@ -212,7 +195,7 @@ const CollapsiblePreview = ({
                     onMouseLeave={stopHolding}
                     onTouchStart={startHolding}
                     onTouchEnd={stopHolding}
-                    onClick={(e) => e.preventDefault()} // Prevent default click action
+                    onClick={(e) => e.preventDefault()}
                   >
                     Hold to Approve
                   </AlertDialogAction>
