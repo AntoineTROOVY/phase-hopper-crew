@@ -98,8 +98,8 @@ const CollapsiblePreview = ({
             </div>
           </CollapsibleTrigger>
         </CardHeader>
-        <CollapsibleContent>
-          <CardContent>
+        <CollapsibleContent className="transition-all duration-300 ease-in-out">
+          <CardContent className="py-4">
             {children}
           </CardContent>
         </CollapsibleContent>
