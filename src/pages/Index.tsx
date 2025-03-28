@@ -20,7 +20,7 @@ const Dashboard = () => {
     const loadProjects = async () => {
       try {
         setIsLoading(true);
-        const data = await fetchProjects(slackId || undefined);
+        const data = await fetchProjects();
         setProjects(data);
         setFilteredProjects(data);
         
