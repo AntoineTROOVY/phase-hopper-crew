@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, Building, User, Clock, Tag } from 'lucide-react';
@@ -34,7 +35,7 @@ const ProjectDetails = () => {
             description: `No project found with ID: ${projectId}`,
             variant: "destructive",
           });
-          navigate('/');
+          navigate(slackId ? `/?slack-id=${slackId}` : '/');
         }
       } catch (error) {
         console.error("Failed to load project:", error);
@@ -43,7 +44,7 @@ const ProjectDetails = () => {
           description: "There was a problem loading the project details. Please try again later.",
           variant: "destructive",
         });
-        navigate('/');
+        navigate(slackId ? `/?slack-id=${slackId}` : '/');
       } finally {
         setIsLoading(false);
       }
