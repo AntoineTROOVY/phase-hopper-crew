@@ -3,9 +3,23 @@ import React from 'react';
 import { FileText, Mic, Image, Film, Package } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
-type ProjectPhase = 'Copywriting' | 'Voice-over' | 'Storyboard' | 'Animation' | 'Variations' | string;
+// Define phase types with emoji prefixes
+type ProjectPhase = 
+  | '📝 Copywriting' 
+  | '🎙️Voice-over' 
+  | '🖼️ Storyboard' 
+  | '🎞️ Animation' 
+  | '📦 Variations' 
+  | string;
 
-const phases: ProjectPhase[] = ['Copywriting', 'Voice-over', 'Storyboard', 'Animation', 'Variations'];
+// Define phases array with emoji prefixes
+const phases: ProjectPhase[] = [
+  '📝 Copywriting',
+  '🎙️Voice-over',
+  '🖼️ Storyboard',
+  '🎞️ Animation',
+  '📦 Variations'
+];
 
 interface ProjectTimelineProps {
   currentPhase: string;
@@ -14,28 +28,53 @@ interface ProjectTimelineProps {
 const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
   // Function to normalize phase names for comparison
   const normalizePhase = (phase: string): ProjectPhase => {
-    // Strip emoji prefixes and trim whitespace for comparison
-    const cleanPhase = phase?.replace(/[\u{1F300}-\u{1F6FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
-    
-    // Map of lowercase phase names to standardized phase names
+    // Map of possible phase variations to standardized phase names with emojis
     const phaseMap: Record<string, ProjectPhase> = {
-      'copywriting': 'Copywriting',
-      'voice-over': 'Voice-over',
-      'voiceover': 'Voice-over',
-      'storyboard': 'Storyboard',
-      'animation': 'Animation',
-      'variations': 'Variations',
+      'copywriting': '📝 Copywriting',
+      '📝 copywriting': '📝 Copywriting',
+      '📝copywriting': '📝 Copywriting',
+      
+      'voice-over': '🎙️Voice-over',
+      'voiceover': '🎙️Voice-over',
+      '🎙️voice-over': '🎙️Voice-over',
+      '🎙️voiceover': '🎙️Voice-over',
+      '🎙️ voice-over': '🎙️Voice-over',
+      '🎙️ voiceover': '🎙️Voice-over',
+      
+      'storyboard': '🖼️ Storyboard',
+      '🖼️storyboard': '🖼️ Storyboard',
+      '🖼️ storyboard': '🖼️ Storyboard',
+      
+      'animation': '🎞️ Animation',
+      '🎞️animation': '🎞️ Animation',
+      '🎞️ animation': '🎞️ Animation',
+      
+      'variations': '📦 Variations',
+      '📦variations': '📦 Variations',
+      '📦 variations': '📦 Variations',
     };
     
-    const normalized = cleanPhase?.toLowerCase();
-    return phaseMap[normalized] || phase;
+    // Try direct match first
+    if (phases.includes(phase)) {
+      return phase as ProjectPhase;
+    }
+    
+    // Try case-insensitive matching
+    const normalized = phase?.toLowerCase();
+    for (const [key, value] of Object.entries(phaseMap)) {
+      if (normalized === key.toLowerCase() || normalized?.includes(key.toLowerCase())) {
+        return value;
+      }
+    }
+    
+    return phase;
   };
 
   const normalizedCurrentPhase = normalizePhase(currentPhase);
   
   // Find the index of the current phase
   const currentPhaseIndex = phases.findIndex(
-    phase => normalizePhase(phase) === normalizedCurrentPhase
+    phase => phase === normalizedCurrentPhase
   );
   
   // Calculate completion percentage
@@ -45,16 +84,16 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
 
   // Get icon for a phase
   const getPhaseIcon = (phase: ProjectPhase) => {
-    switch (normalizePhase(phase)) {
-      case 'Copywriting':
+    switch (phase) {
+      case '📝 Copywriting':
         return <FileText className="h-5 w-5" />;
-      case 'Voice-over':
+      case '🎙️Voice-over':
         return <Mic className="h-5 w-5" />;
-      case 'Storyboard':
+      case '🖼️ Storyboard':
         return <Image className="h-5 w-5" />;
-      case 'Animation':
+      case '🎞️ Animation':
         return <Film className="h-5 w-5" />;
-      case 'Variations':
+      case '📦 Variations':
         return <Package className="h-5 w-5" />;
       default:
         return <FileText className="h-5 w-5" />;
@@ -82,7 +121,7 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
       
       <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
         {phases.map((phase, index) => {
-          const isCurrentPhase = normalizePhase(phase) === normalizedCurrentPhase;
+          const isCurrentPhase = phase === normalizedCurrentPhase;
           const isPastPhase = currentPhaseIndex >= 0 && index <= currentPhaseIndex;
           
           return (
@@ -100,11 +139,7 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
                 {getPhaseIcon(phase)}
               </div>
               <span className="text-xs font-medium text-center">
-                {phase === 'Voice-over' ? '🎙️ Voice-over' : 
-                 phase === 'Copywriting' ? '📝 Copywriting' :
-                 phase === 'Storyboard' ? '🖼️ Storyboard' :
-                 phase === 'Animation' ? '🎞️ Animation' :
-                 phase === 'Variations' ? '📦 Variations' : phase}
+                {phase}
               </span>
               {isCurrentPhase && (
                 <span className="mt-1 text-[10px] bg-primary-foreground text-primary px-1.5 py-0.5 rounded-full">
