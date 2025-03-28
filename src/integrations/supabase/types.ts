@@ -188,6 +188,7 @@ export type Database = {
           "Languages-number": number | null
           Langues: string | null
           "Linked company": string | null
+          "Logo url": string | null
           "Num version video": string | null
           OPERATIONS: string | null
           "OPERATIONS copy": string | null
@@ -236,6 +237,7 @@ export type Database = {
           "Languages-number"?: number | null
           Langues?: string | null
           "Linked company"?: string | null
+          "Logo url"?: string | null
           "Num version video"?: string | null
           OPERATIONS?: string | null
           "OPERATIONS copy"?: string | null
@@ -284,6 +286,7 @@ export type Database = {
           "Languages-number"?: number | null
           Langues?: string | null
           "Linked company"?: string | null
+          "Logo url"?: string | null
           "Num version video"?: string | null
           OPERATIONS?: string | null
           "OPERATIONS copy"?: string | null
@@ -334,6 +337,7 @@ export type Database = {
           "Languages-number": number | null
           Langues: string | null
           "Linked company": string | null
+          "Logo url": string | null
           "Num version video": string | null
           OPERATIONS: string | null
           OPERATIONSS: string | null
@@ -376,6 +380,7 @@ export type Database = {
           "Languages-number"?: number | null
           Langues?: string | null
           "Linked company"?: string | null
+          "Logo url"?: string | null
           "Num version video"?: string | null
           OPERATIONS?: string | null
           OPERATIONSS?: string | null
@@ -418,6 +423,7 @@ export type Database = {
           "Languages-number"?: number | null
           Langues?: string | null
           "Linked company"?: string | null
+          "Logo url"?: string | null
           "Num version video"?: string | null
           OPERATIONS?: string | null
           OPERATIONSS?: string | null

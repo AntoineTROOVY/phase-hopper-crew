@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Building, User, Clock, FileText, Image, Film } from 'lucide-react';
@@ -115,6 +116,15 @@ const ProjectDetails = () => {
                   <div>
                     <h2 className="text-xl font-semibold">{project["Company"] || 'Untitled Project'}</h2>
                     <p className="text-gray-500">Client: {project["Client"] || 'N/A'}</p>
+                    {project["Logo url"] && (
+                      <div className="mt-3">
+                        <img 
+                          src={project["Logo url"]} 
+                          alt={`${project["Company"]} logo`} 
+                          className="max-h-16 w-auto object-contain"
+                        />
+                      </div>
+                    )}
                   </div>
                   <StatusBadge status={project["Status"] || 'Unknown'} />
                 </div>
