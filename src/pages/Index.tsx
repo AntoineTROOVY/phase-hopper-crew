@@ -7,7 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { fetchProjects, PipelineProject } from '@/services/projectService';
 import { useToast } from '@/hooks/use-toast';
 import { useSearchParams } from 'react-router-dom';
-import { InfoCircle } from 'lucide-react';
+import { Info } from 'lucide-react';
 
 const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');

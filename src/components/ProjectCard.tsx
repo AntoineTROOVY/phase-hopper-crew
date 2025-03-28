@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Calendar, Building, User, Clock } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import StatusBadge from './StatusBadge';
@@ -11,6 +11,9 @@ interface ProjectCardProps {
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+  const [searchParams] = useSearchParams();
+  const slackId = searchParams.get('slack-id');
+  
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return 'Not set';
     
@@ -21,9 +24,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
     }
   };
 
+  // Create the project link with the SlackID parameter preserved
+  const projectLink = `/project/${encodeURIComponent(project["ID-PROJET"] || '')}${slackId ? `?slack-id=${slackId}` : ''}`;
+
   return (
     <Link 
-      to={`/project/${encodeURIComponent(project["ID-PROJET"] || '')}`}
+      to={projectLink}
       className="block transition-transform hover:scale-[1.02] focus:outline-none"
     >
       <Card className="h-full">

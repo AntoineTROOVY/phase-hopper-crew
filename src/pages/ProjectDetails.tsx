@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, Building, User, Clock, Tag } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,8 @@ import { useToast } from '@/hooks/use-toast';
 
 const ProjectDetails = () => {
   const { projectId } = useParams<{ projectId: string }>();
+  const [searchParams] = useSearchParams();
+  const slackId = searchParams.get('slack-id');
   const [project, setProject] = useState<PipelineProject | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
@@ -24,7 +25,7 @@ const ProjectDetails = () => {
 
       try {
         setIsLoading(true);
-        const data = await fetchProjectById(projectId);
+        const data = await fetchProjectById(projectId, slackId || undefined);
         setProject(data);
         
         if (!data) {
@@ -49,7 +50,7 @@ const ProjectDetails = () => {
     };
 
     loadProject();
-  }, [projectId, toast, navigate]);
+  }, [projectId, slackId, toast, navigate]);
 
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return 'Not set';
@@ -60,6 +61,8 @@ const ProjectDetails = () => {
       return dateString;
     }
   };
+
+  const backLink = `/${slackId ? `?slack-id=${slackId}` : ''}`;
 
   if (isLoading) {
     return (
@@ -79,7 +82,7 @@ const ProjectDetails = () => {
           <h2 className="text-xl font-semibold mb-2">Project not found</h2>
           <p className="text-gray-500 mb-4">The project you're looking for doesn't exist.</p>
           <Button asChild>
-            <Link to="/">Go back to dashboard</Link>
+            <Link to={backLink}>Go back to dashboard</Link>
           </Button>
         </div>
       </div>
@@ -92,7 +95,7 @@ const ProjectDetails = () => {
         <div className="container mx-auto py-4">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" asChild>
-              <Link to="/">
+              <Link to={backLink}>
                 <ArrowLeft className="h-5 w-5" />
               </Link>
             </Button>

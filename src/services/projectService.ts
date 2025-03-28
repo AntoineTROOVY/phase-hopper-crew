@@ -36,12 +36,18 @@ export const fetchProjects = async (slackId?: string): Promise<PipelineProject[]
   return data || [];
 };
 
-export const fetchProjectById = async (projectId: string): Promise<PipelineProject | null> => {
-  const { data, error } = await supabase
+export const fetchProjectById = async (projectId: string, slackId?: string): Promise<PipelineProject | null> => {
+  let query = supabase
     .from("PIPELINE PROJET")
     .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Slack ID"')
-    .eq("ID-PROJET", projectId)
-    .maybeSingle(); // Using maybeSingle instead of single to prevent errors when multiple rows are returned
+    .eq("ID-PROJET", projectId);
+  
+  // If slackId is provided, add it as a filter
+  if (slackId) {
+    query = query.eq("Slack ID", slackId);
+  }
+  
+  const { data, error } = await query.maybeSingle();
 
   if (error) {
     console.error("Error fetching project:", error);
