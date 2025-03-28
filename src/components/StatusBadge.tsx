@@ -13,6 +13,8 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className }) => {
     
     if (lowerStatus.includes('completed') || lowerStatus.includes('done') || lowerStatus.includes('finished')) {
       return 'bg-green-100 text-green-800 border-green-200';
+    } else if (lowerStatus.includes('review')) {
+      return 'bg-amber-100 text-amber-800 border-amber-200';
     } else if (lowerStatus.includes('progress') || lowerStatus.includes('ongoing') || lowerStatus.includes('started')) {
       return 'bg-blue-100 text-blue-800 border-blue-200';
     } else if (lowerStatus.includes('risk') || lowerStatus.includes('danger') || lowerStatus.includes('critical')) {

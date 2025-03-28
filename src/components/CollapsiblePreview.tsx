@@ -1,13 +1,25 @@
 
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Check } from 'lucide-react';
 import { 
   Collapsible, 
   CollapsibleContent, 
   CollapsibleTrigger 
 } from '@/components/ui/collapsible';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface CollapsiblePreviewProps {
   title: string;
@@ -31,6 +43,8 @@ const CollapsiblePreview = ({
   
   // State to track if the preview is open or closed
   const [isOpen, setIsOpen] = useState(isCurrentPhasePreview);
+  // State to track if the component is approved
+  const [isApproved, setIsApproved] = useState(false);
 
   // Determine the status of this preview based on phases and project status
   const determinePreviewStatus = () => {
@@ -62,12 +76,21 @@ const CollapsiblePreview = ({
   };
   
   const previewStatus = determinePreviewStatus();
+  const isToReview = previewStatus === 'To Review';
   
   // Styles for different statuses - removed hover effects
   const statusStyles = {
     'In Progress': 'bg-blue-100 text-blue-800 border-blue-200',
     'To Review': 'bg-amber-100 text-amber-800 border-amber-200',
     'Approved': 'bg-green-100 text-green-800 border-green-200'
+  };
+
+  // Function to handle approval
+  const handleApprove = () => {
+    console.log(`Approved ${relevantPhase}`);
+    setIsApproved(true);
+    // Here we would normally send a request to update the project status
+    // This will be implemented later
   };
   
   // Update open state if current phase changes
@@ -76,7 +99,7 @@ const CollapsiblePreview = ({
   }, [currentPhase, isCurrentPhasePreview]);
 
   return (
-    <Card className="mt-6">
+    <Card className={`mt-6 ${isToReview ? 'border-2 border-amber-500' : ''}`}>
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CardHeader className="py-4">
           <CollapsibleTrigger className="flex items-center justify-between w-full text-left">
@@ -102,6 +125,33 @@ const CollapsiblePreview = ({
           <CardContent className="py-6">
             {children}
           </CardContent>
+          {isToReview && !isApproved && (
+            <CardFooter className="pt-0 pb-6">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button className="bg-amber-500 hover:bg-amber-600">
+                    <Check className="mr-2 h-4 w-4" />
+                    Approve
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to proceed to the next phase? This action is definitive. 
+                      You will no longer be able to modify the {relevantPhase.toLowerCase()}.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleApprove} className="bg-amber-500 hover:bg-amber-600">
+                      Approve
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </CardFooter>
+          )}
         </CollapsibleContent>
       </Collapsible>
     </Card>
