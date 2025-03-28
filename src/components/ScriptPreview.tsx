@@ -8,14 +8,14 @@ interface ScriptPreviewProps {
 const ScriptPreview = ({ scriptUrl }: ScriptPreviewProps) => {
   return (
     <div className="m-0 p-0">
-      <iframe 
-        src={scriptUrl} 
-        title="Script Preview" 
-        className="w-full h-48 rounded-md"
-        onError={(e) => {
-          console.error('Error loading script preview:', e);
-        }}
-      />
+      <a 
+        href={scriptUrl} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="block px-4 py-3 bg-gray-50 text-blue-600 hover:underline text-center rounded-md"
+      >
+        Open Script
+      </a>
     </div>
   );
 };
