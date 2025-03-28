@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Building, User, Clock, FileText, Image, Film } from 'lucide-react';
@@ -84,6 +83,8 @@ const ProjectDetails = () => {
       </div>;
   }
 
+  console.log('Project Logo URL:', project["Logo url"]);
+
   return <div className="flex min-h-screen flex-col bg-gray-50">
       <header className="sticky top-0 z-10 bg-white border-b">
         <div className="container mx-auto py-4">
@@ -122,6 +123,10 @@ const ProjectDetails = () => {
                           src={project["Logo url"]} 
                           alt={`${project["Company"]} logo`} 
                           className="max-h-16 w-auto object-contain"
+                          onError={(e) => {
+                            console.error('Error loading logo:', e);
+                            e.currentTarget.style.display = 'none';
+                          }}
                         />
                       </div>
                     )}
