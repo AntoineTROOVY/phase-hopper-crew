@@ -37,22 +37,29 @@ export const fetchProjects = async (slackId?: string): Promise<PipelineProject[]
 };
 
 export const fetchProjectById = async (projectId: string, slackId?: string): Promise<PipelineProject | null> => {
-  let query = supabase
-    .from("PIPELINE PROJET")
-    .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Slack ID"')
-    .eq("ID-PROJET", projectId);
-  
-  // If slackId is provided, add it as a filter
-  if (slackId) {
-    query = query.eq("Slack ID", slackId);
-  }
-  
-  const { data, error } = await query.maybeSingle();
+  try {
+    let query = supabase
+      .from("PIPELINE PROJET")
+      .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Slack ID"')
+      .eq("ID-PROJET", projectId);
+    
+    // If slackId is provided, add it as a filter
+    if (slackId) {
+      query = query.eq("Slack ID", slackId);
+    }
+    
+    // Use limit(1) to only get the first matching record when there are duplicates
+    const { data, error } = await query.limit(1);
 
-  if (error) {
+    if (error) {
+      console.error("Error fetching project:", error);
+      throw error;
+    }
+
+    // Return the first item from the array or null if empty
+    return data && data.length > 0 ? data[0] : null;
+  } catch (error) {
     console.error("Error fetching project:", error);
     throw error;
   }
-
-  return data || null;
 };

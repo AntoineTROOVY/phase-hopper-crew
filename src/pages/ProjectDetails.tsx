@@ -20,7 +20,7 @@ const ProjectDetails = () => {
   useEffect(() => {
     const loadProject = async () => {
       if (!projectId) {
-        navigate('/');
+        navigate(slackId ? `/?slack-id=${slackId}` : '/');
         return;
       }
 
