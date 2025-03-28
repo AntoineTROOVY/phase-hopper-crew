@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Building, User, Clock, Tag, ExternalLink, Film } from 'lucide-react';
@@ -7,6 +8,7 @@ import StatusBadge from '@/components/StatusBadge';
 import { fetchProjectById, PipelineProject } from '@/services/projectService';
 import { useToast } from '@/hooks/use-toast';
 import AnimationPreview from '@/components/AnimationPreview';
+import ProjectTimeline from '@/components/ProjectTimeline';
 
 const ProjectDetails = () => {
   const { projectId } = useParams<{ projectId: string; }>();
@@ -96,6 +98,13 @@ const ProjectDetails = () => {
       </header>
       
       <main className="container mx-auto py-6 px-4 sm:px-6 lg:px-8 flex-1">
+        {/* Add the timeline at the top */}
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <ProjectTimeline currentPhase={project["Phase"] || ''} />
+          </CardContent>
+        </Card>
+        
         <div className="grid gap-6 md:grid-cols-3">
           <div className="md:col-span-2">
             <Card>

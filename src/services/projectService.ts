@@ -32,15 +32,14 @@ export const fetchProjectById = async (projectId: string): Promise<PipelineProje
       .from("PIPELINE PROJET")
       .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Animation"')
       .eq("ID-PROJET", projectId)
-      .limit(1);
+      .single();
     
     if (error) {
       console.error("Error fetching project:", error);
       throw error;
     }
 
-    // Return the first item from the array or null if empty
-    return data && data.length > 0 ? data[0] : null;
+    return data;
   } catch (error) {
     console.error("Error fetching project:", error);
     throw error;
