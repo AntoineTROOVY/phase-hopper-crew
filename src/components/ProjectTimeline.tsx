@@ -103,9 +103,9 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
           return (
             <div 
               key={phase}
-              className={`flex flex-col items-center p-2 h-20 rounded-md transition-colors ${
+              className={`flex flex-col items-center p-2 h-16 rounded-md transition-colors ${
                 isCurrentPhase 
-                  ? 'bg-gradient-to-r from-[#4E90FF] from-50% to-[#DBEAFE] to-50%' 
+                  ? 'bg-gradient-to-r from-[#4E90FF] from-50% to-[#E6F0FF] to-50%' 
                   : isPastPhase
                     ? 'bg-[#4E90FF] text-white'
                     : 'bg-muted text-muted-foreground'
@@ -113,9 +113,9 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
             >
               <span className={`font-medium text-center ${
                 isCurrentPhase 
-                  ? 'text-lg text-white drop-shadow-md' 
+                  ? 'text-lg text-white drop-shadow-md shadow-black' 
                   : isPastPhase 
-                    ? 'text-lg' 
+                    ? 'text-lg text-white' 
                     : 'text-sm'
               }`}>
                 {phase}
@@ -126,7 +126,7 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
                 </span>
               )}
               {isCurrentPhase && (
-                <span className="mt-1 text-[10px] bg-white text-[#4E90FF] px-1.5 py-0.5 rounded-full">
+                <span className="mt-1 text-[10px] bg-white text-[#4E90FF] px-1.5 py-0.5 rounded-full drop-shadow-sm">
                   In Progress
                 </span>
               )}

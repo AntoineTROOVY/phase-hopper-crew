@@ -10,6 +10,7 @@ import AnimationPreview from '@/components/AnimationPreview';
 import StoryboardPreview from '@/components/StoryboardPreview';
 import ScriptPreview from '@/components/ScriptPreview';
 import ProjectTimeline from '@/components/ProjectTimeline';
+import ProjectCalendar from '@/components/ProjectCalendar';
 import CollapsiblePreview from '@/components/CollapsiblePreview';
 
 const ProjectDetails = () => {
@@ -195,7 +196,7 @@ const ProjectDetails = () => {
             )}
           </div>
           
-          <div>
+          <div className="space-y-6">
             <Card>
               <CardHeader className="pb-2">
                 <h3 className="font-semibold">Project Status</h3>
@@ -213,6 +214,11 @@ const ProjectDetails = () => {
                 </div>
               </CardContent>
             </Card>
+            
+            <ProjectCalendar 
+              startDate={project["Date de début"]} 
+              endDate={project["Deadline"]} 
+            />
           </div>
         </div>
       </main>
