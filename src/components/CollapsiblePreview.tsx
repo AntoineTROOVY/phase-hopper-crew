@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Check, ExternalLink } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
@@ -120,6 +121,19 @@ const CollapsiblePreview = ({
     };
   }, []);
 
+  // Determine instructions based on relevant phase
+  const getInstructions = () => {
+    if (relevantPhase.toLowerCase().includes('storyboard')) {
+      return "Suggest modifications directly on Figma by clicking the button above.";
+    } else if (relevantPhase.toLowerCase().includes('copy')) {
+      return "Suggest modifications directly on Google Docs by clicking the button above.";
+    } else if (relevantPhase.toLowerCase().includes('animation')) {
+      return "Suggest modifications directly on Frame.io by clicking the button above.";
+    } else {
+      return "Suggest modifications directly on the platform by clicking the button above.";
+    }
+  };
+
   return (
     <Card className={`mt-6 ${isToReview ? 'border-2 border-amber-500' : ''}`}>
       <CardHeader className="py-4">
@@ -143,8 +157,8 @@ const CollapsiblePreview = ({
                       window.open(externalUrl, '_blank', 'noopener,noreferrer');
                     }}
                   >
-                    <ExternalLink className="h-4 w-4 mr-1" />
-                    Review
+                    <span>Review</span>
+                    <ExternalLink className="h-4 w-4 ml-1" />
                   </Button>
                 )}
                 {!isToReview && (
@@ -165,7 +179,8 @@ const CollapsiblePreview = ({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="py-4">
+      <CardContent className="py-2">
+        <p className="text-sm text-gray-500 mb-4">{getInstructions()}</p>
         {children}
       </CardContent>
       {isToReview && !isApproved && (

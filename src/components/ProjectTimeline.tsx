@@ -105,7 +105,7 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
               key={phase}
               className={`flex flex-col items-center p-2 h-16 rounded-md transition-colors ${
                 isCurrentPhase 
-                  ? 'bg-gradient-to-r from-[#4E90FF] from-50% to-[#E6F0FF] to-50%' 
+                  ? 'bg-gradient-to-r from-[#4E90FF] from-50% to-[#0F3B7F] to-50%' 
                   : isPastPhase
                     ? 'bg-[#4E90FF] text-white'
                     : 'bg-muted text-muted-foreground'

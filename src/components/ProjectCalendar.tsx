@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { format, isWithinInterval, isSameDay } from 'date-fns';
+import { format, isWithinInterval, isSameDay, startOfMonth, endOfMonth } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Package } from 'lucide-react';
@@ -16,6 +16,10 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
   
   // Default to current month if no dates provided
   const defaultMonth = start || new Date();
+  
+  // Get the first and last day of the month to properly bound the view
+  const firstDayOfMonth = startOfMonth(defaultMonth);
+  const lastDayOfMonth = endOfMonth(defaultMonth);
   
   // Custom day rendering to highlight the project period
   const dayClassNames = (date: Date) => {
@@ -55,19 +59,21 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
       </CardHeader>
       <CardContent className="pb-4">
         <Calendar
-          mode="default"
+          mode="single"
           defaultMonth={defaultMonth}
-          selected={start && end ? { from: start, to: end } : undefined}
+          selected={undefined}
+          fromDate={firstDayOfMonth}
+          toDate={lastDayOfMonth}
           className="rounded-md border"
           classNames={{
             day_selected: "", // Override default selected styling
             day_today: "border border-[#4E90FF]",
             day: "h-9 w-9 p-0 font-normal rounded-lg border border-gray-200",
             cell: "p-1", // Added padding between cells
-            month: "space-y-6", // Increased vertical spacing
-            row: "flex w-full mt-3", // Increased row spacing
-            caption: "flex justify-center pt-1 relative items-center mb-4", // Add more space below the month caption and center it
-            table: "w-full border-collapse space-y-2", // Increased table spacing
+            month: "space-y-4", // Reduced vertical spacing
+            row: "flex w-full mt-2", // Reduced row spacing
+            caption: "flex justify-center pt-1 relative items-center mb-2", // Reduced space below the month caption
+            table: "w-full border-collapse", // Removed extra spacing in table
             caption_label: "text-sm font-medium px-6", // Add horizontal padding to month label
             nav_button_previous: "absolute left-2", // Position left arrow with more space
             nav_button_next: "absolute right-2", // Position right arrow with more space
