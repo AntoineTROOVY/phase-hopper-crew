@@ -14,14 +14,17 @@ export interface PipelineProject {
 }
 
 export const fetchProjects = async (slackId?: string): Promise<PipelineProject[]> => {
+  // If no slackId is provided, return an empty array (making projects private by default)
+  if (!slackId) {
+    return [];
+  }
+  
   let query = supabase
     .from("PIPELINE PROJET")
     .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Slack ID"');
   
   // Apply Slack ID filter if provided
-  if (slackId) {
-    query = query.eq("Slack ID", slackId);
-  }
+  query = query.eq("Slack ID", slackId);
   
   const { data, error } = await query;
 
@@ -38,7 +41,7 @@ export const fetchProjectById = async (projectId: string): Promise<PipelineProje
     .from("PIPELINE PROJET")
     .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Slack ID"')
     .eq("ID-PROJET", projectId)
-    .single();
+    .maybeSingle(); // Using maybeSingle instead of single to prevent errors when multiple rows are returned
 
   if (error) {
     console.error("Error fetching project:", error);
