@@ -1,34 +1,29 @@
+
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Calendar, Building, User, Clock, Tag } from 'lucide-react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Calendar, Building, User, Clock, Tag, ExternalLink } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/StatusBadge';
 import { fetchProjectById, PipelineProject } from '@/services/projectService';
 import { useToast } from '@/hooks/use-toast';
+
 const ProjectDetails = () => {
-  const {
-    projectId
-  } = useParams<{
-    projectId: string;
-  }>();
-  const [searchParams] = useSearchParams();
-  const slackId = searchParams.get('slack-id');
+  const { projectId } = useParams<{ projectId: string; }>();
   const [project, setProject] = useState<PipelineProject | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
   const navigate = useNavigate();
+
   useEffect(() => {
     const loadProject = async () => {
       if (!projectId) {
-        navigate(slackId ? `/?slack-id=${slackId}` : '/');
+        navigate('/');
         return;
       }
       try {
         setIsLoading(true);
-        const data = await fetchProjectById(projectId, slackId || undefined);
+        const data = await fetchProjectById(projectId);
         setProject(data);
         if (!data) {
           toast({
@@ -36,7 +31,7 @@ const ProjectDetails = () => {
             description: `No project found with ID: ${projectId}`,
             variant: "destructive"
           });
-          navigate(slackId ? `/?slack-id=${slackId}` : '/');
+          navigate('/');
         }
       } catch (error) {
         console.error("Failed to load project:", error);
@@ -45,13 +40,14 @@ const ProjectDetails = () => {
           description: "There was a problem loading the project details. Please try again later.",
           variant: "destructive"
         });
-        navigate(slackId ? `/?slack-id=${slackId}` : '/');
+        navigate('/');
       } finally {
         setIsLoading(false);
       }
     };
     loadProject();
-  }, [projectId, slackId, toast, navigate]);
+  }, [projectId, toast, navigate]);
+
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return 'Not set';
     try {
@@ -60,7 +56,7 @@ const ProjectDetails = () => {
       return dateString;
     }
   };
-  const backLink = `/${slackId ? `?slack-id=${slackId}` : ''}`;
+
   if (isLoading) {
     return <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
@@ -69,23 +65,25 @@ const ProjectDetails = () => {
         </div>
       </div>;
   }
+
   if (!project) {
     return <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Project not found</h2>
           <p className="text-gray-500 mb-4">The project you're looking for doesn't exist.</p>
           <Button asChild>
-            <Link to={backLink}>Go back to dashboard</Link>
+            <Link to="/">Go back to dashboard</Link>
           </Button>
         </div>
       </div>;
   }
+
   return <div className="flex min-h-screen flex-col bg-gray-50">
       <header className="sticky top-0 z-10 bg-white border-b">
         <div className="container mx-auto py-4">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" asChild>
-              <Link to={backLink}>
+              <Link to="/">
                 <ArrowLeft className="h-5 w-5" />
               </Link>
             </Button>
@@ -149,6 +147,23 @@ const ProjectDetails = () => {
                       </div>
                     </div>
                     
+                    {project["Animation"] && (
+                      <div className="flex items-center gap-3">
+                        <ExternalLink className="h-5 w-5 text-gray-400" />
+                        <div>
+                          <p className="text-sm font-medium">Animation</p>
+                          <a 
+                            href={project["Animation"]} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                          >
+                            View on Frame.io
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -184,4 +199,5 @@ const ProjectDetails = () => {
       </footer>
     </div>;
 };
+
 export default ProjectDetails;

@@ -10,22 +10,14 @@ export interface PipelineProject {
   "Deadline"?: string | null;
   "Client"?: string | null;
   "Duration"?: string | null;
-  "Slack ID"?: string | null;
+  "Animation"?: string | null;
 }
 
-export const fetchProjects = async (slackId?: string): Promise<PipelineProject[]> => {
-  // During testing phase: return all projects if no slackId is provided
-  let query = supabase
+export const fetchProjects = async (): Promise<PipelineProject[]> => {
+  const { data, error } = await supabase
     .from("PIPELINE PROJET")
-    .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Slack ID"');
+    .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Animation"');
   
-  // Apply Slack ID filter only if provided
-  if (slackId) {
-    query = query.eq("Slack ID", slackId);
-  }
-  
-  const { data, error } = await query;
-
   if (error) {
     console.error("Error fetching projects:", error);
     throw error;
@@ -34,21 +26,14 @@ export const fetchProjects = async (slackId?: string): Promise<PipelineProject[]
   return data || [];
 };
 
-export const fetchProjectById = async (projectId: string, slackId?: string): Promise<PipelineProject | null> => {
+export const fetchProjectById = async (projectId: string): Promise<PipelineProject | null> => {
   try {
-    let query = supabase
+    const { data, error } = await supabase
       .from("PIPELINE PROJET")
-      .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Slack ID"')
-      .eq("ID-PROJET", projectId);
+      .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Animation"')
+      .eq("ID-PROJET", projectId)
+      .limit(1);
     
-    // During testing phase: only apply Slack ID filter if provided
-    if (slackId) {
-      query = query.eq("Slack ID", slackId);
-    }
-    
-    // Use limit(1) to only get the first matching record when there are duplicates
-    const { data, error } = await query.limit(1);
-
     if (error) {
       console.error("Error fetching project:", error);
       throw error;
