@@ -111,11 +111,14 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
               key={phase}
               className={`flex flex-col items-center p-2 rounded-md transition-colors ${
                 isCurrentPhase 
-                  ? 'bg-primary text-primary-foreground' 
+                  ? 'bg-[#4E90FF] text-white' 
                   : isPastPhase
                     ? 'bg-primary/20 text-foreground'
                     : 'bg-muted text-muted-foreground'
               }`}
+              style={isCurrentPhase ? { 
+                background: `linear-gradient(to right, #4E90FF 50%, #DBEAFE 50%)` 
+              } : {}}
             >
               <span className={`font-medium text-center ${isCurrentPhase || isPastPhase ? 'text-base' : 'text-sm'}`}>
                 {phase}
@@ -126,7 +129,7 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
                 </span>
               )}
               {isCurrentPhase && (
-                <span className="mt-1 text-[10px] bg-primary-foreground text-primary px-1.5 py-0.5 rounded-full">
+                <span className="mt-1 text-[10px] bg-white text-[#4E90FF] px-1.5 py-0.5 rounded-full">
                   In Progress
                 </span>
               )}

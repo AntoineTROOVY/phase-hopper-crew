@@ -1,13 +1,14 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, Building, User, Clock, Tag, ExternalLink, Film } from 'lucide-react';
+import { ArrowLeft, Calendar, Building, User, Clock, Tag, ExternalLink, Film, FileText, Image } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/StatusBadge';
 import { fetchProjectById, PipelineProject } from '@/services/projectService';
 import { useToast } from '@/hooks/use-toast';
 import AnimationPreview from '@/components/AnimationPreview';
+import StoryboardPreview from '@/components/StoryboardPreview';
+import ScriptPreview from '@/components/ScriptPreview';
 import ProjectTimeline from '@/components/ProjectTimeline';
 
 const ProjectDetails = () => {
@@ -98,7 +99,6 @@ const ProjectDetails = () => {
       </header>
       
       <main className="container mx-auto py-6 px-4 sm:px-6 lg:px-8 flex-1">
-        {/* Add the timeline at the top */}
         <Card className="mb-6">
           <CardContent className="pt-6">
             <ProjectTimeline currentPhase={project["Phase"] || ''} />
@@ -159,6 +159,34 @@ const ProjectDetails = () => {
                 </div>
               </CardContent>
             </Card>
+            
+            {project["Storyboard"] && (
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Image className="h-5 w-5" />
+                    Storyboard Preview
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <StoryboardPreview storyboardUrl={project["Storyboard"]} />
+                </CardContent>
+              </Card>
+            )}
+            
+            {project["Script"] && (
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Script Preview
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ScriptPreview scriptUrl={project["Script"]} />
+                </CardContent>
+              </Card>
+            )}
             
             {project["Animation"] && (
               <Card className="mt-6">

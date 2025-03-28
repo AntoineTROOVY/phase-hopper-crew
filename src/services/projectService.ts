@@ -11,12 +11,14 @@ export interface PipelineProject {
   "Client"?: string | null;
   "Duration"?: string | null;
   "Animation"?: string | null;
+  "Storyboard"?: string | null;
+  "Script"?: string | null;
 }
 
 export const fetchProjects = async (): Promise<PipelineProject[]> => {
   const { data, error } = await supabase
     .from("PIPELINE PROJET")
-    .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Animation"');
+    .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Animation", "Storyboard", "Script"');
   
   if (error) {
     console.error("Error fetching projects:", error);
@@ -31,7 +33,7 @@ export const fetchProjectById = async (projectId: string): Promise<PipelineProje
     // First attempt to get all matching records
     const { data, error } = await supabase
       .from("PIPELINE PROJET")
-      .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Animation"')
+      .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Animation", "Storyboard", "Script"')
       .eq("ID-PROJET", projectId);
     
     if (error) {
