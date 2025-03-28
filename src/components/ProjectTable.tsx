@@ -9,48 +9,58 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import StatusBadge from './StatusBadge';
-import { Project } from '@/data/projects';
+import { PipelineProject } from '@/services/projectService';
 
 interface ProjectTableProps {
-  projects: Project[];
+  projects: PipelineProject[];
 }
 
 const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return 'Not set';
+    
+    try {
+      return new Date(dateString).toLocaleDateString();
+    } catch (e) {
+      return dateString; // If the date can't be parsed, return the original string
+    }
+  };
+
   return (
     <div className="w-full overflow-auto rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead className="w-[100px]">Project ID</TableHead>
-            <TableHead>Company Name</TableHead>
+            <TableHead>Company</TableHead>
+            <TableHead>Client</TableHead>
             <TableHead>Phase</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Start Date</TableHead>
-            <TableHead>End Date</TableHead>
+            <TableHead>Deadline</TableHead>
+            <TableHead>Duration</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {projects.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="h-24 text-center">
+              <TableCell colSpan={8} className="h-24 text-center">
                 No projects found.
               </TableCell>
             </TableRow>
           ) : (
-            projects.map((project) => (
-              <TableRow key={project.id} className="hover:bg-gray-50">
-                <TableCell className="font-medium">{project.id}</TableCell>
-                <TableCell>{project.companyName}</TableCell>
-                <TableCell>{project.phase}</TableCell>
+            projects.map((project, index) => (
+              <TableRow key={project["ID-PROJET"] || index} className="hover:bg-gray-50">
+                <TableCell className="font-medium">{project["ID-PROJET"] || 'N/A'}</TableCell>
+                <TableCell>{project["Company"] || 'N/A'}</TableCell>
+                <TableCell>{project["Client"] || 'N/A'}</TableCell>
+                <TableCell>{project["Phase"] || 'N/A'}</TableCell>
                 <TableCell>
-                  <StatusBadge status={project.status} />
+                  <StatusBadge status={project["Status"] || 'Unknown'} />
                 </TableCell>
-                <TableCell>{new Date(project.startDate).toLocaleDateString()}</TableCell>
-                <TableCell>
-                  {project.endDate 
-                    ? new Date(project.endDate).toLocaleDateString() 
-                    : 'Not set'}
-                </TableCell>
+                <TableCell>{formatDate(project["Date de début"])}</TableCell>
+                <TableCell>{formatDate(project["Deadline"])}</TableCell>
+                <TableCell>{project["Duration"] || 'N/A'}</TableCell>
               </TableRow>
             ))
           )}
