@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, Building, User, Clock, Tag } from 'lucide-react';
@@ -7,33 +6,35 @@ import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/StatusBadge';
 import { fetchProjectById, PipelineProject } from '@/services/projectService';
 import { useToast } from '@/hooks/use-toast';
-
 const ProjectDetails = () => {
-  const { projectId } = useParams<{ projectId: string }>();
+  const {
+    projectId
+  } = useParams<{
+    projectId: string;
+  }>();
   const [searchParams] = useSearchParams();
   const slackId = searchParams.get('slack-id');
   const [project, setProject] = useState<PipelineProject | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const navigate = useNavigate();
-
   useEffect(() => {
     const loadProject = async () => {
       if (!projectId) {
         navigate(slackId ? `/?slack-id=${slackId}` : '/');
         return;
       }
-
       try {
         setIsLoading(true);
         const data = await fetchProjectById(projectId, slackId || undefined);
         setProject(data);
-        
         if (!data) {
           toast({
             title: "Project not found",
             description: `No project found with ID: ${projectId}`,
-            variant: "destructive",
+            variant: "destructive"
           });
           navigate(slackId ? `/?slack-id=${slackId}` : '/');
         }
@@ -42,43 +43,34 @@ const ProjectDetails = () => {
         toast({
           title: "Error loading project",
           description: "There was a problem loading the project details. Please try again later.",
-          variant: "destructive",
+          variant: "destructive"
         });
         navigate(slackId ? `/?slack-id=${slackId}` : '/');
       } finally {
         setIsLoading(false);
       }
     };
-
     loadProject();
   }, [projectId, slackId, toast, navigate]);
-
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return 'Not set';
-    
     try {
       return new Date(dateString).toLocaleDateString();
     } catch (e) {
       return dateString;
     }
   };
-
   const backLink = `/${slackId ? `?slack-id=${slackId}` : ''}`;
-
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
+    return <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Loading project details...</h2>
           <p className="text-gray-500">Please wait while we fetch your data.</p>
         </div>
-      </div>
-    );
+      </div>;
   }
-
   if (!project) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
+    return <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Project not found</h2>
           <p className="text-gray-500 mb-4">The project you're looking for doesn't exist.</p>
@@ -86,12 +78,9 @@ const ProjectDetails = () => {
             <Link to={backLink}>Go back to dashboard</Link>
           </Button>
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="flex min-h-screen flex-col bg-gray-50">
+  return <div className="flex min-h-screen flex-col bg-gray-50">
       <header className="sticky top-0 z-10 bg-white border-b">
         <div className="container mx-auto py-4">
           <div className="flex items-center gap-4">
@@ -159,13 +148,7 @@ const ProjectDetails = () => {
                         <p className="text-sm text-gray-500">{project["Phase"] || 'N/A'}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Tag className="h-5 w-5 text-gray-400" />
-                      <div>
-                        <p className="text-sm font-medium">Slack ID</p>
-                        <p className="text-sm text-gray-500">{project["Slack ID"] || 'N/A'}</p>
-                      </div>
-                    </div>
+                    
                   </div>
                 </div>
               </CardContent>
@@ -199,8 +182,6 @@ const ProjectDetails = () => {
           Keyframe Project Manager © {new Date().getFullYear()}
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default ProjectDetails;
