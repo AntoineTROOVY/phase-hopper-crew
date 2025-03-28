@@ -1,11 +1,6 @@
 
-import React, { useState, useEffect, useRef } from 'react';
-import { ChevronDown, ChevronUp, Check, ExternalLink } from 'lucide-react';
-import { 
-  Collapsible, 
-  CollapsibleContent, 
-  CollapsibleTrigger 
-} from '@/components/ui/collapsible';
+import React, { useState, useRef } from 'react';
+import { Check, ExternalLink } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -43,8 +38,6 @@ const CollapsiblePreview = ({
   // Check if this preview is relevant to the current phase
   const isCurrentPhasePreview = currentPhase.includes(relevantPhase);
   
-  // State to track if the preview is open or closed (collapsed by default)
-  const [isOpen, setIsOpen] = useState(false);
   // State to track if the component is approved
   const [isApproved, setIsApproved] = useState(false);
   // State for the hold-to-confirm button
@@ -85,7 +78,7 @@ const CollapsiblePreview = ({
   const previewStatus = determinePreviewStatus();
   const isToReview = previewStatus === 'To Review';
   
-  // Styles for different statuses - removed hover effects
+  // Styles for different statuses
   const statusStyles = {
     'In Progress': 'bg-blue-100 text-blue-800 border-blue-200',
     'To Review': 'bg-amber-100 text-amber-800 border-amber-200',
@@ -139,7 +132,7 @@ const CollapsiblePreview = ({
   };
   
   // Cleanup timer on unmount
-  useEffect(() => {
+  React.useEffect(() => {
     return () => {
       if (holdTimerRef.current) {
         window.clearInterval(holdTimerRef.current);
@@ -149,93 +142,79 @@ const CollapsiblePreview = ({
 
   return (
     <Card className={`mt-6 ${isToReview ? 'border-2 border-amber-500' : ''}`}>
-      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <CardHeader className="py-4">
-          <div className="flex items-center justify-between w-full">
-            <CollapsibleTrigger className="flex items-center gap-2 text-left">
-              <CardTitle className="text-lg flex items-center gap-2">
-                {icon}
-                {title}
-              </CardTitle>
-              <div className="flex items-center ml-2">
-                {isOpen ? (
-                  <ChevronUp className="h-5 w-5 text-muted-foreground" />
-                ) : (
-                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                )}
-              </div>
-            </CollapsibleTrigger>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className={statusStyles[previewStatus]}>
-                {previewStatus}
-              </Badge>
-              {externalUrl && (
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-8 w-8" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.open(externalUrl, '_blank', 'noopener,noreferrer');
-                  }}
-                  title="Open in new tab"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
+      <CardHeader className="py-4">
+        <div className="flex items-center justify-between w-full">
+          <CardTitle className="text-lg flex items-center gap-2">
+            {icon}
+            {title}
+          </CardTitle>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className={statusStyles[previewStatus]}>
+              {previewStatus}
+            </Badge>
+            {externalUrl && (
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8" 
+                onClick={() => {
+                  window.open(externalUrl, '_blank', 'noopener,noreferrer');
+                }}
+                title="Open in new tab"
+              >
+                <ExternalLink className="h-4 w-4" />
+              </Button>
+            )}
           </div>
-        </CardHeader>
-        <CollapsibleContent className="transition-all duration-300 ease-in-out">
-          <CardContent className={`py-6 ${isToReview ? 'pb-16' : 'pb-6'}`}>
-            {children}
-          </CardContent>
-          {isToReview && !isApproved && (
-            <CardFooter className="pt-0 pb-6">
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button className="bg-green-500 hover:bg-green-600 text-white w-full">
-                    <Check className="mr-2 h-4 w-4" />
-                    Approve
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Are you sure you want to proceed to the next phase? This action is definitive. 
-                      You will no longer be able to modify the {relevantPhase.toLowerCase()}.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <div className="relative">
-                      <AlertDialogAction
-                        className="bg-white border border-green-500 text-green-600 hover:bg-green-50"
-                        onMouseDown={startHolding}
-                        onMouseUp={stopHolding}
-                        onMouseLeave={stopHolding}
-                        onTouchStart={startHolding}
-                        onTouchEnd={stopHolding}
-                        onClick={(e) => e.preventDefault()} // Prevent default click action
-                      >
-                        Hold to Approve
-                      </AlertDialogAction>
-                      <div 
-                        className="absolute inset-0 bg-green-500 opacity-70 pointer-events-none rounded-md transition-all ease-linear" 
-                        style={{ 
-                          width: `${holdProgress}%`,
-                          maxWidth: '100%'
-                        }}
-                      />
-                    </div>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </CardFooter>
-          )}
-        </CollapsibleContent>
-      </Collapsible>
+        </div>
+      </CardHeader>
+      <CardContent className="py-4">
+        {children}
+      </CardContent>
+      {isToReview && !isApproved && (
+        <CardFooter className="pb-6">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button className="bg-green-500 hover:bg-green-600 text-white w-full">
+                <Check className="mr-2 h-4 w-4" />
+                Approve
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to proceed to the next phase? This action is definitive. 
+                  You will no longer be able to modify the {relevantPhase.toLowerCase()}.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <div className="relative">
+                  <AlertDialogAction
+                    className="bg-white border border-green-500 text-green-600 hover:bg-green-50"
+                    onMouseDown={startHolding}
+                    onMouseUp={stopHolding}
+                    onMouseLeave={stopHolding}
+                    onTouchStart={startHolding}
+                    onTouchEnd={stopHolding}
+                    onClick={(e) => e.preventDefault()} // Prevent default click action
+                  >
+                    Hold to Approve
+                  </AlertDialogAction>
+                  <div 
+                    className="absolute inset-0 bg-green-500 opacity-70 pointer-events-none rounded-md transition-all ease-linear" 
+                    style={{ 
+                      width: `${holdProgress}%`,
+                      maxWidth: '100%'
+                    }}
+                  />
+                </div>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </CardFooter>
+      )}
     </Card>
   );
 };

@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Film } from 'lucide-react';
 
 interface AnimationPreviewProps {
   animationUrl: string;
@@ -8,15 +7,8 @@ interface AnimationPreviewProps {
 
 const AnimationPreview = ({ animationUrl }: AnimationPreviewProps) => {
   return (
-    <div className="space-y-4">
-      <div className="p-4 bg-gray-50 border rounded-md">
-        <p className="text-sm text-gray-700">
-          This animation is available on Frame.io. Click the link icon above to open the full animation.
-        </p>
-        <div className="flex items-center justify-center mt-4 p-6 bg-gray-100 rounded-md">
-          <Film className="h-12 w-12 text-gray-400" />
-        </div>
-      </div>
+    <div className="text-sm text-gray-700">
+      This animation is available on Frame.io. Click the link icon above to open the full animation.
     </div>
   );
 };
