@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Building, User, Clock, FileText, Image, Film } from 'lucide-react';
@@ -83,7 +84,12 @@ const ProjectDetails = () => {
       </div>;
   }
 
+  // Debug log to check the value of Logo url
   console.log('Project Logo URL:', project["Logo url"]);
+  
+  // Access the Logo url more explicitly
+  const logoUrl = project["Logo url"] || null;
+  console.log('Logo URL (explicit):', logoUrl);
 
   return <div className="flex min-h-screen flex-col bg-gray-50">
       <header className="sticky top-0 z-10 bg-white border-b">
@@ -117,10 +123,10 @@ const ProjectDetails = () => {
                   <div>
                     <h2 className="text-xl font-semibold">{project["Company"] || 'Untitled Project'}</h2>
                     <p className="text-gray-500">Client: {project["Client"] || 'N/A'}</p>
-                    {project["Logo url"] && (
+                    {logoUrl && (
                       <div className="mt-3">
                         <img 
-                          src={project["Logo url"]} 
+                          src={logoUrl} 
                           alt={`${project["Company"]} logo`} 
                           className="max-h-16 w-auto object-contain"
                           onError={(e) => {
