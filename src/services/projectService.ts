@@ -17,7 +17,7 @@ export interface PipelineProject {
 
 export const fetchProjects = async (): Promise<PipelineProject[]> => {
   const { data, error } = await supabase
-    .from("PIPELINE PROJET")
+    .from("PIPELINE PROJECTS")
     .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Animation", "Storyboard", "Script"');
   
   if (error) {
@@ -32,7 +32,7 @@ export const fetchProjectById = async (projectId: string): Promise<PipelineProje
   try {
     // First attempt to get all matching records
     const { data, error } = await supabase
-      .from("PIPELINE PROJET")
+      .from("PIPELINE PROJECTS")
       .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Animation", "Storyboard", "Script"')
       .eq("ID-PROJET", projectId);
     

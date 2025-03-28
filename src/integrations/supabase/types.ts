@@ -9,6 +9,123 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      COMPANY: {
+        Row: {
+          "Business sector": string | null
+          Clients: string | null
+          "Company Name": string
+          Country: string | null
+          "Full address": string | null
+          Language: string | null
+          "Legal company name for invoice": string | null
+          "PIPELINE PROJECT": string | null
+          Role: string | null
+          SIREN: string | null
+          "SLACK ID": string | null
+          "TVA status": string | null
+          "VAT Number": string | null
+          Website: string | null
+          whalesync_postgres_id: string
+        }
+        Insert: {
+          "Business sector"?: string | null
+          Clients?: string | null
+          "Company Name": string
+          Country?: string | null
+          "Full address"?: string | null
+          Language?: string | null
+          "Legal company name for invoice"?: string | null
+          "PIPELINE PROJECT"?: string | null
+          Role?: string | null
+          SIREN?: string | null
+          "SLACK ID"?: string | null
+          "TVA status"?: string | null
+          "VAT Number"?: string | null
+          Website?: string | null
+          whalesync_postgres_id?: string
+        }
+        Update: {
+          "Business sector"?: string | null
+          Clients?: string | null
+          "Company Name"?: string
+          Country?: string | null
+          "Full address"?: string | null
+          Language?: string | null
+          "Legal company name for invoice"?: string | null
+          "PIPELINE PROJECT"?: string | null
+          Role?: string | null
+          SIREN?: string | null
+          "SLACK ID"?: string | null
+          "TVA status"?: string | null
+          "VAT Number"?: string | null
+          Website?: string | null
+          whalesync_postgres_id?: string
+        }
+        Relationships: []
+      }
+      CRM: {
+        Row: {
+          "Business segment": string | null
+          COMPANY: string | null
+          Email: string
+          "First name": string | null
+          Instagram: string | null
+          "Joined date": string | null
+          Language: string | null
+          "Last name": string | null
+          Linkedin: string | null
+          LTV: string | null
+          "Phone number": string | null
+          "PIPELINE PROJECT": string | null
+          "Slack id": string | null
+          Status: string | null
+          "Total Deliverables": string | null
+          Twitter: string | null
+          "Video gratuite 1": string | null
+          whalesync_postgres_id: string
+        }
+        Insert: {
+          "Business segment"?: string | null
+          COMPANY?: string | null
+          Email: string
+          "First name"?: string | null
+          Instagram?: string | null
+          "Joined date"?: string | null
+          Language?: string | null
+          "Last name"?: string | null
+          Linkedin?: string | null
+          LTV?: string | null
+          "Phone number"?: string | null
+          "PIPELINE PROJECT"?: string | null
+          "Slack id"?: string | null
+          Status?: string | null
+          "Total Deliverables"?: string | null
+          Twitter?: string | null
+          "Video gratuite 1"?: string | null
+          whalesync_postgres_id?: string
+        }
+        Update: {
+          "Business segment"?: string | null
+          COMPANY?: string | null
+          Email?: string
+          "First name"?: string | null
+          Instagram?: string | null
+          "Joined date"?: string | null
+          Language?: string | null
+          "Last name"?: string | null
+          Linkedin?: string | null
+          LTV?: string | null
+          "Phone number"?: string | null
+          "PIPELINE PROJECT"?: string | null
+          "Slack id"?: string | null
+          Status?: string | null
+          "Total Deliverables"?: string | null
+          Twitter?: string | null
+          "Video gratuite 1"?: string | null
+          whalesync_postgres_id?: string
+        }
+        Relationships: []
+      }
       motion_design_projects: {
         Row: {
           company_name: string | null
@@ -42,6 +159,153 @@ export type Database = {
           project_name?: string
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      "PIPELINE PROJECTS": {
+        Row: {
+          Additionals_formats: string | null
+          Animation: string | null
+          "Assigned members": string | null
+          Autonumber: number | null
+          "Brief main": string | null
+          Client: string | null
+          Collected: string | null
+          Company: string | null
+          "Company link": string | null
+          Contracted: string | null
+          "Date de début": string | null
+          Deadline: string | null
+          "Deadline phrase": string | null
+          "Drive folder": string | null
+          Duration: string | null
+          Email: string | null
+          "First name": string | null
+          "Google doc id": string | null
+          "Hook varitions": string | null
+          "ID-PROJET": string
+          Invoice: string | null
+          "Languages-number": number | null
+          Langues: string | null
+          "Linked company": string | null
+          "Num version video": string | null
+          OPERATIONS: string | null
+          "OPERATIONS copy": string | null
+          "OPERATIONS TEMPLATE copy": string | null
+          OPERATIONSS: string | null
+          PAYROLL: string | null
+          Phase: string | null
+          "Plan de paiement": string | null
+          Progression: string | null
+          "Progression phrase": string | null
+          "Record id": string | null
+          Script: string | null
+          "Slack ID": string | null
+          "Slack language": string | null
+          Status: string | null
+          Storyboard: string | null
+          "Test voix autre colonne": string | null
+          "Voice overs list string": string | null
+          "Voice-file": string | null
+          "Voice-links": string | null
+          "Voix-off": string | null
+          whalesync_postgres_id: string
+        }
+        Insert: {
+          Additionals_formats?: string | null
+          Animation?: string | null
+          "Assigned members"?: string | null
+          Autonumber?: number | null
+          "Brief main"?: string | null
+          Client?: string | null
+          Collected?: string | null
+          Company?: string | null
+          "Company link"?: string | null
+          Contracted?: string | null
+          "Date de début"?: string | null
+          Deadline?: string | null
+          "Deadline phrase"?: string | null
+          "Drive folder"?: string | null
+          Duration?: string | null
+          Email?: string | null
+          "First name"?: string | null
+          "Google doc id"?: string | null
+          "Hook varitions"?: string | null
+          "ID-PROJET": string
+          Invoice?: string | null
+          "Languages-number"?: number | null
+          Langues?: string | null
+          "Linked company"?: string | null
+          "Num version video"?: string | null
+          OPERATIONS?: string | null
+          "OPERATIONS copy"?: string | null
+          "OPERATIONS TEMPLATE copy"?: string | null
+          OPERATIONSS?: string | null
+          PAYROLL?: string | null
+          Phase?: string | null
+          "Plan de paiement"?: string | null
+          Progression?: string | null
+          "Progression phrase"?: string | null
+          "Record id"?: string | null
+          Script?: string | null
+          "Slack ID"?: string | null
+          "Slack language"?: string | null
+          Status?: string | null
+          Storyboard?: string | null
+          "Test voix autre colonne"?: string | null
+          "Voice overs list string"?: string | null
+          "Voice-file"?: string | null
+          "Voice-links"?: string | null
+          "Voix-off"?: string | null
+          whalesync_postgres_id?: string
+        }
+        Update: {
+          Additionals_formats?: string | null
+          Animation?: string | null
+          "Assigned members"?: string | null
+          Autonumber?: number | null
+          "Brief main"?: string | null
+          Client?: string | null
+          Collected?: string | null
+          Company?: string | null
+          "Company link"?: string | null
+          Contracted?: string | null
+          "Date de début"?: string | null
+          Deadline?: string | null
+          "Deadline phrase"?: string | null
+          "Drive folder"?: string | null
+          Duration?: string | null
+          Email?: string | null
+          "First name"?: string | null
+          "Google doc id"?: string | null
+          "Hook varitions"?: string | null
+          "ID-PROJET"?: string
+          Invoice?: string | null
+          "Languages-number"?: number | null
+          Langues?: string | null
+          "Linked company"?: string | null
+          "Num version video"?: string | null
+          OPERATIONS?: string | null
+          "OPERATIONS copy"?: string | null
+          "OPERATIONS TEMPLATE copy"?: string | null
+          OPERATIONSS?: string | null
+          PAYROLL?: string | null
+          Phase?: string | null
+          "Plan de paiement"?: string | null
+          Progression?: string | null
+          "Progression phrase"?: string | null
+          "Record id"?: string | null
+          Script?: string | null
+          "Slack ID"?: string | null
+          "Slack language"?: string | null
+          Status?: string | null
+          Storyboard?: string | null
+          "Test voix autre colonne"?: string | null
+          "Voice overs list string"?: string | null
+          "Voice-file"?: string | null
+          "Voice-links"?: string | null
+          "Voix-off"?: string | null
+          whalesync_postgres_id?: string
         }
         Relationships: []
       }
