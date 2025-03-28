@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Building, User, Clock, Tag, ExternalLink, Film } from 'lucide-react';
@@ -7,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/StatusBadge';
 import { fetchProjectById, PipelineProject } from '@/services/projectService';
 import { useToast } from '@/hooks/use-toast';
+import AnimationPreview from '@/components/AnimationPreview';
 
 const ProjectDetails = () => {
   const { projectId } = useParams<{ projectId: string; }>();
@@ -160,27 +160,7 @@ const ProjectDetails = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="bg-gray-50 border rounded-md p-4">
-                    <div className="flex flex-col gap-3">
-                      <p className="text-sm text-gray-700">
-                        Access the animation preview for this project on Frame.io platform.
-                      </p>
-                      <Button 
-                        variant="outline" 
-                        className="w-full sm:w-auto flex items-center gap-2"
-                        asChild
-                      >
-                        <a 
-                          href={project["Animation"]} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                          View on Frame.io
-                        </a>
-                      </Button>
-                    </div>
-                  </div>
+                  <AnimationPreview animationUrl={project["Animation"]} />
                 </CardContent>
               </Card>
             )}
