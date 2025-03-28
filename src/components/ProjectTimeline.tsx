@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { FileText, Mic, Image, Film, Package } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 // Define phase types with emoji prefixes
@@ -82,24 +81,6 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
     ? Math.round(((currentPhaseIndex + 1) / phases.length) * 100) 
     : 0;
 
-  // Get icon for a phase
-  const getPhaseIcon = (phase: ProjectPhase) => {
-    switch (phase) {
-      case '📝 Copywriting':
-        return <FileText className="h-5 w-5" />;
-      case '🎙️Voice-over':
-        return <Mic className="h-5 w-5" />;
-      case '🖼️ Storyboard':
-        return <Image className="h-5 w-5" />;
-      case '🎞️ Animation':
-        return <Film className="h-5 w-5" />;
-      case '📦 Variations':
-        return <Package className="h-5 w-5" />;
-      default:
-        return <FileText className="h-5 w-5" />;
-    }
-  };
-
   console.log('Current Phase:', currentPhase);
   console.log('Normalized Phase:', normalizedCurrentPhase);
   console.log('Current Phase Index:', currentPhaseIndex);
@@ -122,28 +103,31 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
       <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
         {phases.map((phase, index) => {
           const isCurrentPhase = phase === normalizedCurrentPhase;
-          const isPastPhase = currentPhaseIndex >= 0 && index <= currentPhaseIndex;
+          const isPastPhase = currentPhaseIndex >= 0 && index < currentPhaseIndex;
+          const isFuturePhase = currentPhaseIndex >= 0 && index > currentPhaseIndex;
           
           return (
             <div 
               key={phase}
-              className={`flex flex-col items-center p-3 rounded-md transition-colors ${
+              className={`flex flex-col items-center p-2 rounded-md transition-colors ${
                 isCurrentPhase 
-                  ? 'bg-primary text-primary-foreground ring-2 ring-primary/50' 
+                  ? 'bg-primary text-primary-foreground' 
                   : isPastPhase
                     ? 'bg-primary/20 text-foreground'
                     : 'bg-muted text-muted-foreground'
               }`}
             >
-              <div className="flex items-center justify-center mb-2">
-                {getPhaseIcon(phase)}
-              </div>
-              <span className="text-xs font-medium text-center">
+              <span className={`font-medium text-center ${isCurrentPhase || isPastPhase ? 'text-base' : 'text-sm'}`}>
                 {phase}
               </span>
+              {isPastPhase && (
+                <span className="mt-1 text-[10px] bg-primary/20 text-foreground px-1.5 py-0.5 rounded-full">
+                  Completed
+                </span>
+              )}
               {isCurrentPhase && (
                 <span className="mt-1 text-[10px] bg-primary-foreground text-primary px-1.5 py-0.5 rounded-full">
-                  You are here
+                  In Progress
                 </span>
               )}
             </div>
