@@ -7,8 +7,15 @@ interface ScriptPreviewProps {
 
 const ScriptPreview = ({ scriptUrl }: ScriptPreviewProps) => {
   return (
-    <div className="text-sm text-gray-700">
-      {/* Preview content would go here */}
+    <div className="text-sm text-gray-700 mb-0">
+      <iframe 
+        src={scriptUrl} 
+        title="Script Preview" 
+        className="w-full h-48 rounded-md"
+        onError={(e) => {
+          console.error('Error loading script preview:', e);
+        }}
+      />
     </div>
   );
 };

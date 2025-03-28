@@ -120,15 +120,13 @@ const ProjectDetails = () => {
             <Card>
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
-                  <div>
-                    <h2 className="text-xl font-semibold">{project["Company"] || 'Untitled Project'}</h2>
-                    <p className="text-gray-500">Client: {project["Client"] || 'N/A'}</p>
+                  <div className="flex items-center gap-4">
                     {logoUrl && (
-                      <div className="mt-3">
+                      <div className="flex-shrink-0">
                         <img 
                           src={logoUrl} 
                           alt={`${project["Company"]} logo`} 
-                          className="max-h-16 w-auto object-contain"
+                          className="h-12 w-auto object-contain rounded-md"
                           onError={(e) => {
                             console.error('Error loading logo:', e);
                             e.currentTarget.style.display = 'none';
@@ -136,6 +134,10 @@ const ProjectDetails = () => {
                         />
                       </div>
                     )}
+                    <div>
+                      <h2 className="text-xl font-semibold">{project["Company"] || 'Untitled Project'}</h2>
+                      <p className="text-gray-500">Client: {project["Client"] || 'N/A'}</p>
+                    </div>
                   </div>
                   <StatusBadge status={project["Status"] || 'Unknown'} />
                 </div>

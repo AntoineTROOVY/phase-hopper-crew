@@ -179,12 +179,12 @@ const CollapsiblePreview = ({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="py-2">
+      <CardContent className="py-2 pb-0">
         {isToReview && <p className="text-sm text-gray-500 mb-4">{getInstructions()}</p>}
         {children}
       </CardContent>
       {isToReview && !isApproved && (
-        <CardFooter className="pb-6">
+        <CardFooter className="pb-6 pt-4">
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button className="bg-green-500 hover:bg-green-600 text-white w-full">
