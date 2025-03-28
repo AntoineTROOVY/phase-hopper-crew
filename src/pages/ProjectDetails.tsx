@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, Building, User, Clock, Tag, ExternalLink, Film, FileText, Image } from 'lucide-react';
+import { ArrowLeft, Calendar, Building, User, Clock, FileText, Image, Film } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/StatusBadge';
@@ -10,6 +10,7 @@ import AnimationPreview from '@/components/AnimationPreview';
 import StoryboardPreview from '@/components/StoryboardPreview';
 import ScriptPreview from '@/components/ScriptPreview';
 import ProjectTimeline from '@/components/ProjectTimeline';
+import CollapsiblePreview from '@/components/CollapsiblePreview';
 
 const ProjectDetails = () => {
   const { projectId } = useParams<{ projectId: string; }>();
@@ -161,45 +162,36 @@ const ProjectDetails = () => {
             </Card>
             
             {project["Storyboard"] && (
-              <Card className="mt-6">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Image className="h-5 w-5" />
-                    Storyboard Preview
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <StoryboardPreview storyboardUrl={project["Storyboard"]} />
-                </CardContent>
-              </Card>
+              <CollapsiblePreview 
+                title="Storyboard Preview" 
+                icon={<Image className="h-5 w-5" />}
+                currentPhase={project["Phase"] || ''}
+                relevantPhase="Storyboard"
+              >
+                <StoryboardPreview storyboardUrl={project["Storyboard"]} />
+              </CollapsiblePreview>
             )}
             
             {project["Script"] && (
-              <Card className="mt-6">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <FileText className="h-5 w-5" />
-                    Script Preview
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ScriptPreview scriptUrl={project["Script"]} />
-                </CardContent>
-              </Card>
+              <CollapsiblePreview 
+                title="Script Preview" 
+                icon={<FileText className="h-5 w-5" />}
+                currentPhase={project["Phase"] || ''}
+                relevantPhase="Copywriting"
+              >
+                <ScriptPreview scriptUrl={project["Script"]} />
+              </CollapsiblePreview>
             )}
             
             {project["Animation"] && (
-              <Card className="mt-6">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Film className="h-5 w-5" />
-                    Animation Preview
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <AnimationPreview animationUrl={project["Animation"]} />
-                </CardContent>
-              </Card>
+              <CollapsiblePreview 
+                title="Animation Preview" 
+                icon={<Film className="h-5 w-5" />}
+                currentPhase={project["Phase"] || ''}
+                relevantPhase="Animation"
+              >
+                <AnimationPreview animationUrl={project["Animation"]} />
+              </CollapsiblePreview>
             )}
           </div>
           

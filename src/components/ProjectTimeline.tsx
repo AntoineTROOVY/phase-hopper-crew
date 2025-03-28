@@ -81,18 +81,13 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
     ? Math.round(((currentPhaseIndex + 1) / phases.length) * 100) 
     : 0;
 
-  console.log('Current Phase:', currentPhase);
-  console.log('Normalized Phase:', normalizedCurrentPhase);
-  console.log('Current Phase Index:', currentPhaseIndex);
-  console.log('Completion Percentage:', completionPercentage);
-
   return (
     <div className="space-y-4 mb-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
         <h3 className="text-lg font-semibold">Project Progress</h3>
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">{completionPercentage}% Complete</span>
-          <span className="px-2 py-1 text-xs bg-primary/10 text-primary rounded-full">
+          <span className="px-2 py-1 text-xs bg-[#4E90FF]/10 text-[#4E90FF] rounded-full">
             Current: {normalizedCurrentPhase || 'Not started'}
           </span>
         </div>
@@ -104,27 +99,29 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
         {phases.map((phase, index) => {
           const isCurrentPhase = phase === normalizedCurrentPhase;
           const isPastPhase = currentPhaseIndex >= 0 && index < currentPhaseIndex;
-          const isFuturePhase = currentPhaseIndex >= 0 && index > currentPhaseIndex;
           
           return (
             <div 
               key={phase}
-              className={`flex flex-col items-center p-2 rounded-md transition-colors ${
+              className={`flex flex-col items-center p-2 h-20 rounded-md transition-colors ${
                 isCurrentPhase 
-                  ? 'bg-[#4E90FF] text-white' 
+                  ? 'bg-gradient-to-r from-[#4E90FF] from-50% to-[#DBEAFE] to-50%' 
                   : isPastPhase
-                    ? 'bg-primary/20 text-foreground'
+                    ? 'bg-[#4E90FF] text-white'
                     : 'bg-muted text-muted-foreground'
               }`}
-              style={isCurrentPhase ? { 
-                background: `linear-gradient(to right, #4E90FF 50%, #DBEAFE 50%)` 
-              } : {}}
             >
-              <span className={`font-medium text-center ${isCurrentPhase || isPastPhase ? 'text-base' : 'text-sm'}`}>
+              <span className={`font-medium text-center ${
+                isCurrentPhase 
+                  ? 'text-lg text-white drop-shadow-md' 
+                  : isPastPhase 
+                    ? 'text-lg' 
+                    : 'text-sm'
+              }`}>
                 {phase}
               </span>
               {isPastPhase && (
-                <span className="mt-1 text-[10px] bg-primary/20 text-foreground px-1.5 py-0.5 rounded-full">
+                <span className="mt-1 text-[10px] bg-white/20 text-white px-1.5 py-0.5 rounded-full">
                   Completed
                 </span>
               )}

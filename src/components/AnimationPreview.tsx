@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ExternalLink, Film, Image } from 'lucide-react';
+import { ExternalLink, Film } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 
