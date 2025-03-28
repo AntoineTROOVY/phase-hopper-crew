@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Check, ExternalLink } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
@@ -146,36 +145,7 @@ const CollapsiblePreview = ({
             <Badge variant="outline" className={statusStyles[previewStatus]}>
               {previewStatus}
             </Badge>
-            {externalUrl && (
-              <div className="flex items-center gap-1">
-                {isToReview && (
-                  <Button 
-                    variant="outline"
-                    size="sm"
-                    className="h-8 text-amber-600 border-amber-600 hover:bg-amber-50"
-                    onClick={() => {
-                      window.open(externalUrl, '_blank', 'noopener,noreferrer');
-                    }}
-                  >
-                    <span>Review</span>
-                    <ExternalLink className="h-4 w-4 ml-1" />
-                  </Button>
-                )}
-                {!isToReview && (
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-8 w-8" 
-                    onClick={() => {
-                      window.open(externalUrl, '_blank', 'noopener,noreferrer');
-                    }}
-                    title="Open in new tab"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            )}
+            {/* Removed the external URL button from here as it will be moved to footer */}
           </div>
         </div>
       </CardHeader>
@@ -186,10 +156,21 @@ const CollapsiblePreview = ({
         </div>
       </CardContent>
       {isToReview && !isApproved && (
-        <CardFooter className="pb-6 pt-4">
+        <CardFooter className="pb-6 pt-4 flex gap-2 justify-center">
+          {externalUrl && (
+            <Button 
+              className="bg-orange-500 hover:bg-orange-600 text-white"
+              onClick={() => {
+                window.open(externalUrl, '_blank', 'noopener,noreferrer');
+              }}
+            >
+              <ExternalLink className="mr-2 h-4 w-4" />
+              Review
+            </Button>
+          )}
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button className="bg-green-500 hover:bg-green-600 text-white w-full">
+              <Button className="bg-green-500 hover:bg-green-600 text-white">
                 <Check className="mr-2 h-4 w-4" />
                 Approve
               </Button>
