@@ -179,9 +179,11 @@ const CollapsiblePreview = ({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="py-2 pb-0">
-        {isToReview && <p className="text-sm text-gray-500 mb-4">{getInstructions()}</p>}
-        {children}
+      <CardContent className="p-0">
+        {isToReview && <p className="text-sm text-gray-500 mb-3 pt-2 px-6">{getInstructions()}</p>}
+        <div className="w-full">
+          {children}
+        </div>
       </CardContent>
       {isToReview && !isApproved && (
         <CardFooter className="pb-6 pt-4">

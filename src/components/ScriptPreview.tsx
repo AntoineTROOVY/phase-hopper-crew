@@ -7,7 +7,7 @@ interface ScriptPreviewProps {
 
 const ScriptPreview = ({ scriptUrl }: ScriptPreviewProps) => {
   return (
-    <div className="text-sm text-gray-700 mb-0">
+    <div className="m-0 p-0">
       <iframe 
         src={scriptUrl} 
         title="Script Preview" 

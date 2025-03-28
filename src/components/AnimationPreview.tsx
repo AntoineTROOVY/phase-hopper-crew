@@ -7,7 +7,7 @@ interface AnimationPreviewProps {
 
 const AnimationPreview = ({ animationUrl }: AnimationPreviewProps) => {
   return (
-    <div className="text-sm text-gray-700 mb-0">
+    <div className="m-0 p-0">
       <video 
         src={animationUrl} 
         controls 
