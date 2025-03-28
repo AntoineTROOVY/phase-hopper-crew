@@ -63,7 +63,7 @@ const CollapsiblePreview = ({
   
   const previewStatus = determinePreviewStatus();
   
-  // Styles for different statuses
+  // Styles for different statuses - removed hover effects
   const statusStyles = {
     'In Progress': 'bg-blue-100 text-blue-800 border-blue-200',
     'To Review': 'bg-amber-100 text-amber-800 border-amber-200',
@@ -86,7 +86,7 @@ const CollapsiblePreview = ({
                 {title}
               </CardTitle>
               <div className="flex items-center gap-2">
-                <Badge className={statusStyles[previewStatus]}>
+                <Badge variant="outline" className={statusStyles[previewStatus]}>
                   {previewStatus}
                 </Badge>
                 {isOpen ? (

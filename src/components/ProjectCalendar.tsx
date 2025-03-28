@@ -63,6 +63,11 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
             day_selected: "", // Override default selected styling
             day_today: "border border-[#4E90FF]",
             day: "h-9 w-9 p-0 font-normal rounded-lg border border-gray-200",
+            cell: "p-1", // Added padding between cells
+            month: "space-y-6", // Increased vertical spacing
+            row: "flex w-full mt-3", // Increased row spacing
+            caption: "mb-4", // Add more space below the month caption
+            table: "w-full border-collapse space-y-2", // Increased table spacing
           }}
           modifiersClassNames={{
             selected: "",
@@ -80,7 +85,7 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
                   className={`h-9 w-9 p-0 font-normal aria-selected:opacity-100 relative ${customClasses}`}
                   disabled={true} // Make calendar read-only
                 >
-                  {props.children}
+                  <div>{date.getDate()}</div>
                   {isEndDate && (
                     <span className="absolute -top-1 -right-1 bg-white rounded-full">
                       <Package className="h-3.5 w-3.5 text-[#4E90FF]" />
