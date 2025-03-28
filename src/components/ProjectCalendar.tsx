@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { format, isWithinInterval, isSameDay, startOfMonth, endOfMonth } from 'date-fns';
+import { format, isWithinInterval, isSameDay, startOfMonth, endOfMonth, isSameMonth } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Package } from 'lucide-react';
@@ -24,6 +24,11 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
   // Custom day rendering to highlight the project period
   const dayClassNames = (date: Date) => {
     if (!start || !end) return "border border-gray-200 rounded-lg";
+    
+    // Skip days not in the current month
+    if (!isSameMonth(date, defaultMonth)) {
+      return "hidden";
+    }
     
     // Check if the date is the start or end date
     if (isSameDay(date, start)) {
@@ -84,6 +89,11 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
           }}
           components={{
             Day: ({ date, ...props }) => {
+              // Skip days that are not in the current month
+              if (!isSameMonth(date, defaultMonth)) {
+                return null;
+              }
+              
               const customClasses = dayClassNames(date);
               
               // Add package icon to the end date

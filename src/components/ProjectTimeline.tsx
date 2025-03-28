@@ -99,16 +99,19 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
         {phases.map((phase, index) => {
           const isCurrentPhase = phase === normalizedCurrentPhase;
           const isPastPhase = currentPhaseIndex >= 0 && index < currentPhaseIndex;
+          const isFuturePhase = currentPhaseIndex >= 0 && index > currentPhaseIndex;
           
           return (
             <div 
               key={phase}
               className={`flex flex-col items-center p-2 h-16 rounded-md transition-colors ${
                 isCurrentPhase 
-                  ? 'bg-gradient-to-r from-[#4E90FF] from-50% to-[#0F3B7F] to-50%' 
+                  ? 'bg-gradient-to-r from-[#80A6E7] from-50% to-[#0F3B7F] to-50%' 
                   : isPastPhase
                     ? 'bg-[#4E90FF] text-white'
-                    : 'bg-muted text-muted-foreground'
+                    : isFuturePhase
+                      ? 'bg-[#80A6E7]/30 text-muted-foreground'
+                      : 'bg-muted text-muted-foreground'
               }`}
             >
               <span className={`font-medium text-center ${
