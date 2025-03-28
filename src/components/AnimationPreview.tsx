@@ -8,7 +8,7 @@ interface AnimationPreviewProps {
 const AnimationPreview = ({ animationUrl }: AnimationPreviewProps) => {
   return (
     <div className="text-sm text-gray-700">
-      This animation is available on Frame.io. Click the link icon above to open the full animation.
+      Vous devez suggérer des modifications directement sur Frame.io. Cliquez au-dessus pour y accéder.
     </div>
   );
 };

@@ -8,7 +8,7 @@ interface StoryboardPreviewProps {
 const StoryboardPreview = ({ storyboardUrl }: StoryboardPreviewProps) => {
   return (
     <div className="text-sm text-gray-700">
-      This storyboard is available externally. Click the link icon above to open the full storyboard.
+      Vous devez suggérer des modifications directement sur Figma. Cliquez au-dessus pour y accéder.
     </div>
   );
 };

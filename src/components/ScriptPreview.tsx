@@ -8,7 +8,7 @@ interface ScriptPreviewProps {
 const ScriptPreview = ({ scriptUrl }: ScriptPreviewProps) => {
   return (
     <div className="text-sm text-gray-700">
-      This script is available externally. Click the link icon above to open the full script.
+      Vous devez suggérer des modifications directement sur le Google Doc. Cliquez au-dessus pour y accéder.
     </div>
   );
 };
