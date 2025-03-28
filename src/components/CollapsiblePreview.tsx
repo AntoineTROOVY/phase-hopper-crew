@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Check, ExternalLink } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
@@ -156,21 +157,10 @@ const CollapsiblePreview = ({
         </div>
       </CardContent>
       {isToReview && !isApproved && (
-        <CardFooter className="pb-6 pt-4 flex gap-2 justify-center">
-          {externalUrl && (
-            <Button 
-              className="bg-orange-500 hover:bg-orange-600 text-white"
-              onClick={() => {
-                window.open(externalUrl, '_blank', 'noopener,noreferrer');
-              }}
-            >
-              <ExternalLink className="mr-2 h-4 w-4" />
-              Review
-            </Button>
-          )}
+        <CardFooter className="pb-6 pt-4 flex justify-between w-full px-6">
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button className="bg-green-500 hover:bg-green-600 text-white">
+              <Button className="bg-green-500 hover:bg-green-600 text-white flex-1 mr-2">
                 <Check className="mr-2 h-4 w-4" />
                 Approve
               </Button>
@@ -208,6 +198,17 @@ const CollapsiblePreview = ({
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+          {externalUrl && (
+            <Button 
+              className="bg-orange-500 hover:bg-orange-600 text-white flex-1 ml-2"
+              onClick={() => {
+                window.open(externalUrl, '_blank', 'noopener,noreferrer');
+              }}
+            >
+              <ExternalLink className="mr-2 h-4 w-4" />
+              Review
+            </Button>
+          )}
         </CardFooter>
       )}
     </Card>
