@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, Building, User, Clock, Tag, ExternalLink } from 'lucide-react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { ArrowLeft, Calendar, Building, User, Clock, Tag, ExternalLink, Film } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/StatusBadge';
 import { fetchProjectById, PipelineProject } from '@/services/projectService';
@@ -146,28 +146,44 @@ const ProjectDetails = () => {
                         <p className="text-sm text-gray-500">{project["Phase"] || 'N/A'}</p>
                       </div>
                     </div>
-                    
-                    {project["Animation"] && (
-                      <div className="flex items-center gap-3">
-                        <ExternalLink className="h-5 w-5 text-gray-400" />
-                        <div>
-                          <p className="text-sm font-medium">Animation</p>
-                          <a 
-                            href={project["Animation"]} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            className="text-sm text-blue-600 hover:underline flex items-center gap-1"
-                          >
-                            View on Frame.io
-                            <ExternalLink className="h-3 w-3" />
-                          </a>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               </CardContent>
             </Card>
+            
+            {project["Animation"] && (
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Film className="h-5 w-5" />
+                    Animation Preview
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="bg-gray-50 border rounded-md p-4">
+                    <div className="flex flex-col gap-3">
+                      <p className="text-sm text-gray-700">
+                        Access the animation preview for this project on Frame.io platform.
+                      </p>
+                      <Button 
+                        variant="outline" 
+                        className="w-full sm:w-auto flex items-center gap-2"
+                        asChild
+                      >
+                        <a 
+                          href={project["Animation"]} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                          View on Frame.io
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
           
           <div>
