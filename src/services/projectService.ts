@@ -14,17 +14,15 @@ export interface PipelineProject {
 }
 
 export const fetchProjects = async (slackId?: string): Promise<PipelineProject[]> => {
-  // If no slackId is provided, return an empty array (making projects private by default)
-  if (!slackId) {
-    return [];
-  }
-  
+  // During testing phase: return all projects if no slackId is provided
   let query = supabase
     .from("PIPELINE PROJET")
     .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Slack ID"');
   
-  // Apply Slack ID filter if provided
-  query = query.eq("Slack ID", slackId);
+  // Apply Slack ID filter only if provided
+  if (slackId) {
+    query = query.eq("Slack ID", slackId);
+  }
   
   const { data, error } = await query;
 
@@ -43,7 +41,7 @@ export const fetchProjectById = async (projectId: string, slackId?: string): Pro
       .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Slack ID"')
       .eq("ID-PROJET", projectId);
     
-    // If slackId is provided, add it as a filter
+    // During testing phase: only apply Slack ID filter if provided
     if (slackId) {
       query = query.eq("Slack ID", slackId);
     }
