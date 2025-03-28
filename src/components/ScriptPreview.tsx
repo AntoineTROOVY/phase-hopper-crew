@@ -8,7 +8,7 @@ interface ScriptPreviewProps {
 const ScriptPreview = ({ scriptUrl }: ScriptPreviewProps) => {
   return (
     <div className="text-sm text-gray-700">
-      You can view the full script by clicking the button above.
+      {/* Preview content would go here */}
     </div>
   );
 };

@@ -8,7 +8,7 @@ interface AnimationPreviewProps {
 const AnimationPreview = ({ animationUrl }: AnimationPreviewProps) => {
   return (
     <div className="text-sm text-gray-700">
-      You can view the full animation by clicking the button above.
+      {/* Preview content would go here */}
     </div>
   );
 };

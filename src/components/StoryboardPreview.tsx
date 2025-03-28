@@ -8,7 +8,7 @@ interface StoryboardPreviewProps {
 const StoryboardPreview = ({ storyboardUrl }: StoryboardPreviewProps) => {
   return (
     <div className="text-sm text-gray-700">
-      You can view the full storyboard by clicking the button above.
+      {/* Preview content would go here */}
     </div>
   );
 };
