@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown, ChevronUp, Check } from 'lucide-react';
 import { 
   Collapsible, 
@@ -45,6 +45,11 @@ const CollapsiblePreview = ({
   const [isOpen, setIsOpen] = useState(isCurrentPhasePreview);
   // State to track if the component is approved
   const [isApproved, setIsApproved] = useState(false);
+  // State for the hold-to-confirm button
+  const [holdProgress, setHoldProgress] = useState(0);
+  const [isHolding, setIsHolding] = useState(false);
+  const holdTimerRef = useRef<number | null>(null);
+  const requiredHoldTime = 5000; // 5 seconds in milliseconds
 
   // Determine the status of this preview based on phases and project status
   const determinePreviewStatus = () => {
@@ -89,9 +94,56 @@ const CollapsiblePreview = ({
   const handleApprove = () => {
     console.log(`Approved ${relevantPhase}`);
     setIsApproved(true);
+    // Reset hold progress
+    setHoldProgress(0);
     // Here we would normally send a request to update the project status
     // This will be implemented later
   };
+
+  // Hold to confirm logic
+  const startHolding = () => {
+    setIsHolding(true);
+    const startTime = Date.now();
+    
+    // Clear any existing timer
+    if (holdTimerRef.current) {
+      window.clearInterval(holdTimerRef.current);
+    }
+    
+    // Set up progress update interval
+    holdTimerRef.current = window.setInterval(() => {
+      const elapsedTime = Date.now() - startTime;
+      const progress = Math.min(100, (elapsedTime / requiredHoldTime) * 100);
+      setHoldProgress(progress);
+      
+      // If completed holding for required time
+      if (progress >= 100) {
+        stopHolding();
+        handleApprove();
+      }
+    }, 100);
+  };
+  
+  const stopHolding = () => {
+    if (holdTimerRef.current) {
+      window.clearInterval(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+    setIsHolding(false);
+    // Only reset progress if not completed
+    if (holdProgress < 100) {
+      setHoldProgress(0);
+    }
+  };
+  
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (holdTimerRef.current) {
+        window.clearInterval(holdTimerRef.current);
+      }
+    };
+  }, []);
   
   // Update open state if current phase changes
   useEffect(() => {
@@ -129,7 +181,7 @@ const CollapsiblePreview = ({
             <CardFooter className="pt-0 pb-6">
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button className="bg-amber-500 hover:bg-amber-600">
+                  <Button variant="outline" className="border-green-500 text-green-600 hover:bg-green-50">
                     <Check className="mr-2 h-4 w-4" />
                     Approve
                   </Button>
@@ -144,9 +196,26 @@ const CollapsiblePreview = ({
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleApprove} className="bg-amber-500 hover:bg-amber-600">
-                      Approve
-                    </AlertDialogAction>
+                    <div className="relative">
+                      <AlertDialogAction
+                        className="bg-white border border-green-500 text-green-600 hover:bg-green-50"
+                        onMouseDown={startHolding}
+                        onMouseUp={stopHolding}
+                        onMouseLeave={stopHolding}
+                        onTouchStart={startHolding}
+                        onTouchEnd={stopHolding}
+                        onClick={(e) => e.preventDefault()} // Prevent default click action
+                      >
+                        Hold to Approve
+                      </AlertDialogAction>
+                      <div 
+                        className="absolute inset-0 bg-green-500 opacity-70 pointer-events-none rounded-md transition-all ease-linear" 
+                        style={{ 
+                          width: `${holdProgress}%`,
+                          maxWidth: '100%'
+                        }}
+                      />
+                    </div>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
