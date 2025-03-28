@@ -32,3 +32,18 @@ export const fetchProjects = async (slackId?: string): Promise<PipelineProject[]
 
   return data || [];
 };
+
+export const fetchProjectById = async (projectId: string): Promise<PipelineProject | null> => {
+  const { data, error } = await supabase
+    .from("PIPELINE PROJET")
+    .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Slack ID"')
+    .eq("ID-PROJET", projectId)
+    .single();
+
+  if (error) {
+    console.error("Error fetching project:", error);
+    throw error;
+  }
+
+  return data || null;
+};

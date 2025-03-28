@@ -1,11 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
-import ProjectTable from '@/components/ProjectTable';
+import ProjectCard from '@/components/ProjectCard';
 import ProjectFilter from '@/components/ProjectFilter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchProjects, PipelineProject } from '@/services/projectService';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useSearchParams } from 'react-router-dom';
 
 const Dashboard = () => {
@@ -135,25 +135,65 @@ const Dashboard = () => {
             </TabsList>
             
             <TabsContent value="all">
-              <ProjectTable projects={filteredProjects} />
+              {filteredProjects.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">No projects found.</p>
+                </div>
+              ) : (
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {filteredProjects.map((project, index) => (
+                    <ProjectCard key={`${project["ID-PROJET"]}-${index}`} project={project} />
+                  ))}
+                </div>
+              )}
             </TabsContent>
             
             <TabsContent value="in-progress">
-              <ProjectTable 
-                projects={filteredProjects.filter(p => p.Status === 'In Progress')} 
-              />
+              {filteredProjects.filter(p => p.Status === 'In Progress').length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">No in-progress projects found.</p>
+                </div>
+              ) : (
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {filteredProjects
+                    .filter(p => p.Status === 'In Progress')
+                    .map((project, index) => (
+                      <ProjectCard key={`${project["ID-PROJET"]}-${index}`} project={project} />
+                    ))}
+                </div>
+              )}
             </TabsContent>
             
             <TabsContent value="at-risk">
-              <ProjectTable 
-                projects={filteredProjects.filter(p => p.Status === 'At Risk')} 
-              />
+              {filteredProjects.filter(p => p.Status === 'At Risk').length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">No at-risk projects found.</p>
+                </div>
+              ) : (
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {filteredProjects
+                    .filter(p => p.Status === 'At Risk')
+                    .map((project, index) => (
+                      <ProjectCard key={`${project["ID-PROJET"]}-${index}`} project={project} />
+                    ))}
+                </div>
+              )}
             </TabsContent>
             
             <TabsContent value="completed">
-              <ProjectTable 
-                projects={filteredProjects.filter(p => p.Status === 'Completed')} 
-              />
+              {filteredProjects.filter(p => p.Status === 'Completed').length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">No completed projects found.</p>
+                </div>
+              ) : (
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {filteredProjects
+                    .filter(p => p.Status === 'Completed')
+                    .map((project, index) => (
+                      <ProjectCard key={`${project["ID-PROJET"]}-${index}`} project={project} />
+                    ))}
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>
