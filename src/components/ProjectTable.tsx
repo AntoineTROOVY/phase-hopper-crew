@@ -39,18 +39,19 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
             <TableHead>Start Date</TableHead>
             <TableHead>Deadline</TableHead>
             <TableHead>Duration</TableHead>
+            <TableHead>Slack ID</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {projects.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={8} className="h-24 text-center">
+              <TableCell colSpan={9} className="h-24 text-center">
                 No projects found.
               </TableCell>
             </TableRow>
           ) : (
             projects.map((project, index) => (
-              <TableRow key={project["ID-PROJET"] || index} className="hover:bg-gray-50">
+              <TableRow key={`${project["ID-PROJET"]}-${index}`} className="hover:bg-gray-50">
                 <TableCell className="font-medium">{project["ID-PROJET"] || 'N/A'}</TableCell>
                 <TableCell>{project["Company"] || 'N/A'}</TableCell>
                 <TableCell>{project["Client"] || 'N/A'}</TableCell>
@@ -61,6 +62,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
                 <TableCell>{formatDate(project["Date de début"])}</TableCell>
                 <TableCell>{formatDate(project["Deadline"])}</TableCell>
                 <TableCell>{project["Duration"] || 'N/A'}</TableCell>
+                <TableCell>{project["Slack ID"] || 'N/A'}</TableCell>
               </TableRow>
             ))
           )}

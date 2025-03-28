@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchProjects, PipelineProject } from '@/services/projectService';
 import { useToast } from '@/components/ui/use-toast';
+import { useSearchParams } from 'react-router-dom';
 
 const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,14 +14,24 @@ const Dashboard = () => {
   const [filteredProjects, setFilteredProjects] = useState<PipelineProject[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const slackId = searchParams.get('slack-id');
 
   useEffect(() => {
     const loadProjects = async () => {
       try {
         setIsLoading(true);
-        const data = await fetchProjects();
+        const data = await fetchProjects(slackId || undefined);
         setProjects(data);
         setFilteredProjects(data);
+        
+        if (slackId && data.length === 0) {
+          toast({
+            title: "No projects found",
+            description: `No projects found for the provided Slack ID: ${slackId}`,
+            variant: "destructive",
+          });
+        }
       } catch (error) {
         console.error("Failed to load projects:", error);
         toast({
@@ -34,7 +45,7 @@ const Dashboard = () => {
     };
 
     loadProjects();
-  }, [toast]);
+  }, [toast, slackId]);
 
   useEffect(() => {
     const query = searchQuery.toLowerCase();
@@ -70,6 +81,11 @@ const Dashboard = () => {
       <header className="sticky top-0 z-10 bg-white border-b">
         <div className="container mx-auto py-4">
           <h1 className="text-2xl font-bold text-gray-900">Keyframe Project Manager</h1>
+          {slackId && (
+            <p className="text-sm text-gray-500 mt-1">
+              Viewing projects for Slack ID: {slackId}
+            </p>
+          )}
         </div>
       </header>
       
