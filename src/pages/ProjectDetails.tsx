@@ -168,6 +168,7 @@ const ProjectDetails = () => {
                 icon={<Image className="h-5 w-5" />}
                 currentPhase={project["Phase"] || ''}
                 relevantPhase="Storyboard"
+                projectStatus={project["Status"]}
               >
                 <StoryboardPreview storyboardUrl={project["Storyboard"]} />
               </CollapsiblePreview>
@@ -179,6 +180,7 @@ const ProjectDetails = () => {
                 icon={<FileText className="h-5 w-5" />}
                 currentPhase={project["Phase"] || ''}
                 relevantPhase="Copywriting"
+                projectStatus={project["Status"]}
               >
                 <ScriptPreview scriptUrl={project["Script"]} />
               </CollapsiblePreview>
@@ -190,6 +192,7 @@ const ProjectDetails = () => {
                 icon={<Film className="h-5 w-5" />}
                 currentPhase={project["Phase"] || ''}
                 relevantPhase="Animation"
+                projectStatus={project["Status"]}
               >
                 <AnimationPreview animationUrl={project["Animation"]} />
               </CollapsiblePreview>
