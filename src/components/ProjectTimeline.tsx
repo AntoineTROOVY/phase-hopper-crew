@@ -14,6 +14,10 @@ interface ProjectTimelineProps {
 const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
   // Function to normalize phase names for comparison
   const normalizePhase = (phase: string): ProjectPhase => {
+    // Strip emoji prefixes and trim whitespace for comparison
+    const cleanPhase = phase?.replace(/[\u{1F300}-\u{1F6FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
+    
+    // Map of lowercase phase names to standardized phase names
     const phaseMap: Record<string, ProjectPhase> = {
       'copywriting': 'Copywriting',
       'voice-over': 'Voice-over',
@@ -23,7 +27,7 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
       'variations': 'Variations',
     };
     
-    const normalized = phase?.toLowerCase();
+    const normalized = cleanPhase?.toLowerCase();
     return phaseMap[normalized] || phase;
   };
 
@@ -56,6 +60,11 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
         return <FileText className="h-5 w-5" />;
     }
   };
+
+  console.log('Current Phase:', currentPhase);
+  console.log('Normalized Phase:', normalizedCurrentPhase);
+  console.log('Current Phase Index:', currentPhaseIndex);
+  console.log('Completion Percentage:', completionPercentage);
 
   return (
     <div className="space-y-4 mb-6">
