@@ -104,11 +104,11 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
             classNames={{
               day_selected: "", // Override default selected styling
               day_today: "border border-[#4E90FF]",
-              day: "font-normal flex items-center justify-center text-xs sm:text-sm",
-              cell: "p-0 relative", // Removed padding to ensure proper grid alignment
-              month: "space-y-2 w-full", // Reduced vertical spacing
-              row: "grid grid-cols-7 w-full gap-1.5 mb-1.5", // Consistent gap for rows
-              head_row: "grid grid-cols-7 w-full gap-1.5 mb-2", // Consistent gap for header row
+              day: "font-normal flex items-center justify-center text-xs sm:text-sm aspect-square w-full h-auto rounded-lg",
+              cell: "p-0 relative aspect-square", // Set aspect-ratio for the cells
+              month: "space-y-2 w-full", 
+              row: "grid grid-cols-7 w-full gap-2 mb-2", // Consistent gap for rows
+              head_row: "grid grid-cols-7 w-full gap-2 mb-2", // Consistent gap for header row
               caption: "flex justify-center pt-1 relative items-center mb-3",
               table: "w-full",
               caption_label: "text-sm font-medium px-6",
@@ -133,8 +133,16 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
                 return (
                   <button
                     {...props}
-                    className={`flex items-center justify-center font-normal aria-selected:opacity-100 relative ${customClasses}`}
+                    className={`flex items-center justify-center font-normal aria-selected:opacity-100 relative ${customClasses} w-full h-full`}
                     disabled={true} // Make calendar read-only
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      aspectRatio: '1',
+                      minWidth: '32px',
+                      minHeight: '32px',
+                      borderRadius: '8px'
+                    }}
                   >
                     <div>{date.getDate()}</div>
                     {isEndDate && (
