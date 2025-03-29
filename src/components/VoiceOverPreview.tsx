@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Headphones, Volume2, VolumeX, Play, Pause } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
