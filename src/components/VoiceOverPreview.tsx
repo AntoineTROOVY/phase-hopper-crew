@@ -1,8 +1,9 @@
 
-import React from 'react';
-import { Play, Pause, Volume2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Play, Pause, Volume2, ChevronDown, ChevronUp } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface VoiceOverPreviewProps {
   voiceFileUrl: string;
@@ -160,6 +161,8 @@ const AudioPlayer = ({
 const VoiceOverPreview = ({
   voiceFileUrl
 }: VoiceOverPreviewProps) => {
+  const [isOpen, setIsOpen] = useState(true);
+  
   const parseVoiceFileUrl = (urlString: string): AudioFile[] => {
     if (!urlString) return [];
 
@@ -185,9 +188,23 @@ const VoiceOverPreview = ({
 
   return (
     <div className="p-3">
-      {audioFiles.map((file, index) => (
-        <AudioPlayer key={index} url={file.url} filename={file.filename} />
-      ))}
+      <div className="flex items-center justify-between mb-3 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
+        <h3 className="font-medium text-gray-700">Voice-Over Files ({audioFiles.length})</h3>
+        <button 
+          className="text-gray-500 hover:text-gray-700"
+          aria-label={isOpen ? "Collapse voice-over files" : "Expand voice-over files"}
+        >
+          {isOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+        </button>
+      </div>
+      
+      {isOpen && (
+        <div className="space-y-2">
+          {audioFiles.map((file, index) => (
+            <AudioPlayer key={index} url={file.url} filename={file.filename} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,5 +1,6 @@
+
 import React, { useState, useRef } from 'react';
-import { Check, ExternalLink } from 'lucide-react';
+import { Check, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -35,6 +36,7 @@ const CollapsiblePreview = ({
   externalUrl
 }: CollapsiblePreviewProps) => {
   const isCurrentPhasePreview = currentPhase.includes(relevantPhase);
+  const [isOpen, setIsOpen] = useState(true);
   
   const [isApproved, setIsApproved] = useState(false);
   const [holdProgress, setHoldProgress] = useState(0);
@@ -68,6 +70,7 @@ const CollapsiblePreview = ({
   
   const previewStatus = determinePreviewStatus();
   const isToReview = previewStatus === 'To Review';
+  const isVoiceOver = relevantPhase.toLowerCase() === 'voice';
   
   const statusStyles = {
     'In Progress': 'bg-blue-100 text-blue-800 border-blue-200',
@@ -139,16 +142,20 @@ const CollapsiblePreview = ({
     }
   };
 
+  const toggleCollapse = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
     <Card className={`mt-6 ${isToReview ? 'border-2 border-amber-500' : ''}`}>
-      <CardHeader className="py-4">
+      <CardHeader className="py-4 cursor-pointer" onClick={toggleCollapse}>
         <div className="flex items-center justify-between w-full">
           <CardTitle className="text-lg flex items-center gap-2">
             {icon}
             {title}
           </CardTitle>
           <div className="flex items-center gap-2">
-            {externalUrl && !isToReview && relevantPhase.toLowerCase() !== 'voice' && (
+            {externalUrl && !isToReview && !isVoiceOver && (
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -162,69 +169,79 @@ const CollapsiblePreview = ({
             <Badge variant="outline" className={statusStyles[previewStatus]}>
               {previewStatus}
             </Badge>
+            <button 
+              className="ml-2 text-gray-500 hover:text-gray-700" 
+              aria-label={isOpen ? "Collapse" : "Expand"}
+            >
+              {isOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+            </button>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-0">
-        {isToReview && <p className="text-sm text-gray-500 mb-3 pt-2 px-6">{getInstructions()}</p>}
-        <div className="w-full">
-          {children}
-        </div>
-      </CardContent>
-      {isToReview && !isApproved && (
-        <CardFooter className="pb-6 pt-4 flex justify-between w-full px-6">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button className="bg-green-500 hover:bg-green-600 text-white flex-1 mr-2">
-                <Check className="mr-2 h-4 w-4" />
-                Approve
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Are you sure you want to proceed to the next phase? This action is definitive. 
-                  You will no longer be able to modify the {relevantPhase.toLowerCase()}.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <div className="relative">
-                  <AlertDialogAction
-                    className="bg-white border border-green-500 text-green-600 hover:bg-green-50"
-                    onMouseDown={startHolding}
-                    onMouseUp={stopHolding}
-                    onMouseLeave={stopHolding}
-                    onTouchStart={startHolding}
-                    onTouchEnd={stopHolding}
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    Hold to Approve
-                  </AlertDialogAction>
-                  <div 
-                    className="absolute inset-0 bg-green-500 opacity-70 pointer-events-none rounded-md transition-all ease-linear" 
-                    style={{ 
-                      width: `${holdProgress}%`,
-                      maxWidth: '100%'
-                    }}
-                  />
-                </div>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-          {externalUrl && (
-            <Button 
-              className="bg-orange-500 hover:bg-orange-600 text-white flex-1 ml-2"
-              onClick={() => {
-                window.open(externalUrl, '_blank', 'noopener,noreferrer');
-              }}
-            >
-              <ExternalLink className="mr-2 h-4 w-4" />
-              Review
-            </Button>
+      {isOpen && (
+        <>
+          <CardContent className="p-0">
+            {isToReview && <p className="text-sm text-gray-500 mb-3 pt-2 px-6">{getInstructions()}</p>}
+            <div className="w-full">
+              {children}
+            </div>
+          </CardContent>
+          {isToReview && !isApproved && (
+            <CardFooter className="pb-6 pt-4 flex justify-between w-full px-6">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button className="bg-green-500 hover:bg-green-600 text-white flex-1 mr-2">
+                    <Check className="mr-2 h-4 w-4" />
+                    Approve
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to proceed to the next phase? This action is definitive. 
+                      You will no longer be able to modify the {relevantPhase.toLowerCase()}.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <div className="relative">
+                      <AlertDialogAction
+                        className="bg-white border border-green-500 text-green-600 hover:bg-green-50"
+                        onMouseDown={startHolding}
+                        onMouseUp={stopHolding}
+                        onMouseLeave={stopHolding}
+                        onTouchStart={startHolding}
+                        onTouchEnd={stopHolding}
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        Hold to Approve
+                      </AlertDialogAction>
+                      <div 
+                        className="absolute inset-0 bg-green-500 opacity-70 pointer-events-none rounded-md transition-all ease-linear" 
+                        style={{ 
+                          width: `${holdProgress}%`,
+                          maxWidth: '100%'
+                        }}
+                      />
+                    </div>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              {externalUrl && (
+                <Button 
+                  className="bg-orange-500 hover:bg-orange-600 text-white flex-1 ml-2"
+                  onClick={() => {
+                    window.open(externalUrl, '_blank', 'noopener,noreferrer');
+                  }}
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  Review
+                </Button>
+              )}
+            </CardFooter>
           )}
-        </CardFooter>
+        </>
       )}
     </Card>
   );
