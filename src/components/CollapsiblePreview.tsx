@@ -27,6 +27,7 @@ interface CollapsiblePreviewProps {
   projectStatus?: string | null;
   externalUrl?: string;
   projectId?: string;
+  initialOpen?: boolean;
 }
 
 const CollapsiblePreview = ({ 
@@ -37,10 +38,11 @@ const CollapsiblePreview = ({
   relevantPhase,
   projectStatus,
   externalUrl,
-  projectId
+  projectId,
+  initialOpen = true
 }: CollapsiblePreviewProps) => {
   const isVoiceOverPreview = relevantPhase.toLowerCase() === 'voice';
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(initialOpen);
   
   const isCurrentPhasePreview = currentPhase.includes(relevantPhase);
   const [isApproved, setIsApproved] = useState(false);

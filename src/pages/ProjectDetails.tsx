@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Building, User, Clock, FileText, Image, Film, Headphones } from 'lucide-react';
@@ -93,6 +92,8 @@ const ProjectDetails = () => {
 
   const logoUrl = project["Logo url"] || '';
   const shouldShowVoiceOver = project["Voice-file-url"] && project["Voice-file-url"].length > 0 || project["Phase"]?.toLowerCase().includes('voice') && (project["Status"]?.toLowerCase().includes('not') && project["Status"]?.toLowerCase().includes('start') || project["Status"]?.toLowerCase().includes('in progress'));
+  
+  const isVoiceOverPhase = project["Phase"]?.includes("🎙️Voice-over") || false;
 
   console.log('Languages for project:', project["Langues"]);
 
@@ -183,12 +184,19 @@ const ProjectDetails = () => {
               </CardContent>
             </Card>
             
-            {/* Reordered preview sections as requested: Script, Voice-Over, Storyboard, Animation */}
             {project["Script"] && <CollapsiblePreview title="Script Preview" icon={<FileText className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Copywriting" projectStatus={project["Status"]} externalUrl={project["Script"]} projectId={project["ID-PROJET"] || ''}>
                 <ScriptPreview scriptUrl={project["Script"]} />
               </CollapsiblePreview>}
             
-            {shouldShowVoiceOver && <CollapsiblePreview title="Voice-Over Preview" icon={<Headphones className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Voice" projectStatus={project["Status"]} projectId={project["ID-PROJET"] || ''}>
+            {shouldShowVoiceOver && <CollapsiblePreview 
+                title="Voice-Over Preview" 
+                icon={<Headphones className="h-5 w-5" />} 
+                currentPhase={project["Phase"] || ''} 
+                relevantPhase="Voice" 
+                projectStatus={project["Status"]} 
+                projectId={project["ID-PROJET"] || ''}
+                initialOpen={isVoiceOverPhase}
+              >
                 <VoiceOverPreview voiceFileUrl={project["Voice-file-url"] || ''} phase={project["Phase"] || ''} status={project["Status"] || ''} projectId={project["ID-PROJET"] || ''} languages={project["Langues"] || ''} />
               </CollapsiblePreview>}
             
