@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, Volume2, X, Filter, Check } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
@@ -202,7 +201,6 @@ const VoiceOverSelectionModal = ({
   const { toast } = useToast();
 
   useEffect(() => {
-    // Parse languages when component mounts or when languages prop changes
     if (languages) {
       const languageArray = languages.split(',').map(lang => lang.trim());
       setProjectLanguages(languageArray);
@@ -262,7 +260,6 @@ const VoiceOverSelectionModal = ({
       if (prev.includes(voiceOverName)) {
         return prev.filter(name => name !== voiceOverName);
       } else {
-        // Only allow selecting up to the number of languages
         if (prev.length < projectLanguages.length) {
           return [...prev, voiceOverName];
         }
@@ -281,7 +278,6 @@ const VoiceOverSelectionModal = ({
       return;
     }
 
-    // Prepare the payload for the webhook
     const payload = {
       "ID-PROJET": projectId,
       "voiceOverNames": selectedVoiceOvers
@@ -290,7 +286,6 @@ const VoiceOverSelectionModal = ({
     setIsSubmitting(true);
 
     try {
-      // Send the request to the webhook
       const response = await fetch('https://hook.eu2.make.com/ydu459dw7hdi4vx6lrzc7v3bq9aoty1g', {
         method: 'POST',
         headers: {
@@ -303,14 +298,12 @@ const VoiceOverSelectionModal = ({
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      // Show success message
       toast({
         title: "Selection submitted",
         description: "Your voice-over selections have been submitted successfully.",
         variant: "default"
       });
 
-      // Close the modal and trigger the callback to update the parent component
       onOpenChange(false);
       
       if (onSelectionComplete) {
@@ -490,14 +483,17 @@ const VoiceOverPreview = ({
   
   const audioFiles = parseVoiceFileUrl(voiceFileUrl);
   
-  // Special case: Voice-over phase with Not started status and no files
   const isVoiceOverPhaseNotStarted = 
     phase?.toLowerCase().includes('voice') && 
     status?.toLowerCase().includes('not') && 
     status?.toLowerCase().includes('start') && 
     !audioFiles.length;
 
-  // Hide the prompt after selection is complete
+  const isVoiceOverPhaseInProgress = 
+    phase?.toLowerCase().includes('voice') && 
+    status?.toLowerCase().includes('in progress') && 
+    !audioFiles.length;
+
   const handleSelectionComplete = () => {
     setShowVoiceOverPrompt(false);
   };
@@ -525,6 +521,16 @@ const VoiceOverPreview = ({
           onSelectionComplete={handleSelectionComplete}
         />
       </>
+    );
+  }
+  
+  if (isVoiceOverPhaseInProgress) {
+    return (
+      <div className="p-6 text-center">
+        <p className="text-gray-600">
+          Your voice-overs are currently being recorded. They'll be available here very soon.
+        </p>
+      </div>
     );
   }
   
