@@ -65,11 +65,12 @@ const CollapsiblePreview = ({
       if (lowerCurrentPhase.includes('copy') && lowerProjectStatus.includes('approved')) {
         return 'Approved';
       }
-      // If we've moved beyond copywriting to a later phase or if we're in voice-over phase
+      // If we've moved beyond copywriting to a later phase OR if we're in voice-over phase
+      // Important fix: Always mark script as approved if we're in voice-over phase, regardless of status
       else if (
-        (lowerCurrentPhase.includes('storyboard') || 
-         lowerCurrentPhase.includes('animation') || 
-         lowerCurrentPhase.includes('voice'))
+        lowerCurrentPhase.includes('storyboard') || 
+        lowerCurrentPhase.includes('animation') || 
+        lowerCurrentPhase.includes('voice')
       ) {
         return 'Approved';
       }
