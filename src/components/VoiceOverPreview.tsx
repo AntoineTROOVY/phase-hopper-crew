@@ -3,9 +3,12 @@ import React from 'react';
 import { Play, Pause, Volume2 } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
 
 interface VoiceOverPreviewProps {
   voiceFileUrl: string;
+  phase?: string;
+  status?: string;
 }
 
 interface AudioFile {
@@ -158,7 +161,9 @@ const AudioPlayer = ({
 };
 
 const VoiceOverPreview = ({
-  voiceFileUrl
+  voiceFileUrl,
+  phase,
+  status
 }: VoiceOverPreviewProps) => {
   const parseVoiceFileUrl = (urlString: string): AudioFile[] => {
     if (!urlString) return [];
@@ -174,6 +179,26 @@ const VoiceOverPreview = ({
   };
   
   const audioFiles = parseVoiceFileUrl(voiceFileUrl);
+  
+  // Special case: Voice-over phase with Not started status and no files
+  const isVoiceOverPhaseNotStarted = 
+    phase?.toLowerCase().includes('voice') && 
+    status?.toLowerCase().includes('not') && 
+    status?.toLowerCase().includes('start') && 
+    !audioFiles.length;
+
+  if (isVoiceOverPhaseNotStarted) {
+    return (
+      <div className="p-4 border-2 border-amber-500 rounded-md m-3 bg-amber-50">
+        <p className="text-amber-800 font-medium mb-4">
+          You need to select a VoiceOver for your project
+        </p>
+        <Button className="bg-primary text-white">
+          Select a VoiceOver
+        </Button>
+      </div>
+    );
+  }
   
   if (!audioFiles.length) {
     return (

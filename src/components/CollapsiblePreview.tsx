@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Check, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
@@ -56,17 +55,12 @@ const CollapsiblePreview = ({
     const lowerRelevantPhase = relevantPhase.toLowerCase();
     const lowerProjectStatus = projectStatus?.toLowerCase() || '';
     
-    // The phases in the expected workflow order
     const phases = ['copywriting', 'storyboard', 'animation'];
     
-    // For Script Preview (Copywriting phase)
     if (lowerRelevantPhase.includes('copy')) {
-      // If current phase is copywriting and status is approved
       if (lowerCurrentPhase.includes('copy') && lowerProjectStatus.includes('approved')) {
         return 'Approved';
       }
-      // If we've moved beyond copywriting to a later phase OR if we're in voice-over phase
-      // Important fix: Always mark script as approved if we're in voice-over phase, regardless of status
       else if (
         lowerCurrentPhase.includes('storyboard') || 
         lowerCurrentPhase.includes('animation') || 
@@ -74,7 +68,6 @@ const CollapsiblePreview = ({
       ) {
         return 'Approved';
       }
-      // Current phase is copywriting but not yet approved
       else if (lowerCurrentPhase.includes('copy')) {
         if (lowerProjectStatus.includes('review')) {
           return 'To Review';
@@ -83,7 +76,6 @@ const CollapsiblePreview = ({
         }
       }
     }
-    // For other phases (Storyboard, Animation, Voice)
     else {
       if (lowerCurrentPhase.includes(lowerRelevantPhase)) {
         if (lowerProjectStatus.includes('review')) {
@@ -219,6 +211,13 @@ const CollapsiblePreview = ({
     }
   };
 
+  const childrenWithProps = React.isValidElement(children) && isVoiceOverPreview
+    ? React.cloneElement(children, { 
+        phase: currentPhase,
+        status: projectStatus
+      })
+    : children;
+
   return (
     <Card className={`mt-6 ${isToReview ? 'border-2 border-amber-500' : ''}`}>
       <CardHeader 
@@ -262,7 +261,7 @@ const CollapsiblePreview = ({
           <CardContent className="p-0">
             {isToReview && <p className="text-sm text-gray-500 mb-3 pt-2 px-6">{getInstructions()}</p>}
             <div className="w-full">
-              {children}
+              {childrenWithProps}
             </div>
           </CardContent>
           {isToReview && !isApproved && (
