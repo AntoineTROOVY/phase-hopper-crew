@@ -65,9 +65,11 @@ const CollapsiblePreview = ({
       if (lowerCurrentPhase.includes('copy') && lowerProjectStatus.includes('approved')) {
         return 'Approved';
       }
-      // If we've moved beyond copywriting to a later phase
+      // If we've moved beyond copywriting to a later phase or if we're in voice-over phase
       else if (
-        (lowerCurrentPhase.includes('storyboard') || lowerCurrentPhase.includes('animation'))
+        (lowerCurrentPhase.includes('storyboard') || 
+         lowerCurrentPhase.includes('animation') || 
+         lowerCurrentPhase.includes('voice'))
       ) {
         return 'Approved';
       }
