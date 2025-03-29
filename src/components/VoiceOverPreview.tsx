@@ -1,8 +1,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2 } from 'lucide-react';
+import { Play, Pause, Volume2, ChevronDown } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface VoiceOverPreviewProps {
   voiceFileUrl: string;
@@ -124,7 +125,7 @@ const AudioPlayer = ({ url, filename }: AudioFile) => {
               return (
                 <div 
                   key={i} 
-                  className={`w-[1px] ${isPlayed ? 'bg-blue-500' : 'bg-gray-300'}`}
+                  className={`w-[2px] ${isPlayed ? 'bg-blue-500' : 'bg-gray-300'}`}
                   style={{ height: `${height}%` }}
                 />
               );
@@ -164,6 +165,8 @@ const AudioPlayer = ({ url, filename }: AudioFile) => {
 };
 
 const VoiceOverPreview = ({ voiceFileUrl }: VoiceOverPreviewProps) => {
+  const [isOpen, setIsOpen] = useState(true);
+  
   const parseVoiceFileUrl = (urlString: string): AudioFile[] => {
     if (!urlString) return [];
     
@@ -188,11 +191,26 @@ const VoiceOverPreview = ({ voiceFileUrl }: VoiceOverPreviewProps) => {
   }
 
   return (
-    <div className="p-3">
-      {audioFiles.map((file, index) => (
-        <AudioPlayer key={index} url={file.url} filename={file.filename} />
-      ))}
-    </div>
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="border rounded-lg overflow-hidden">
+      <div className="bg-white p-3 border-b flex justify-between items-center">
+        <h3 className="font-medium flex items-center">
+          <Headphones className="h-5 w-5 mr-2" />
+          Voice-Over Files
+        </h3>
+        <CollapsibleTrigger asChild>
+          <button className="p-1 hover:bg-gray-100 rounded">
+            <ChevronDown className={`h-5 w-5 text-gray-500 transition-transform ${isOpen ? '' : 'transform rotate-180'}`} />
+          </button>
+        </CollapsibleTrigger>
+      </div>
+      <CollapsibleContent>
+        <div className="p-3">
+          {audioFiles.map((file, index) => (
+            <AudioPlayer key={index} url={file.url} filename={file.filename} />
+          ))}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 };
 
