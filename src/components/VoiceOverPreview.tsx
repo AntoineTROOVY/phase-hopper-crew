@@ -1,24 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, ChevronDown, Headphones, ExternalLink } from 'lucide-react';
+import { Play, Pause, Volume2, ChevronDown, Headphones } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
-
 interface VoiceOverPreviewProps {
   voiceFileUrl: string;
 }
-
 interface AudioFile {
   url: string;
   filename: string;
 }
-
 const formatTime = (seconds: number): string => {
   const mins = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 };
-
 const AudioPlayer = ({
   url,
   filename
@@ -29,7 +24,6 @@ const AudioPlayer = ({
   const [duration, setDuration] = React.useState(0);
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const waveformRef = React.useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const audio = audioRef.current;
     if (audio) {
@@ -42,7 +36,6 @@ const AudioPlayer = ({
       return () => audio.removeEventListener('loadedmetadata', updateDuration);
     }
   }, []);
-
   const togglePlay = () => {
     if (audioRef.current) {
       if (isPlaying) {
@@ -53,7 +46,6 @@ const AudioPlayer = ({
       setIsPlaying(!isPlaying);
     }
   };
-
   const handleVolumeChange = (values: number[]) => {
     const newVolume = values[0];
     setVolume(newVolume);
@@ -61,14 +53,12 @@ const AudioPlayer = ({
       audioRef.current.volume = newVolume;
     }
   };
-
   const updateProgress = () => {
     if (audioRef.current) {
       const value = audioRef.current.currentTime / audioRef.current.duration * 100;
       setProgress(value);
     }
   };
-
   const seekAudio = (e: React.MouseEvent<HTMLDivElement>) => {
     if (audioRef.current && waveformRef.current) {
       const rect = waveformRef.current.getBoundingClientRect();
@@ -78,7 +68,6 @@ const AudioPlayer = ({
       setProgress(clickPosition * 100);
     }
   };
-
   return <div className="bg-white rounded-lg p-3 mb-4 border border-gray-100">
       <div className="text-sm font-medium text-gray-700 mb-2 truncate" title={filename}>
         {filename}
@@ -98,7 +87,9 @@ const AudioPlayer = ({
         <div ref={waveformRef} className="flex-grow relative h-10 cursor-pointer bg-gray-50 rounded overflow-hidden" onClick={seekAudio}>
           <div className="absolute inset-0 flex items-center justify-around px-1">
             {[...Array(50)].map((_, i) => {
+            // Create a pattern of varying heights
             const height = 30 + Math.sin(i * 0.2) * 20 + Math.random() * 15;
+            // Determine if this bar is part of the played portion
             const isPlayed = i / 50 * 100 <= progress;
             return <div key={i} className={`w-[3px] ${isPlayed ? 'bg-blue-500' : 'bg-gray-300'}`} style={{
               height: `${height}%`
@@ -129,17 +120,17 @@ const AudioPlayer = ({
       </div>
     </div>;
 };
-
 const VoiceOverPreview = ({
   voiceFileUrl
 }: VoiceOverPreviewProps) => {
   const [isOpen, setIsOpen] = useState(true);
-  
   const parseVoiceFileUrl = (urlString: string): AudioFile[] => {
     if (!urlString) return [];
 
+    // Split by Record Separator (␞)
     const entries = urlString.split('␞');
     return entries.map(entry => {
+      // Split each entry by Unit Separator (␟)
       const [filename, url] = entry.split('␟');
       return {
         url,
@@ -147,55 +138,18 @@ const VoiceOverPreview = ({
       };
     }).filter(file => file.url && file.filename);
   };
-  
   const audioFiles = parseVoiceFileUrl(voiceFileUrl);
-  
-  const handleOpenExternalLink = () => {
-    if (audioFiles.length > 0) {
-      window.open(audioFiles[0].url, '_blank', 'noopener,noreferrer');
-    }
-  };
-  
   if (!audioFiles.length) {
     return <div className="p-4 text-center text-gray-500">
         No voice-over files available
       </div>;
   }
-  
-  return (
-    <div className="border rounded-lg overflow-hidden">
-      <div className="flex items-center justify-between p-4 bg-gray-50 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
-        <div className="flex items-center gap-2">
-          <Headphones className="h-5 w-5 text-gray-500" />
-          <h3 className="font-medium">Voice-Over Preview</h3>
-          <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform ${isOpen ? '' : 'transform -rotate-90'}`} />
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="px-2.5 py-0.5 text-xs font-medium rounded-full border bg-green-100 text-green-800 border-green-200">
-            Approved
-          </span>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="h-8 w-8 p-0" 
-            onClick={(e) => {
-              e.stopPropagation();
-              handleOpenExternalLink();
-            }}
-          >
-            <ExternalLink className="h-4 w-4" />
-            <span className="sr-only">Open in new tab</span>
-          </Button>
-        </div>
-      </div>
+  return <div className="border rounded-lg overflow-hidden">
       
-      {isOpen && (
-        <div className="p-3">
+      
+      {isOpen && <div className="p-3">
           {audioFiles.map((file, index) => <AudioPlayer key={index} url={file.url} filename={file.filename} />)}
-        </div>
-      )}
-    </div>
-  );
+        </div>}
+    </div>;
 };
-
 export default VoiceOverPreview;
