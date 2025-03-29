@@ -1,6 +1,8 @@
 
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
+import { FileText, Headphones, Image, Film, Package } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 // Define phase types with emoji prefixes
 type ProjectPhase = 
@@ -19,6 +21,15 @@ const phases: ProjectPhase[] = [
   '🎞️ Animation',
   '📦 Variations'
 ];
+
+// Define phase icons mapping
+const phaseIcons: Record<string, React.ReactNode> = {
+  '📝 Copywriting': <FileText className="h-6 w-6" />,
+  '🎙️Voice-over': <Headphones className="h-6 w-6" />,
+  '🖼️ Storyboard': <Image className="h-6 w-6" />,
+  '🎞️ Animation': <Film className="h-6 w-6" />,
+  '📦 Variations': <Package className="h-6 w-6" />
+};
 
 interface ProjectTimelineProps {
   currentPhase: string;
@@ -93,46 +104,72 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
         </div>
       </div>
       
-      <Progress value={completionPercentage} className="h-2 mb-4" />
+      <Progress value={completionPercentage} className="h-2 mb-6" />
       
-      <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
+      <div className="relative flex flex-col sm:flex-row justify-between items-center w-full">
+        {/* Connector line */}
+        <div className="hidden sm:block absolute top-7 left-0 right-0 h-0.5 bg-gray-200 z-0" />
+        
         {phases.map((phase, index) => {
           const isCurrentPhase = phase === normalizedCurrentPhase;
           const isPastPhase = currentPhaseIndex >= 0 && index < currentPhaseIndex;
           const isFuturePhase = currentPhaseIndex >= 0 && index > currentPhaseIndex;
           
+          // Determine connector color/style between this phase and next
+          const connectorClass = isPastPhase 
+            ? "bg-[#4E90FF]" // Solid blue for completed phases
+            : "bg-gray-200"; // Dashed or light for upcoming phases
+          
+          // Calculate the width needed to connect this phase to the next (except last phase)
+          const showConnector = index < phases.length - 1;
+          
           return (
-            <div 
-              key={phase}
-              className={`flex flex-col items-center p-2 h-16 rounded-md transition-colors ${
-                isCurrentPhase 
-                  ? 'bg-gradient-to-r from-[#4E90FF] from-50% to-[#80A6E7] to-50%' 
-                  : isPastPhase
-                    ? 'bg-[#4E90FF] text-white'
-                    : isFuturePhase
-                      ? 'bg-[#80A6E7]/30 text-muted-foreground'
-                      : 'bg-muted text-muted-foreground'
-              }`}
-            >
-              <span className={`font-medium text-center ${
-                isCurrentPhase 
-                  ? 'text-lg text-white drop-shadow-md shadow-black' 
+            <div key={phase} className="flex flex-col items-center mb-4 sm:mb-0 z-10">
+              {/* If not the first phase on mobile, show a connector */}
+              {index > 0 && index <= currentPhaseIndex && (
+                <div className="block sm:hidden h-6 w-0.5 bg-[#4E90FF] -mt-2 mb-2" />
+              )}
+              
+              {/* Phase icon circle */}
+              <div 
+                className={cn(
+                  "flex items-center justify-center w-14 h-14 rounded-full border-2",
+                  isCurrentPhase ? "border-[#4E90FF] bg-white text-[#4E90FF]" : 
+                  isPastPhase ? "border-[#4E90FF] bg-[#4E90FF] text-white" : 
+                  "border-gray-200 bg-white text-gray-400"
+                )}
+              >
+                {phaseIcons[phase]}
+              </div>
+              
+              {/* If not the last phase and on mobile view, show a connector to the next phase */}
+              {showConnector && isFuturePhase && (
+                <div className="block sm:hidden h-6 w-0.5 bg-gray-200 mt-2 mb-2" />
+              )}
+              
+              {/* Phase name */}
+              <p className={cn(
+                "font-medium mt-2 text-center whitespace-nowrap",
+                isCurrentPhase ? "text-[#4E90FF]" : 
+                isPastPhase ? "text-gray-900" : 
+                "text-gray-400"
+              )}>
+                {phase.split(' ')[1] || phase}
+              </p>
+              
+              {/* Phase status */}
+              <p className={cn(
+                "text-xs mt-1",
+                isCurrentPhase ? "text-[#4E90FF]" : 
+                isPastPhase ? "text-green-600" : 
+                "text-gray-400"
+              )}>
+                {isCurrentPhase 
+                  ? "In Progress" 
                   : isPastPhase 
-                    ? 'text-lg text-white' 
-                    : 'text-sm'
-              }`}>
-                {phase}
-              </span>
-              {isPastPhase && (
-                <span className="mt-1 text-[10px] bg-white/20 text-white px-1.5 py-0.5 rounded-full">
-                  Completed
-                </span>
-              )}
-              {isCurrentPhase && (
-                <span className="mt-1 text-[10px] bg-white text-[#4E90FF] px-1.5 py-0.5 rounded-full drop-shadow-sm">
-                  In Progress
-                </span>
-              )}
+                    ? "Completed" 
+                    : "Not Started"}
+              </p>
             </div>
           );
         })}
