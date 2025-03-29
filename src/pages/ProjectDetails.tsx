@@ -92,6 +92,9 @@ const ProjectDetails = () => {
   console.log('Project phase:', project["Phase"]);
   console.log('Project status:', project["Status"]);
 
+  // Define logoUrl variable properly from project data
+  const logoUrl = project["Logo url"] || '';
+
   // Determine if we should show the Voice-Over preview section
   // We show it if either:
   // 1. There are voice files available, or
