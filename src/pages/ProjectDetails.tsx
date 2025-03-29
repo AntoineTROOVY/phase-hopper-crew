@@ -13,6 +13,7 @@ import VoiceOverPreview from '@/components/VoiceOverPreview';
 import ProjectTimeline from '@/components/ProjectTimeline';
 import ProjectCalendar from '@/components/ProjectCalendar';
 import CollapsiblePreview from '@/components/CollapsiblePreview';
+
 const ProjectDetails = () => {
   const {
     projectId
@@ -25,6 +26,7 @@ const ProjectDetails = () => {
     toast
   } = useToast();
   const navigate = useNavigate();
+
   useEffect(() => {
     const loadProject = async () => {
       if (!projectId) {
@@ -57,6 +59,7 @@ const ProjectDetails = () => {
     };
     loadProject();
   }, [projectId, toast, navigate]);
+
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return 'Not set';
     try {
@@ -65,6 +68,7 @@ const ProjectDetails = () => {
       return dateString;
     }
   };
+
   if (isLoading) {
     return <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
@@ -73,6 +77,7 @@ const ProjectDetails = () => {
         </div>
       </div>;
   }
+
   if (!project) {
     return <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
@@ -84,9 +89,12 @@ const ProjectDetails = () => {
         </div>
       </div>;
   }
+
   const logoUrl = project["Logo url"] || '';
   const shouldShowVoiceOver = project["Voice-file-url"] && project["Voice-file-url"].length > 0 || project["Phase"]?.toLowerCase().includes('voice') && (project["Status"]?.toLowerCase().includes('not') && project["Status"]?.toLowerCase().includes('start') || project["Status"]?.toLowerCase().includes('in progress'));
+
   console.log('Languages for project:', project["Langues"]);
+
   return <div className="flex min-h-screen flex-col bg-gray-50">
       <header className="sticky top-0 z-10 bg-white border-b">
         <div className="container mx-auto py-4">
@@ -222,4 +230,5 @@ const ProjectDetails = () => {
       </footer>
     </div>;
 };
+
 export default ProjectDetails;
