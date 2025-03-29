@@ -5,6 +5,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Package, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ProjectCalendarProps {
   startDate: string | null | undefined;
@@ -14,6 +15,7 @@ interface ProjectCalendarProps {
 const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
   const start = startDate ? new Date(startDate) : null;
   const end = endDate ? new Date(endDate) : null;
+  const isMobile = useIsMobile();
   
   // Default to current month if no dates provided
   const [currentMonth, setCurrentMonth] = useState<Date>(start || new Date());
@@ -90,7 +92,7 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
         </div>
       </CardHeader>
       <CardContent className="pb-4">
-        <div className="w-full max-w-full overflow-hidden">
+        <div className="w-full overflow-hidden">
           <Calendar
             mode="single"
             month={currentMonth}
@@ -98,18 +100,18 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
             selected={undefined}
             fromDate={firstDayOfMonth}
             toDate={lastDayOfMonth}
-            className="rounded-md border max-w-full"
+            className="rounded-md border w-full"
             classNames={{
               day_selected: "", // Override default selected styling
               day_today: "border border-[#4E90FF]",
-              day: "p-0 font-normal rounded-lg border border-gray-200 flex items-center justify-center text-xs sm:text-sm",
+              day: "font-normal flex items-center justify-center text-xs sm:text-sm",
               cell: "p-0 relative", // Removed padding to ensure proper grid alignment
-              month: "space-y-2 max-w-full", // Reduced vertical spacing and width control
-              row: "gap-1", // Use gap instead of margin for consistent spacing
-              caption: "flex justify-center pt-1 relative items-center mb-1", // Reduced space below the month caption
+              month: "space-y-2 w-full", // Reduced vertical spacing and width control
+              row: "gap-2", // Use gap instead of margin for consistent spacing
+              head_row: "gap-2 mb-2", // Add gap to head row and bottom margin
+              caption: "flex justify-center pt-1 relative items-center mb-2", // Reduced space below the month caption
               table: "w-full", // Full width table
               caption_label: "text-sm font-medium px-6", // Add horizontal padding to month label
-              head_row: "mb-1", // Add bottom margin to head row
               nav: "hidden", // Hide default navigation since we have custom buttons
               head_cell: "text-muted-foreground rounded-md text-[0.7rem] sm:text-[0.8rem] font-normal"
             }}
