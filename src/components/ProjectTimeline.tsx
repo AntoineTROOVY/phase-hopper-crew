@@ -93,7 +93,8 @@ const ProjectTimeline = ({ currentPhase, status = '' }: ProjectTimelineProps) =>
     if (!isCurrentPhase) return 0; // Future phases are 0%
     
     // For current phase, determine progress based on status
-    if (status?.toLowerCase().includes('review')) return 66; // 2/3 complete
+    if (status?.toLowerCase().includes('not started')) return 0;
+    if (status?.toLowerCase().includes('review')) return 90; // almost complete
     if (status?.toLowerCase().includes('progress')) return 33; // 1/3 complete
     if (status?.toLowerCase().includes('approved')) return 100; // Completed
     
@@ -122,8 +123,10 @@ const ProjectTimeline = ({ currentPhase, status = '' }: ProjectTimelineProps) =>
     if (currentPhaseIndex < index) return "Not Started";
     
     // This is the current phase, determine status based on project status
+    if (status?.toLowerCase().includes('not started')) return "Not Started";
     if (status?.toLowerCase().includes('review')) return "In Review";
-    if (status?.toLowerCase().includes('approved')) return "Approved";
+    if (status?.toLowerCase().includes('approved')) return "Completed";
+    if (status?.toLowerCase().includes('progress')) return "In Progress";
     
     // Default for current phase
     return "In Progress";
@@ -183,7 +186,7 @@ const ProjectTimeline = ({ currentPhase, status = '' }: ProjectTimelineProps) =>
                   />
                   
                   {/* Progress arc - only show for current or completed phases */}
-                  {(isCurrentPhase || isPastPhase) && (
+                  {(isCurrentPhase || isPastPhase) && progressPercentage > 0 && (
                     <circle 
                       cx="28" 
                       cy="28" 
