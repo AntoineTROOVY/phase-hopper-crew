@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, Building, User, Clock, FileText, Image, Film, Headphones } from 'lucide-react';
+import { ArrowLeft, Calendar, Building, User, Clock, FileText, Image, Film, Headphones, Package } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/StatusBadge';
@@ -13,6 +13,7 @@ import VoiceOverPreview from '@/components/VoiceOverPreview';
 import ProjectTimeline from '@/components/ProjectTimeline';
 import ProjectCalendar from '@/components/ProjectCalendar';
 import CollapsiblePreview from '@/components/CollapsiblePreview';
+import VariationsPreview from '@/components/VariationsPreview';
 
 const ProjectDetails = () => {
   const {
@@ -94,6 +95,7 @@ const ProjectDetails = () => {
   const shouldShowVoiceOver = project["Voice-file-url"] && project["Voice-file-url"].length > 0 || project["Phase"]?.toLowerCase().includes('voice') && (project["Status"]?.toLowerCase().includes('not') && project["Status"]?.toLowerCase().includes('start') || project["Status"]?.toLowerCase().includes('in progress'));
   
   const isVoiceOverPhase = project["Phase"]?.includes("🎙️Voice-over") || false;
+  const isVariationsPhase = project["Phase"]?.includes("📦 Variations") || false;
 
   console.log('Languages for project:', project["Langues"]);
 
@@ -206,6 +208,19 @@ const ProjectDetails = () => {
             
             {project["Animation"] && <CollapsiblePreview title="Animation Preview" icon={<Film className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Animation" projectStatus={project["Status"]} externalUrl={project["Animation"]} projectId={project["ID-PROJET"] || ''}>
                 <AnimationPreview animationUrl={project["Animation"]} />
+              </CollapsiblePreview>}
+            
+            {project["Variations-url"] && <CollapsiblePreview 
+                title="Variations Preview" 
+                icon={<Package className="h-5 w-5" />} 
+                currentPhase={project["Phase"] || ''} 
+                relevantPhase="Variations" 
+                projectStatus={project["Status"]} 
+                externalUrl={project["Variations-url"]} 
+                projectId={project["ID-PROJET"] || ''}
+                initialOpen={isVariationsPhase}
+              >
+                <VariationsPreview variationsUrl={project["Variations-url"]} />
               </CollapsiblePreview>}
           </div>
           
