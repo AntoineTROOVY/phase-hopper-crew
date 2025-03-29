@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Progress } from '@/components/ui/progress';
 import { FileText, Headphones, Image, Film, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -86,25 +85,12 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
   const currentPhaseIndex = phases.findIndex(
     phase => phase === normalizedCurrentPhase
   );
-  
-  // Calculate completion percentage
-  const completionPercentage = currentPhaseIndex >= 0 
-    ? Math.round(((currentPhaseIndex + 1) / phases.length) * 100) 
-    : 0;
 
   return (
     <div className="space-y-4 mb-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
         <h3 className="text-lg font-semibold">Project Progress</h3>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">{completionPercentage}% Complete</span>
-          <span className="px-2 py-1 text-xs bg-[#4E90FF]/10 text-[#4E90FF] rounded-full">
-            Current: {normalizedCurrentPhase || 'Not started'}
-          </span>
-        </div>
       </div>
-      
-      <Progress value={completionPercentage} className="h-2 mb-6" />
       
       <div className="relative flex flex-col sm:flex-row justify-between items-center w-full">
         {/* Connector line */}
