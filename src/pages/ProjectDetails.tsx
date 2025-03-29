@@ -195,6 +195,7 @@ const ProjectDetails = () => {
                 relevantPhase="Storyboard"
                 projectStatus={project["Status"]}
                 externalUrl={project["Storyboard"]}
+                projectId={project["ID-PROJET"] || ''}
               >
                 <StoryboardPreview storyboardUrl={project["Storyboard"]} />
               </CollapsiblePreview>
@@ -208,6 +209,7 @@ const ProjectDetails = () => {
                 relevantPhase="Copywriting"
                 projectStatus={project["Status"]}
                 externalUrl={project["Script"]}
+                projectId={project["ID-PROJET"] || ''}
               >
                 <ScriptPreview scriptUrl={project["Script"]} />
               </CollapsiblePreview>
@@ -220,6 +222,7 @@ const ProjectDetails = () => {
                 currentPhase={project["Phase"] || ''}
                 relevantPhase="Voice"
                 projectStatus={project["Status"]}
+                projectId={project["ID-PROJET"] || ''}
               >
                 <VoiceOverPreview voiceFileUrl={project["Voice-file-url"] || ''} />
               </CollapsiblePreview>
@@ -233,6 +236,7 @@ const ProjectDetails = () => {
                 relevantPhase="Animation"
                 projectStatus={project["Status"]}
                 externalUrl={project["Animation"]}
+                projectId={project["ID-PROJET"] || ''}
               >
                 <AnimationPreview animationUrl={project["Animation"]} />
               </CollapsiblePreview>

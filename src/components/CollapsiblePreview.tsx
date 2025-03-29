@@ -1,8 +1,11 @@
+
 import React, { useState, useRef } from 'react';
 import { Check, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,6 +26,7 @@ interface CollapsiblePreviewProps {
   relevantPhase: string;
   projectStatus?: string | null;
   externalUrl?: string;
+  projectId?: string;
 }
 
 const CollapsiblePreview = ({ 
@@ -32,7 +36,8 @@ const CollapsiblePreview = ({
   currentPhase, 
   relevantPhase,
   projectStatus,
-  externalUrl
+  externalUrl,
+  projectId
 }: CollapsiblePreviewProps) => {
   const isVoiceOverPreview = relevantPhase.toLowerCase() === 'voice';
   const [isOpen, setIsOpen] = useState(true);
@@ -41,8 +46,10 @@ const CollapsiblePreview = ({
   const [isApproved, setIsApproved] = useState(false);
   const [holdProgress, setHoldProgress] = useState(0);
   const [isHolding, setIsHolding] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const holdTimerRef = useRef<number | null>(null);
   const requiredHoldTime = 5000;
+  const { toast } = useToast();
 
   const determinePreviewStatus = () => {
     const lowerCurrentPhase = currentPhase.toLowerCase();
@@ -77,10 +84,46 @@ const CollapsiblePreview = ({
     'Approved': 'bg-green-100 text-green-800 border-green-200'
   };
 
-  const handleApprove = () => {
-    console.log(`Approved ${relevantPhase}`);
-    setIsApproved(true);
-    setHoldProgress(0);
+  const handleApprove = async () => {
+    if (!projectId) {
+      toast({
+        title: "Error",
+        description: "Project ID is missing. Cannot update status.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsUpdating(true);
+
+    try {
+      const { error } = await supabase
+        .from("PIPELINE PROJECTS")
+        .update({ Status: "Approved" })
+        .eq("ID-PROJET", projectId);
+
+      if (error) {
+        throw error;
+      }
+
+      setIsApproved(true);
+      setHoldProgress(0);
+      
+      toast({
+        title: "Success",
+        description: `${relevantPhase} has been approved successfully.`,
+        variant: "default"
+      });
+    } catch (error) {
+      console.error("Error updating project status:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update project status. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const startHolding = () => {
@@ -221,8 +264,9 @@ const CollapsiblePreview = ({
                         onTouchStart={startHolding}
                         onTouchEnd={stopHolding}
                         onClick={(e) => e.preventDefault()}
+                        disabled={isUpdating}
                       >
-                        Hold to Approve
+                        {isUpdating ? 'Updating...' : 'Hold to Approve'}
                       </AlertDialogAction>
                       <div 
                         className="absolute inset-0 bg-green-500 opacity-70 pointer-events-none rounded-md transition-all ease-linear" 
