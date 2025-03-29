@@ -21,6 +21,8 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className }) => {
       return 'bg-red-100 text-red-800 border-red-200';
     } else if (lowerStatus.includes('hold') || lowerStatus.includes('pause') || lowerStatus.includes('waiting')) {
       return 'bg-amber-100 text-amber-800 border-amber-200';
+    } else if (lowerStatus.includes('not') && lowerStatus.includes('start')) {
+      return 'bg-gray-100 text-gray-800 border-gray-200';
     } else {
       return 'bg-gray-100 text-gray-800 border-gray-200';
     }

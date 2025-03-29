@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Building, User, Clock, FileText, Image, Film, Headphones } from 'lucide-react';
@@ -182,16 +183,17 @@ const ProjectDetails = () => {
               </CardContent>
             </Card>
             
-            {project["Storyboard"] && <CollapsiblePreview title="Storyboard Preview" icon={<Image className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Storyboard" projectStatus={project["Status"]} externalUrl={project["Storyboard"]} projectId={project["ID-PROJET"] || ''}>
-                <StoryboardPreview storyboardUrl={project["Storyboard"]} />
-              </CollapsiblePreview>}
-            
+            {/* Reordered preview sections as requested: Script, Voice-Over, Storyboard, Animation */}
             {project["Script"] && <CollapsiblePreview title="Script Preview" icon={<FileText className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Copywriting" projectStatus={project["Status"]} externalUrl={project["Script"]} projectId={project["ID-PROJET"] || ''}>
                 <ScriptPreview scriptUrl={project["Script"]} />
               </CollapsiblePreview>}
             
             {shouldShowVoiceOver && <CollapsiblePreview title="Voice-Over Preview" icon={<Headphones className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Voice" projectStatus={project["Status"]} projectId={project["ID-PROJET"] || ''}>
                 <VoiceOverPreview voiceFileUrl={project["Voice-file-url"] || ''} phase={project["Phase"] || ''} status={project["Status"] || ''} projectId={project["ID-PROJET"] || ''} languages={project["Langues"] || ''} />
+              </CollapsiblePreview>}
+            
+            {project["Storyboard"] && <CollapsiblePreview title="Storyboard Preview" icon={<Image className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Storyboard" projectStatus={project["Status"]} externalUrl={project["Storyboard"]} projectId={project["ID-PROJET"] || ''}>
+                <StoryboardPreview storyboardUrl={project["Storyboard"]} />
               </CollapsiblePreview>}
             
             {project["Animation"] && <CollapsiblePreview title="Animation Preview" icon={<Film className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Animation" projectStatus={project["Status"]} externalUrl={project["Animation"]} projectId={project["ID-PROJET"] || ''}>
