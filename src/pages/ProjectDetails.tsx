@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Building, User, Clock, FileText, Image, Film, Headphones } from 'lucide-react';
@@ -86,8 +85,6 @@ const ProjectDetails = () => {
       </div>;
   }
 
-  console.log('Project Logo URL:', project["Logo url"]);
-  
   const logoUrl = project["Logo url"] || '';
   
   const shouldShowVoiceOver = 
@@ -95,6 +92,8 @@ const ProjectDetails = () => {
     (project["Phase"]?.toLowerCase().includes('voice') && 
      project["Status"]?.toLowerCase().includes('not') && 
      project["Status"]?.toLowerCase().includes('start'));
+
+  console.log('Languages for project:', project["Langues"]);
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">

@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Check, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
@@ -211,10 +212,12 @@ const CollapsiblePreview = ({
     }
   };
 
+  // Fix: Clone children only if they accept the props we want to pass
   const childrenWithProps = React.isValidElement(children) && isVoiceOverPreview
-    ? React.cloneElement(children, { 
+    ? React.cloneElement(children as React.ReactElement<any>, { 
         phase: currentPhase,
-        status: projectStatus
+        status: projectStatus,
+        projectId: projectId
       })
     : children;
 

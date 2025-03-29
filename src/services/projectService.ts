@@ -15,12 +15,13 @@ export interface PipelineProject {
   "Script"?: string | null;
   "Logo url"?: string | null;
   "Voice-file-url"?: string | null;
+  "Langues"?: string | null;
 }
 
 export const fetchProjects = async (): Promise<PipelineProject[]> => {
   const { data, error } = await supabase
     .from("PIPELINE PROJECTS")
-    .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Animation", "Storyboard", "Script", "Logo url", "Voice-file-url"');
+    .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Animation", "Storyboard", "Script", "Logo url", "Voice-file-url", "Langues"');
   
   if (error) {
     console.error("Error fetching projects:", error);
@@ -35,7 +36,7 @@ export const fetchProjectById = async (projectId: string): Promise<PipelineProje
     // First attempt to get all matching records
     const { data, error } = await supabase
       .from("PIPELINE PROJECTS")
-      .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Animation", "Storyboard", "Script", "Logo url", "Voice-file-url"')
+      .select('"ID-PROJET", "Company", "Phase", "Status", "Date de début", "Deadline", "Client", "Duration", "Animation", "Storyboard", "Script", "Logo url", "Voice-file-url", "Langues"')
       .eq("ID-PROJET", projectId);
     
     if (error) {

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, Volume2, X, Filter } from 'lucide-react';
+import { Play, Pause, Volume2, X, Filter, Check } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Toggle } from '@/components/ui/toggle';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { supabase } from '@/integrations/supabase/client';
 
 interface VoiceOverPreviewProps {
@@ -351,14 +352,8 @@ const VoiceOverSelectionModal = ({
           <div className="space-y-4">
             {filteredVoiceOvers.map((voiceOver, index) => (
               <div key={index} className="border rounded-lg p-4 bg-white">
-                <div className="flex items-center mb-3">
-                  <div className="flex items-center gap-2 flex-grow">
-                    <Checkbox 
-                      id={`vo-${index}`} 
-                      checked={selectedVoiceOvers.includes(voiceOver.Name)}
-                      onCheckedChange={() => toggleVoiceOverSelection(voiceOver.Name)}
-                      disabled={selectedVoiceOvers.length >= projectLanguages.length && !selectedVoiceOvers.includes(voiceOver.Name)}
-                    />
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
                     <Avatar className="h-12 w-12">
                       <AvatarImage src={voiceOver["Profil pic"]} alt={voiceOver.Name} />
                       <AvatarFallback>{voiceOver.Name.substring(0, 2)}</AvatarFallback>
@@ -372,6 +367,21 @@ const VoiceOverSelectionModal = ({
                       </div>
                     </div>
                   </div>
+                  <Button
+                    variant={selectedVoiceOvers.includes(voiceOver.Name) ? "default" : "outline"}
+                    onClick={() => toggleVoiceOverSelection(voiceOver.Name)}
+                    disabled={selectedVoiceOvers.length >= projectLanguages.length && !selectedVoiceOvers.includes(voiceOver.Name)}
+                    className="min-w-24"
+                  >
+                    {selectedVoiceOvers.includes(voiceOver.Name) ? (
+                      <>
+                        <Check className="mr-1 h-4 w-4" /> 
+                        Selected
+                      </>
+                    ) : (
+                      "Select"
+                    )}
+                  </Button>
                 </div>
                 
                 {voiceOver.Preview && (
