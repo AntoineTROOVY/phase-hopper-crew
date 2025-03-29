@@ -30,7 +30,7 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
   
   // Custom day rendering to highlight the project period
   const dayClassNames = (date: Date) => {
-    if (!start || !end) return "border border-gray-200 rounded-lg";
+    if (!start || !end) return "h-9 w-9 rounded-lg border border-gray-200";
     
     // Skip days not in the current month
     if (!isSameMonth(date, currentMonth)) {
@@ -39,19 +39,19 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
     
     // Check if the date is the start or end date
     if (isSameDay(date, start)) {
-      return "rounded-xl border-0 bg-[#4E90FF] text-white hover:bg-[#4E90FF] hover:text-white focus:bg-[#4E90FF] focus:text-white";
+      return "h-9 w-9 rounded-xl border-0 bg-[#4E90FF] text-white hover:bg-[#4E90FF] hover:text-white focus:bg-[#4E90FF] focus:text-white";
     }
     
     if (isSameDay(date, end)) {
-      return "rounded-xl border-0 bg-[#4E90FF] text-white hover:bg-[#4E90FF] hover:text-white focus:bg-[#4E90FF] focus:text-white";
+      return "h-9 w-9 rounded-xl border-0 bg-[#4E90FF] text-white hover:bg-[#4E90FF] hover:text-white focus:bg-[#4E90FF] focus:text-white";
     }
     
     // Check if the date is within the project period
     if (isWithinInterval(date, { start, end })) {
-      return "rounded-lg border-0 bg-[#4E90FF]/20 text-[#4E90FF] hover:bg-[#4E90FF]/30 hover:text-[#4E90FF] focus:bg-[#4E90FF]/30 focus:text-[#4E90FF]";
+      return "h-9 w-9 rounded-lg border-0 bg-[#4E90FF]/20 text-[#4E90FF] hover:bg-[#4E90FF]/30 hover:text-[#4E90FF] focus:bg-[#4E90FF]/30 focus:text-[#4E90FF]";
     }
     
-    return "border border-gray-200 rounded-lg";
+    return "h-9 w-9 rounded-lg border border-gray-200";
   };
   
   const formatDate = (date: Date | null) => {
@@ -90,7 +90,7 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
         </div>
       </CardHeader>
       <CardContent className="pb-4">
-        <div className="w-full max-w-full overflow-x-hidden">
+        <div className="w-full max-w-full overflow-hidden">
           <Calendar
             mode="single"
             month={currentMonth}
@@ -102,16 +102,16 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
             classNames={{
               day_selected: "", // Override default selected styling
               day_today: "border border-[#4E90FF]",
-              day: "p-0 font-normal rounded-lg border border-gray-200 aspect-square flex items-center justify-center text-xs sm:text-sm",
-              cell: "p-0.5 sm:p-1", // Smaller padding on mobile
+              day: "p-0 font-normal rounded-lg border border-gray-200 flex items-center justify-center text-xs sm:text-sm",
+              cell: "p-0 relative", // Removed padding to ensure proper grid alignment
               month: "space-y-2 max-w-full", // Reduced vertical spacing and width control
-              row: "flex w-full mt-1 flex-wrap justify-around", // Flexible row wrapping
+              row: "gap-1", // Use gap instead of margin for consistent spacing
               caption: "flex justify-center pt-1 relative items-center mb-1", // Reduced space below the month caption
-              table: "w-full border-collapse", // Full width table
+              table: "w-full", // Full width table
               caption_label: "text-sm font-medium px-6", // Add horizontal padding to month label
-              head_row: "flex w-full justify-around", // Responsive head row
+              head_row: "mb-1", // Add bottom margin to head row
               nav: "hidden", // Hide default navigation since we have custom buttons
-              head_cell: "text-muted-foreground rounded-md text-[0.7rem] sm:text-[0.8rem] w-7 sm:w-9 font-normal"
+              head_cell: "text-muted-foreground rounded-md text-[0.7rem] sm:text-[0.8rem] font-normal"
             }}
             modifiersClassNames={{
               selected: "",
@@ -131,7 +131,7 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
                 return (
                   <button
                     {...props}
-                    className={`aspect-square w-7 sm:w-9 flex items-center justify-center font-normal aria-selected:opacity-100 relative ${customClasses}`}
+                    className={`flex items-center justify-center font-normal aria-selected:opacity-100 relative ${customClasses}`}
                     disabled={true} // Make calendar read-only
                   >
                     <div>{date.getDate()}</div>
