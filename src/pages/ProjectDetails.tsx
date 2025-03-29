@@ -87,10 +87,13 @@ const ProjectDetails = () => {
 
   console.log('Project Logo URL:', project["Logo url"]);
   
-  const logoUrl = project["Logo url"] || null;
-  console.log('Logo URL (explicit):', logoUrl);
+  const logoUrl = project["Logo url"] || '';
   
-  console.log('Voice file URL:', project["Voice-file-url"]);
+  const shouldShowVoiceOver = 
+    (project["Voice-file-url"] && project["Voice-file-url"].length > 0) || 
+    (project["Phase"]?.toLowerCase().includes('voice') && 
+     project["Status"]?.toLowerCase().includes('not') && 
+     project["Status"]?.toLowerCase().includes('start'));
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
@@ -215,7 +218,7 @@ const ProjectDetails = () => {
               </CollapsiblePreview>
             )}
             
-            {project["Voice-file-url"] && (
+            {shouldShowVoiceOver && (
               <CollapsiblePreview 
                 title="Voice-Over Preview" 
                 icon={<Headphones className="h-5 w-5" />}
@@ -224,7 +227,11 @@ const ProjectDetails = () => {
                 projectStatus={project["Status"]}
                 projectId={project["ID-PROJET"] || ''}
               >
-                <VoiceOverPreview voiceFileUrl={project["Voice-file-url"] || ''} />
+                <VoiceOverPreview 
+                  voiceFileUrl={project["Voice-file-url"] || ''} 
+                  phase={project["Phase"] || ''}
+                  status={project["Status"] || ''}
+                />
               </CollapsiblePreview>
             )}
             
