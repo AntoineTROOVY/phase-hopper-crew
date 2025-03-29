@@ -103,7 +103,8 @@ const ProjectDetails = () => {
   // Check for Voice-file-url
   console.log('Voice file URL:', project["Voice-file-url"]);
 
-  return <div className="flex min-h-screen flex-col bg-gray-50">
+  return (
+    <div className="flex min-h-screen flex-col bg-gray-50">
       <header className="sticky top-0 z-10 bg-white border-b">
         <div className="container mx-auto py-4">
           <div className="flex items-center gap-4">
@@ -252,14 +253,14 @@ const ProjectDetails = () => {
                           />
                         </svg>
                       </CollapsibleTrigger>
-                    </div>
-                  </CardHeader>
-                  <CollapsibleContent>
-                    <CardContent className="pt-0">
-                      <VoiceOverPreview voiceFileUrl={project["Voice-file-url"] || ''} />
-                    </CardContent>
-                  </CollapsibleContent>
-                </Collapsible>
+                      <CollapsibleContent>
+                        <CardContent className="pt-0">
+                          <VoiceOverPreview voiceFileUrl={project["Voice-file-url"] || ''} />
+                        </CardContent>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  </div>
+                </CardHeader>
               </Card>
             )}
             
@@ -309,7 +310,8 @@ const ProjectDetails = () => {
           Keyframe Project Manager © {new Date().getFullYear()}
         </div>
       </footer>
-    </div>;
+    </div>
+  );
 };
 
 export default ProjectDetails;
