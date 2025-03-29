@@ -2,7 +2,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2 } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
-import { Progress } from '@/components/ui/progress';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 interface VoiceOverPreviewProps {
@@ -25,7 +24,6 @@ const AudioPlayer = ({ url, filename }: AudioFile) => {
   const [volume, setVolume] = React.useState(0.5);
   const [progress, setProgress] = React.useState(0);
   const [duration, setDuration] = React.useState(0);
-  const [currentTime, setCurrentTime] = React.useState(0);
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const waveformRef = React.useRef<HTMLDivElement>(null);
   
@@ -66,7 +64,6 @@ const AudioPlayer = ({ url, filename }: AudioFile) => {
     if (audioRef.current) {
       const value = (audioRef.current.currentTime / audioRef.current.duration) * 100;
       setProgress(value);
-      setCurrentTime(audioRef.current.currentTime);
     }
   };
   
@@ -111,32 +108,28 @@ const AudioPlayer = ({ url, filename }: AudioFile) => {
           )}
         </button>
         
-        {/* Waveform and Progress */}
+        {/* Waveform with color-changing bars */}
         <div 
           ref={waveformRef}
-          className="flex-grow relative h-10 cursor-pointer bg-gray-100 rounded overflow-hidden"
+          className="flex-grow relative h-10 cursor-pointer bg-gray-50 rounded overflow-hidden"
           onClick={seekAudio}
         >
-          {/* Static Waveform */}
           <div className="absolute inset-0 flex items-center justify-around px-1">
             {[...Array(50)].map((_, i) => {
               // Create a pattern of varying heights
               const height = 30 + Math.sin(i * 0.2) * 20 + Math.random() * 15;
+              // Determine if this bar is part of the played portion
+              const isPlayed = (i / 50) * 100 <= progress;
+              
               return (
                 <div 
                   key={i} 
-                  className="w-[1px] bg-gray-300" 
+                  className={`w-[1px] ${isPlayed ? 'bg-blue-500' : 'bg-gray-300'}`}
                   style={{ height: `${height}%` }}
                 />
               );
             })}
           </div>
-          
-          {/* Progress Overlay */}
-          <div 
-            className="absolute inset-y-0 left-0 bg-blue-400 opacity-40 pointer-events-none"
-            style={{ width: `${progress}%` }}
-          />
         </div>
         
         {/* Volume Control and Duration */}
@@ -162,7 +155,7 @@ const AudioPlayer = ({ url, filename }: AudioFile) => {
           </Popover>
           
           <div className="text-xs text-gray-500 w-10 text-right">
-            {formatTime(currentTime)}/{formatTime(duration)}
+            {formatTime(duration)}
           </div>
         </div>
       </div>
