@@ -54,48 +54,61 @@ const CollapsiblePreview = ({
   const { toast } = useToast();
 
   const determinePreviewStatus = () => {
+    // Get normalized lowercase versions for easier comparison
     const lowerCurrentPhase = currentPhase.toLowerCase();
     const lowerRelevantPhase = relevantPhase.toLowerCase();
     const lowerProjectStatus = projectStatus?.toLowerCase() || '';
     
-    const phases = ['copywriting', 'storyboard', 'animation'];
+    // Define the phase order for comparison
+    const phases = ['copywriting', 'voice', 'storyboard', 'animation', 'variations'];
     
+    // Get the index of the current phase and relevant phase
+    const relevantPhaseIndex = phases.findIndex(p => lowerRelevantPhase.includes(p));
+    const currentPhaseIndex = phases.findIndex(p => lowerCurrentPhase.includes(p));
+    
+    // Special case for Copywriting
     if (lowerRelevantPhase.includes('copy')) {
+      // If we're in the same phase and status contains "approved"
       if (lowerCurrentPhase.includes('copy') && lowerProjectStatus.includes('approved')) {
         return 'Approved';
       }
-      else if (
-        lowerCurrentPhase.includes('storyboard') || 
-        lowerCurrentPhase.includes('animation') || 
-        lowerCurrentPhase.includes('voice')
-      ) {
+      // If we've moved past copywriting to another phase
+      else if (currentPhaseIndex > relevantPhaseIndex) {
         return 'Approved';
       }
+      // If we're in the copywriting phase
       else if (lowerCurrentPhase.includes('copy')) {
+        // In review status
         if (lowerProjectStatus.includes('review')) {
           return 'To Review';
-        } else {
+        } 
+        // Any other status (in progress, etc.)
+        else {
           return 'In Progress';
         }
       }
     }
+    // For all other phases (voice, storyboard, animation, variations)
     else {
+      // If we're in the relevant phase
       if (lowerCurrentPhase.includes(lowerRelevantPhase)) {
+        // In review status
         if (lowerProjectStatus.includes('review')) {
           return 'To Review';
-        } else {
+        } 
+        // Any other status (in progress, etc.)
+        else {
           return 'In Progress';
         }
       }
       
-      const relevantPhaseIndex = phases.findIndex(p => lowerRelevantPhase.includes(p));
-      const currentPhaseIndex = phases.findIndex(p => lowerCurrentPhase.includes(p));
-      
+      // If the relevant phase is before the current phase (we've passed it)
       if (relevantPhaseIndex < currentPhaseIndex) {
         return 'Approved';
       }
     }
     
+    // Default fallback
     return 'In Progress';
   };
   
@@ -196,6 +209,8 @@ const CollapsiblePreview = ({
       return "Suggest modifications directly on Google Docs by clicking the button above.";
     } else if (relevantPhase.toLowerCase().includes('animation')) {
       return "Suggest modifications directly on Frame.io by clicking the button above.";
+    } else if (relevantPhase.toLowerCase().includes('variations')) {
+      return "Suggest modifications directly by clicking the button above.";
     } else {
       return "Suggest modifications directly on the platform by clicking the button above.";
     }
