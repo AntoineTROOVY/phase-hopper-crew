@@ -32,7 +32,7 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
   
   // Custom day rendering to highlight the project period
   const dayClassNames = (date: Date) => {
-    if (!start || !end) return "h-9 w-9 rounded-lg border border-gray-200";
+    if (!start || !end) return "aspect-square rounded-lg border border-gray-200";
     
     // Skip days not in the current month
     if (!isSameMonth(date, currentMonth)) {
@@ -41,19 +41,19 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
     
     // Check if the date is the start or end date
     if (isSameDay(date, start)) {
-      return "h-9 w-9 rounded-xl border-0 bg-[#4E90FF] text-white hover:bg-[#4E90FF] hover:text-white focus:bg-[#4E90FF] focus:text-white";
+      return "aspect-square rounded-lg border-0 bg-[#4E90FF] text-white hover:bg-[#4E90FF] hover:text-white focus:bg-[#4E90FF] focus:text-white";
     }
     
     if (isSameDay(date, end)) {
-      return "h-9 w-9 rounded-xl border-0 bg-[#4E90FF] text-white hover:bg-[#4E90FF] hover:text-white focus:bg-[#4E90FF] focus:text-white";
+      return "aspect-square rounded-lg border-0 bg-[#4E90FF] text-white hover:bg-[#4E90FF] hover:text-white focus:bg-[#4E90FF] focus:text-white";
     }
     
     // Check if the date is within the project period
     if (isWithinInterval(date, { start, end })) {
-      return "h-9 w-9 rounded-lg border-0 bg-[#4E90FF]/20 text-[#4E90FF] hover:bg-[#4E90FF]/30 hover:text-[#4E90FF] focus:bg-[#4E90FF]/30 focus:text-[#4E90FF]";
+      return "aspect-square rounded-lg border-0 bg-[#4E90FF]/20 text-[#4E90FF] hover:bg-[#4E90FF]/30 hover:text-[#4E90FF] focus:bg-[#4E90FF]/30 focus:text-[#4E90FF]";
     }
     
-    return "h-9 w-9 rounded-lg border border-gray-200";
+    return "aspect-square rounded-lg border border-gray-200";
   };
   
   const formatDate = (date: Date | null) => {
@@ -106,14 +106,14 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
               day_today: "border border-[#4E90FF]",
               day: "font-normal flex items-center justify-center text-xs sm:text-sm",
               cell: "p-0 relative", // Removed padding to ensure proper grid alignment
-              month: "space-y-2 w-full", // Reduced vertical spacing and width control
-              row: "gap-2", // Use gap instead of margin for consistent spacing
-              head_row: "gap-2 mb-2", // Add gap to head row and bottom margin
-              caption: "flex justify-center pt-1 relative items-center mb-2", // Reduced space below the month caption
-              table: "w-full", // Full width table
-              caption_label: "text-sm font-medium px-6", // Add horizontal padding to month label
+              month: "space-y-2 w-full", // Reduced vertical spacing
+              row: "grid grid-cols-7 w-full gap-1.5 mb-1.5", // Consistent gap for rows
+              head_row: "grid grid-cols-7 w-full gap-1.5 mb-2", // Consistent gap for header row
+              caption: "flex justify-center pt-1 relative items-center mb-3",
+              table: "w-full",
+              caption_label: "text-sm font-medium px-6",
               nav: "hidden", // Hide default navigation since we have custom buttons
-              head_cell: "text-muted-foreground rounded-md text-[0.7rem] sm:text-[0.8rem] font-normal"
+              head_cell: "text-muted-foreground text-[0.7rem] sm:text-[0.8rem] font-normal"
             }}
             modifiersClassNames={{
               selected: "",

@@ -20,8 +20,8 @@ function Calendar({
       className={cn("p-3 pointer-events-auto w-full", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0 w-full",
-        month: "space-y-4 w-full",
-        caption: "flex justify-center pt-1 relative items-center",
+        month: "space-y-3 w-full",
+        caption: "flex justify-center pt-1 relative items-center mb-2",
         caption_label: "text-sm font-medium",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
@@ -30,15 +30,15 @@ function Calendar({
         ),
         nav_button_previous: "absolute left-1",
         nav_button_next: "absolute right-1",
-        table: "w-full border-collapse space-y-1",
-        head_row: "grid grid-cols-7 w-full",
+        table: "w-full border-collapse",
+        head_row: "grid grid-cols-7 w-full gap-1 mb-1",
         head_cell:
           "text-muted-foreground rounded-md w-full font-normal text-[0.8rem] flex items-center justify-center",
-        row: "grid grid-cols-7 w-full gap-1",
-        cell: "relative p-0 text-center h-9 w-full flex items-center justify-center",
+        row: "grid grid-cols-7 w-full gap-1 mt-1",
+        cell: "relative text-center aspect-square flex items-center justify-center p-0",
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
+          "h-8 w-8 p-0 font-normal aria-selected:opacity-100 rounded-md"
         ),
         day_range_end: "day-range-end",
         day_selected:

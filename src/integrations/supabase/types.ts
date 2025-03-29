@@ -206,6 +206,7 @@ export type Database = {
           Status: string | null
           Storyboard: string | null
           "Test voix autre colonne": string | null
+          "Variations-url": string | null
           "Voice overs list string": string | null
           "Voice-file": string | null
           "Voice-file-url": string | null
@@ -256,6 +257,7 @@ export type Database = {
           Status?: string | null
           Storyboard?: string | null
           "Test voix autre colonne"?: string | null
+          "Variations-url"?: string | null
           "Voice overs list string"?: string | null
           "Voice-file"?: string | null
           "Voice-file-url"?: string | null
@@ -306,6 +308,7 @@ export type Database = {
           Status?: string | null
           Storyboard?: string | null
           "Test voix autre colonne"?: string | null
+          "Variations-url"?: string | null
           "Voice overs list string"?: string | null
           "Voice-file"?: string | null
           "Voice-file-url"?: string | null
