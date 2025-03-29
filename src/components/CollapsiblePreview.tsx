@@ -219,6 +219,17 @@ const CollapsiblePreview = ({
     }
   };
 
+  // Clone children with additional props for VoiceOverPreview
+  const childrenWithProps = React.Children.map(children, child => {
+    if (React.isValidElement(child) && isVoiceOverPreview) {
+      return React.cloneElement(child, { 
+        phase: currentPhase,
+        status: projectStatus
+      });
+    }
+    return child;
+  });
+
   return (
     <Card className={`mt-6 ${isToReview ? 'border-2 border-amber-500' : ''}`}>
       <CardHeader 
@@ -262,7 +273,7 @@ const CollapsiblePreview = ({
           <CardContent className="p-0">
             {isToReview && <p className="text-sm text-gray-500 mb-3 pt-2 px-6">{getInstructions()}</p>}
             <div className="w-full">
-              {children}
+              {childrenWithProps}
             </div>
           </CardContent>
           {isToReview && !isApproved && (
