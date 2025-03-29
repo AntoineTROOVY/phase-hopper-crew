@@ -1,6 +1,6 @@
+
 import React from 'react';
 import { Headphones, Volume2, VolumeX, Play, Pause } from 'lucide-react';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from '@/components/ui/button';
 
 interface VoiceOverPreviewProps {
@@ -135,7 +135,7 @@ const VoiceOverPreview = ({ voiceFileUrl }: VoiceOverPreviewProps) => {
     
     return entries.map(entry => {
       // Split each entry by Unit Separator (␟)
-      const [url, filename] = entry.split('␟');
+      const [filename, url] = entry.split('␟');
       return { url, filename };
     }).filter(file => file.url && file.filename);
   };
@@ -152,25 +152,9 @@ const VoiceOverPreview = ({ voiceFileUrl }: VoiceOverPreviewProps) => {
 
   return (
     <div className="p-0">
-      {audioFiles.length === 1 ? (
-        <AudioPlayer url={audioFiles[0].url} filename={audioFiles[0].filename} />
-      ) : (
-        <Accordion type="single" collapsible className="w-full">
-          {audioFiles.map((file, index) => (
-            <AccordionItem key={index} value={`item-${index}`}>
-              <AccordionTrigger className="py-3 px-4 hover:no-underline">
-                <div className="flex items-center">
-                  <Headphones className="h-4 w-4 mr-2 text-gray-500" />
-                  <span className="text-sm font-medium">{file.filename}</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="px-4">
-                <AudioPlayer url={file.url} filename={file.filename} />
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      )}
+      {audioFiles.map((file, index) => (
+        <AudioPlayer key={index} url={file.url} filename={file.filename} />
+      ))}
     </div>
   );
 };
