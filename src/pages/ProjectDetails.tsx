@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Building, User, Clock, FileText, Image, Film, Headphones } from 'lucide-react';
@@ -14,14 +13,18 @@ import VoiceOverPreview from '@/components/VoiceOverPreview';
 import ProjectTimeline from '@/components/ProjectTimeline';
 import ProjectCalendar from '@/components/ProjectCalendar';
 import CollapsiblePreview from '@/components/CollapsiblePreview';
-
 const ProjectDetails = () => {
-  const { projectId } = useParams<{ projectId: string; }>();
+  const {
+    projectId
+  } = useParams<{
+    projectId: string;
+  }>();
   const [project, setProject] = useState<PipelineProject | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const navigate = useNavigate();
-
   useEffect(() => {
     const loadProject = async () => {
       if (!projectId) {
@@ -32,7 +35,6 @@ const ProjectDetails = () => {
         setIsLoading(true);
         const data = await fetchProjectById(projectId);
         setProject(data);
-        
         if (!data) {
           toast({
             title: "Project not found",
@@ -55,7 +57,6 @@ const ProjectDetails = () => {
     };
     loadProject();
   }, [projectId, toast, navigate]);
-
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return 'Not set';
     try {
@@ -64,7 +65,6 @@ const ProjectDetails = () => {
       return dateString;
     }
   };
-
   if (isLoading) {
     return <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
@@ -73,7 +73,6 @@ const ProjectDetails = () => {
         </div>
       </div>;
   }
-
   if (!project) {
     return <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
@@ -85,20 +84,10 @@ const ProjectDetails = () => {
         </div>
       </div>;
   }
-
   const logoUrl = project["Logo url"] || '';
-  
-  const shouldShowVoiceOver = 
-    (project["Voice-file-url"] && project["Voice-file-url"].length > 0) || 
-    (project["Phase"]?.toLowerCase().includes('voice') && 
-     ((project["Status"]?.toLowerCase().includes('not') && 
-       project["Status"]?.toLowerCase().includes('start')) ||
-      (project["Status"]?.toLowerCase().includes('in progress'))));
-
+  const shouldShowVoiceOver = project["Voice-file-url"] && project["Voice-file-url"].length > 0 || project["Phase"]?.toLowerCase().includes('voice') && (project["Status"]?.toLowerCase().includes('not') && project["Status"]?.toLowerCase().includes('start') || project["Status"]?.toLowerCase().includes('in progress'));
   console.log('Languages for project:', project["Langues"]);
-
-  return (
-    <div className="flex min-h-screen flex-col bg-gray-50">
+  return <div className="flex min-h-screen flex-col bg-gray-50">
       <header className="sticky top-0 z-10 bg-white border-b">
         <div className="container mx-auto py-4">
           <div className="flex items-center gap-4">
@@ -128,22 +117,15 @@ const ProjectDetails = () => {
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
                   <div className="flex items-center gap-4">
-                    {logoUrl && (
-                      <div className="flex-shrink-0">
-                        <img 
-                          src={logoUrl} 
-                          alt={`${project["Company"]} logo`} 
-                          className="h-12 w-auto object-contain rounded-md"
-                          onError={(e) => {
-                            console.error('Error loading logo:', e);
-                            e.currentTarget.style.display = 'none';
-                          }}
-                        />
-                      </div>
-                    )}
+                    {logoUrl && <div className="flex-shrink-0">
+                        <img src={logoUrl} alt={`${project["Company"]} logo`} className="h-12 w-auto object-contain rounded-md" onError={e => {
+                      console.error('Error loading logo:', e);
+                      e.currentTarget.style.display = 'none';
+                    }} />
+                      </div>}
                     <div>
                       <h2 className="text-xl font-semibold">{project["Company"] || 'Untitled Project'}</h2>
-                      <p className="text-gray-500">Client: {project["Client"] || 'N/A'}</p>
+                      
                     </div>
                   </div>
                   <StatusBadge status={project["Status"] || 'Unknown'} />
@@ -192,66 +174,21 @@ const ProjectDetails = () => {
               </CardContent>
             </Card>
             
-            {project["Storyboard"] && (
-              <CollapsiblePreview 
-                title="Storyboard Preview" 
-                icon={<Image className="h-5 w-5" />}
-                currentPhase={project["Phase"] || ''}
-                relevantPhase="Storyboard"
-                projectStatus={project["Status"]}
-                externalUrl={project["Storyboard"]}
-                projectId={project["ID-PROJET"] || ''}
-              >
+            {project["Storyboard"] && <CollapsiblePreview title="Storyboard Preview" icon={<Image className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Storyboard" projectStatus={project["Status"]} externalUrl={project["Storyboard"]} projectId={project["ID-PROJET"] || ''}>
                 <StoryboardPreview storyboardUrl={project["Storyboard"]} />
-              </CollapsiblePreview>
-            )}
+              </CollapsiblePreview>}
             
-            {project["Script"] && (
-              <CollapsiblePreview 
-                title="Script Preview" 
-                icon={<FileText className="h-5 w-5" />}
-                currentPhase={project["Phase"] || ''}
-                relevantPhase="Copywriting"
-                projectStatus={project["Status"]}
-                externalUrl={project["Script"]}
-                projectId={project["ID-PROJET"] || ''}
-              >
+            {project["Script"] && <CollapsiblePreview title="Script Preview" icon={<FileText className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Copywriting" projectStatus={project["Status"]} externalUrl={project["Script"]} projectId={project["ID-PROJET"] || ''}>
                 <ScriptPreview scriptUrl={project["Script"]} />
-              </CollapsiblePreview>
-            )}
+              </CollapsiblePreview>}
             
-            {shouldShowVoiceOver && (
-              <CollapsiblePreview 
-                title="Voice-Over Preview" 
-                icon={<Headphones className="h-5 w-5" />}
-                currentPhase={project["Phase"] || ''}
-                relevantPhase="Voice"
-                projectStatus={project["Status"]}
-                projectId={project["ID-PROJET"] || ''}
-              >
-                <VoiceOverPreview 
-                  voiceFileUrl={project["Voice-file-url"] || ''} 
-                  phase={project["Phase"] || ''}
-                  status={project["Status"] || ''}
-                  projectId={project["ID-PROJET"] || ''}
-                  languages={project["Langues"] || ''}
-                />
-              </CollapsiblePreview>
-            )}
+            {shouldShowVoiceOver && <CollapsiblePreview title="Voice-Over Preview" icon={<Headphones className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Voice" projectStatus={project["Status"]} projectId={project["ID-PROJET"] || ''}>
+                <VoiceOverPreview voiceFileUrl={project["Voice-file-url"] || ''} phase={project["Phase"] || ''} status={project["Status"] || ''} projectId={project["ID-PROJET"] || ''} languages={project["Langues"] || ''} />
+              </CollapsiblePreview>}
             
-            {project["Animation"] && (
-              <CollapsiblePreview 
-                title="Animation Preview" 
-                icon={<Film className="h-5 w-5" />}
-                currentPhase={project["Phase"] || ''}
-                relevantPhase="Animation"
-                projectStatus={project["Status"]}
-                externalUrl={project["Animation"]}
-                projectId={project["ID-PROJET"] || ''}
-              >
+            {project["Animation"] && <CollapsiblePreview title="Animation Preview" icon={<Film className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Animation" projectStatus={project["Status"]} externalUrl={project["Animation"]} projectId={project["ID-PROJET"] || ''}>
                 <AnimationPreview animationUrl={project["Animation"]} />
-              </CollapsiblePreview>
-            )}
+              </CollapsiblePreview>}
           </div>
           
           <div className="space-y-6">
@@ -273,10 +210,7 @@ const ProjectDetails = () => {
               </CardContent>
             </Card>
             
-            <ProjectCalendar 
-              startDate={project["Date de début"]} 
-              endDate={project["Deadline"]} 
-            />
+            <ProjectCalendar startDate={project["Date de début"]} endDate={project["Deadline"]} />
           </div>
         </div>
       </main>
@@ -286,8 +220,6 @@ const ProjectDetails = () => {
           Keyframe Project Manager © {new Date().getFullYear()}
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default ProjectDetails;
