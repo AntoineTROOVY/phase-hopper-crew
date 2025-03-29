@@ -8,12 +8,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 
 interface VoiceOverPreviewProps {
   voiceFileUrl: string;
   phase?: string;
   status?: string;
+  projectId?: string;
+  languages?: string;
 }
 
 interface AudioFile {
@@ -173,12 +176,32 @@ const AudioPlayer = ({
   );
 };
 
-const VoiceOverSelectionModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) => {
+const VoiceOverSelectionModal = ({ 
+  open, 
+  onOpenChange, 
+  projectId, 
+  languages 
+}: { 
+  open: boolean; 
+  onOpenChange: (open: boolean) => void; 
+  projectId?: string;
+  languages?: string;
+}) => {
   const [voiceOvers, setVoiceOvers] = useState<VoiceOver[]>([]);
   const [filteredVoiceOvers, setFilteredVoiceOvers] = useState<VoiceOver[]>([]);
   const [languageFilter, setLanguageFilter] = useState<string | null>(null);
   const [genderFilter, setGenderFilter] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedVoiceOvers, setSelectedVoiceOvers] = useState<string[]>([]);
+  const [projectLanguages, setProjectLanguages] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Parse languages when component mounts or when languages prop changes
+    if (languages) {
+      const languageArray = languages.split(',').map(lang => lang.trim());
+      setProjectLanguages(languageArray);
+    }
+  }, [languages]);
 
   useEffect(() => {
     const fetchVoiceOvers = async () => {
@@ -228,12 +251,49 @@ const VoiceOverSelectionModal = ({ open, onOpenChange }: { open: boolean; onOpen
     setGenderFilter(value === "all" ? null : value);
   };
 
+  const toggleVoiceOverSelection = (voiceOverName: string) => {
+    setSelectedVoiceOvers(prev => {
+      if (prev.includes(voiceOverName)) {
+        return prev.filter(name => name !== voiceOverName);
+      } else {
+        // Only allow selecting up to the number of languages
+        if (prev.length < projectLanguages.length) {
+          return [...prev, voiceOverName];
+        }
+        return prev;
+      }
+    });
+  };
+
+  const handleConfirmSelection = () => {
+    console.log('Selected voice-overs:', selectedVoiceOvers);
+    // Will implement in next step
+    onOpenChange(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl">Select a Voice-Over</DialogTitle>
         </DialogHeader>
+        
+        {projectLanguages.length > 0 && (
+          <div className="bg-blue-50 p-4 rounded-md mb-4">
+            <h3 className="font-medium mb-2">You selected the following languages for your video:</h3>
+            <ul className="list-disc pl-5 mb-2">
+              {projectLanguages.map((language, index) => (
+                <li key={index}>{language}</li>
+              ))}
+            </ul>
+            <p className="font-medium text-blue-700">
+              You need to select {projectLanguages.length} voice-over{projectLanguages.length > 1 ? 's' : ''}
+            </p>
+            <p className="text-sm text-blue-600 mt-1">
+              Selected: {selectedVoiceOvers.length} of {projectLanguages.length}
+            </p>
+          </div>
+        )}
         
         <div className="bg-gray-50 p-4 rounded-md mb-4">
           <div className="flex items-center mb-2">
@@ -292,28 +352,26 @@ const VoiceOverSelectionModal = ({ open, onOpenChange }: { open: boolean; onOpen
             {filteredVoiceOvers.map((voiceOver, index) => (
               <div key={index} className="border rounded-lg p-4 bg-white">
                 <div className="flex items-center mb-3">
-                  <Avatar className="h-12 w-12 mr-3">
-                    <AvatarImage src={voiceOver["Profil pic"]} alt={voiceOver.Name} />
-                    <AvatarFallback>{voiceOver.Name.substring(0, 2)}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h3 className="font-medium">{voiceOver.Name}</h3>
-                    <div className="flex text-sm text-gray-500 space-x-2">
-                      <span>{voiceOver.Gender}</span>
-                      <span>•</span>
-                      <span>{voiceOver.Language}</span>
+                  <div className="flex items-center gap-2 flex-grow">
+                    <Checkbox 
+                      id={`vo-${index}`} 
+                      checked={selectedVoiceOvers.includes(voiceOver.Name)}
+                      onCheckedChange={() => toggleVoiceOverSelection(voiceOver.Name)}
+                      disabled={selectedVoiceOvers.length >= projectLanguages.length && !selectedVoiceOvers.includes(voiceOver.Name)}
+                    />
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage src={voiceOver["Profil pic"]} alt={voiceOver.Name} />
+                      <AvatarFallback>{voiceOver.Name.substring(0, 2)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h3 className="font-medium">{voiceOver.Name}</h3>
+                      <div className="flex text-sm text-gray-500 space-x-2">
+                        <span>{voiceOver.Gender}</span>
+                        <span>•</span>
+                        <span>{voiceOver.Language}</span>
+                      </div>
                     </div>
                   </div>
-                  <Button 
-                    className="ml-auto" 
-                    variant="outline"
-                    onClick={() => {
-                      console.log('Selected voice-over:', voiceOver.Name);
-                      // This will be implemented later
-                    }}
-                  >
-                    Select
-                  </Button>
                 </div>
                 
                 {voiceOver.Preview && (
@@ -326,6 +384,15 @@ const VoiceOverSelectionModal = ({ open, onOpenChange }: { open: boolean; onOpen
             ))}
           </div>
         )}
+        
+        <div className="mt-6 flex justify-end">
+          <Button 
+            onClick={handleConfirmSelection}
+            disabled={selectedVoiceOvers.length === 0}
+          >
+            Confirm selection
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -334,7 +401,9 @@ const VoiceOverSelectionModal = ({ open, onOpenChange }: { open: boolean; onOpen
 const VoiceOverPreview = ({
   voiceFileUrl,
   phase,
-  status
+  status,
+  projectId,
+  languages
 }: VoiceOverPreviewProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   
@@ -377,7 +446,9 @@ const VoiceOverPreview = ({
         
         <VoiceOverSelectionModal 
           open={isModalOpen} 
-          onOpenChange={setIsModalOpen} 
+          onOpenChange={setIsModalOpen}
+          projectId={projectId}
+          languages={languages}
         />
       </>
     );

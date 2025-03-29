@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Building, User, Clock, FileText, Image, Film, Headphones } from 'lucide-react';
@@ -231,6 +232,8 @@ const ProjectDetails = () => {
                   voiceFileUrl={project["Voice-file-url"] || ''} 
                   phase={project["Phase"] || ''}
                   status={project["Status"] || ''}
+                  projectId={project["ID-PROJET"] || ''}
+                  languages={project["Langues"] || ''}
                 />
               </CollapsiblePreview>
             )}
