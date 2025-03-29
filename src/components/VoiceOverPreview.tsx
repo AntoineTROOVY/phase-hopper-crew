@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, Volume2, X, Filter, Check } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -11,6 +11,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Toggle } from '@/components/ui/toggle';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface VoiceOverPreviewProps {
   voiceFileUrl: string;
@@ -181,12 +182,14 @@ const VoiceOverSelectionModal = ({
   open, 
   onOpenChange, 
   projectId, 
-  languages 
+  languages,
+  onSelectionComplete 
 }: { 
   open: boolean; 
   onOpenChange: (open: boolean) => void; 
   projectId?: string;
   languages?: string;
+  onSelectionComplete?: () => void;
 }) => {
   const [voiceOvers, setVoiceOvers] = useState<VoiceOver[]>([]);
   const [filteredVoiceOvers, setFilteredVoiceOvers] = useState<VoiceOver[]>([]);
@@ -195,6 +198,8 @@ const VoiceOverSelectionModal = ({
   const [loading, setLoading] = useState(true);
   const [selectedVoiceOvers, setSelectedVoiceOvers] = useState<string[]>([]);
   const [projectLanguages, setProjectLanguages] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     // Parse languages when component mounts or when languages prop changes
@@ -266,10 +271,61 @@ const VoiceOverSelectionModal = ({
     });
   };
 
-  const handleConfirmSelection = () => {
-    console.log('Selected voice-overs:', selectedVoiceOvers);
-    // Will implement in next step
-    onOpenChange(false);
+  const handleConfirmSelection = async () => {
+    if (!projectId) {
+      toast({
+        title: "Error",
+        description: "Project ID is missing. Cannot submit selection.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Prepare the payload for the webhook
+    const payload = {
+      "ID-PROJET": projectId,
+      "voiceOverNames": selectedVoiceOvers
+    };
+
+    setIsSubmitting(true);
+
+    try {
+      // Send the request to the webhook
+      const response = await fetch('https://hook.eu2.make.com/ydu459dw7hdi4vx6lrzc7v3bq9aoty1g', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      // Show success message
+      toast({
+        title: "Selection submitted",
+        description: "Your voice-over selections have been submitted successfully.",
+        variant: "default"
+      });
+
+      // Close the modal and trigger the callback to update the parent component
+      onOpenChange(false);
+      
+      if (onSelectionComplete) {
+        onSelectionComplete();
+      }
+    } catch (error) {
+      console.error('Error submitting voice-over selection:', error);
+      toast({
+        title: "Submission error",
+        description: "Failed to submit your voice-over selections. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -398,9 +454,10 @@ const VoiceOverSelectionModal = ({
         <div className="mt-6 flex justify-end">
           <Button 
             onClick={handleConfirmSelection}
-            disabled={selectedVoiceOvers.length === 0}
+            disabled={selectedVoiceOvers.length === 0 || isSubmitting}
+            className="min-w-32"
           >
-            Confirm selection
+            {isSubmitting ? "Submitting..." : "Confirm selection"}
           </Button>
         </div>
       </DialogContent>
@@ -416,6 +473,7 @@ const VoiceOverPreview = ({
   languages
 }: VoiceOverPreviewProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showVoiceOverPrompt, setShowVoiceOverPrompt] = useState(true);
   
   const parseVoiceFileUrl = (urlString: string): AudioFile[] => {
     if (!urlString) return [];
@@ -439,7 +497,12 @@ const VoiceOverPreview = ({
     status?.toLowerCase().includes('start') && 
     !audioFiles.length;
 
-  if (isVoiceOverPhaseNotStarted) {
+  // Hide the prompt after selection is complete
+  const handleSelectionComplete = () => {
+    setShowVoiceOverPrompt(false);
+  };
+
+  if (isVoiceOverPhaseNotStarted && showVoiceOverPrompt) {
     return (
       <>
         <div className="p-4 border-2 border-amber-500 rounded-md m-3 bg-amber-50">
@@ -459,6 +522,7 @@ const VoiceOverPreview = ({
           onOpenChange={setIsModalOpen}
           projectId={projectId}
           languages={languages}
+          onSelectionComplete={handleSelectionComplete}
         />
       </>
     );
