@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Building, User, Clock, FileText, Image, Film, Headphones } from 'lucide-react';
@@ -31,10 +32,6 @@ const ProjectDetails = () => {
         setIsLoading(true);
         const data = await fetchProjectById(projectId);
         setProject(data);
-        
-        if (data && data.Phase) {
-          setVoiceOverOpen(data.Phase.toLowerCase().includes('voice'));
-        }
         
         if (!data) {
           toast({
