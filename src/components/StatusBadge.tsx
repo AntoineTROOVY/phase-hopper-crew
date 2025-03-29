@@ -11,7 +11,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className }) => {
   const getStatusColor = (status: string): string => {
     const lowerStatus = status.toLowerCase();
     
-    if (lowerStatus.includes('completed') || lowerStatus.includes('done') || lowerStatus.includes('finished')) {
+    if (lowerStatus.includes('approved') || lowerStatus.includes('completed') || lowerStatus.includes('done') || lowerStatus.includes('finished')) {
       return 'bg-green-100 text-green-800 border-green-200';
     } else if (lowerStatus.includes('review')) {
       return 'bg-amber-100 text-amber-800 border-amber-200';

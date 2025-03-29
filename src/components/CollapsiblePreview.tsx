@@ -56,20 +56,46 @@ const CollapsiblePreview = ({
     const lowerRelevantPhase = relevantPhase.toLowerCase();
     const lowerProjectStatus = projectStatus?.toLowerCase() || '';
     
-    if (lowerCurrentPhase.includes(lowerRelevantPhase)) {
-      if (lowerProjectStatus.includes('review')) {
-        return 'To Review';
-      } else {
-        return 'In Progress';
+    // The phases in the expected workflow order
+    const phases = ['copywriting', 'storyboard', 'animation'];
+    
+    // For Script Preview (Copywriting phase)
+    if (lowerRelevantPhase.includes('copy')) {
+      // If current phase is copywriting and status is approved
+      if (lowerCurrentPhase.includes('copy') && lowerProjectStatus.includes('approved')) {
+        return 'Approved';
+      }
+      // If we've moved beyond copywriting to a later phase
+      else if (
+        (lowerCurrentPhase.includes('storyboard') || lowerCurrentPhase.includes('animation'))
+      ) {
+        return 'Approved';
+      }
+      // Current phase is copywriting but not yet approved
+      else if (lowerCurrentPhase.includes('copy')) {
+        if (lowerProjectStatus.includes('review')) {
+          return 'To Review';
+        } else {
+          return 'In Progress';
+        }
       }
     }
-    
-    const phases = ['copywriting', 'storyboard', 'animation'];
-    const relevantPhaseIndex = phases.findIndex(p => lowerRelevantPhase.includes(p));
-    const currentPhaseIndex = phases.findIndex(p => lowerCurrentPhase.includes(p));
-    
-    if (relevantPhaseIndex < currentPhaseIndex) {
-      return 'Approved';
+    // For other phases (Storyboard, Animation, Voice)
+    else {
+      if (lowerCurrentPhase.includes(lowerRelevantPhase)) {
+        if (lowerProjectStatus.includes('review')) {
+          return 'To Review';
+        } else {
+          return 'In Progress';
+        }
+      }
+      
+      const relevantPhaseIndex = phases.findIndex(p => lowerRelevantPhase.includes(p));
+      const currentPhaseIndex = phases.findIndex(p => lowerCurrentPhase.includes(p));
+      
+      if (relevantPhaseIndex < currentPhaseIndex) {
+        return 'Approved';
+      }
     }
     
     return 'In Progress';
