@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Check, ExternalLink } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
@@ -121,7 +120,6 @@ const CollapsiblePreview = ({
     };
   }, []);
 
-  // Determine instructions based on relevant phase
   const getInstructions = () => {
     if (relevantPhase.toLowerCase().includes('storyboard')) {
       return "Suggest modifications directly on Figma by clicking the button above.";
@@ -150,20 +148,20 @@ const CollapsiblePreview = ({
             {title}
           </CardTitle>
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className={statusStyles[previewStatus]}>
-              {previewStatus}
-            </Badge>
             {externalUrl && !isToReview && relevantPhase.toLowerCase() !== 'voice' && (
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-gray-500 hover:text-gray-700 ml-2"
+                className="text-gray-500 hover:text-gray-700 mr-2"
                 onClick={openExternalLink}
               >
                 <ExternalLink className="h-4 w-4 mr-1" />
                 Open
               </Button>
             )}
+            <Badge variant="outline" className={statusStyles[previewStatus]}>
+              {previewStatus}
+            </Badge>
           </div>
         </div>
       </CardHeader>
