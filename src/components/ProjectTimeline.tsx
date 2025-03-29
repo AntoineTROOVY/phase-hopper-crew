@@ -86,6 +86,32 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
     phase => phase === normalizedCurrentPhase
   );
 
+  // Get progress percentage based on status
+  const getProgressPercentage = (isPastPhase: boolean, isCurrentPhase: boolean, status?: string) => {
+    if (isPastPhase) return 100; // Completed phases are 100%
+    if (!isCurrentPhase) return 0; // Future phases are 0%
+    
+    // For current phase, determine progress based on status
+    if (status?.toLowerCase().includes('review')) return 66; // 2/3 complete
+    if (status?.toLowerCase().includes('progress')) return 33; // 1/3 complete
+    if (status?.toLowerCase().includes('approved')) return 100; // Completed
+    
+    return 33; // Default to 1/3 for "In Progress"
+  };
+
+  // Draw circular progress arc
+  const drawArc = (percentage: number) => {
+    const radius = 24;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDasharray = circumference;
+    const strokeDashoffset = circumference - (percentage / 100) * circumference;
+    
+    return {
+      strokeDasharray: `${strokeDasharray}`,
+      strokeDashoffset: `${strokeDashoffset}`
+    };
+  };
+
   return (
     <div className="space-y-4 mb-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
@@ -108,6 +134,12 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
           
           // Calculate the width needed to connect this phase to the next (except last phase)
           const showConnector = index < phases.length - 1;
+
+          // Get current phase progress percentage
+          const progressPercentage = getProgressPercentage(isPastPhase, isCurrentPhase);
+          
+          // Calculate arc properties
+          const arcProps = drawArc(progressPercentage);
           
           return (
             <div key={phase} className="flex flex-col items-center mb-4 sm:mb-0 z-10">
@@ -116,16 +148,50 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
                 <div className="block sm:hidden h-6 w-0.5 bg-[#4E90FF] -mt-2 mb-2" />
               )}
               
-              {/* Phase icon circle */}
-              <div 
-                className={cn(
-                  "flex items-center justify-center w-14 h-14 rounded-full border-2",
-                  isCurrentPhase ? "border-[#4E90FF] bg-white text-[#4E90FF]" : 
-                  isPastPhase ? "border-[#4E90FF] bg-[#4E90FF] text-white" : 
-                  "border-gray-200 bg-white text-gray-400"
-                )}
-              >
-                {phaseIcons[phase]}
+              {/* Phase icon circle with progress ring */}
+              <div className="relative flex items-center justify-center">
+                {/* SVG for progress ring */}
+                <svg width="56" height="56" className="absolute">
+                  {/* Background circle */}
+                  <circle 
+                    cx="28" 
+                    cy="28" 
+                    r="24" 
+                    fill="transparent" 
+                    stroke={isFuturePhase ? "#E5E7EB" : isCurrentPhase ? "#E5E7EB" : "#4E90FF"} 
+                    strokeWidth="2"
+                  />
+                  
+                  {/* Progress arc - only show for current or completed phases */}
+                  {(isCurrentPhase || isPastPhase) && (
+                    <circle 
+                      cx="28" 
+                      cy="28" 
+                      r="24" 
+                      fill="transparent" 
+                      stroke="#4E90FF" 
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      transform="rotate(-90 28 28)"
+                      style={{
+                        ...arcProps,
+                        transition: "stroke-dashoffset 0.5s ease-in-out"
+                      }}
+                    />
+                  )}
+                </svg>
+                
+                {/* Icon container */}
+                <div 
+                  className={cn(
+                    "flex items-center justify-center w-14 h-14 rounded-full z-10",
+                    isCurrentPhase ? "text-[#4E90FF]" : 
+                    isPastPhase ? "text-white" : 
+                    "text-gray-400"
+                  )}
+                >
+                  {phaseIcons[phase]}
+                </div>
               </div>
               
               {/* If not the last phase and on mobile view, show a connector to the next phase */}
