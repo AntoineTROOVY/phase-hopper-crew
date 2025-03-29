@@ -208,6 +208,7 @@ export type Database = {
           "Test voix autre colonne": string | null
           "Voice overs list string": string | null
           "Voice-file": string | null
+          "Voice-file-url": string | null
           "Voice-links": string | null
           "Voix-off": string | null
           whalesync_postgres_id: string
@@ -257,6 +258,7 @@ export type Database = {
           "Test voix autre colonne"?: string | null
           "Voice overs list string"?: string | null
           "Voice-file"?: string | null
+          "Voice-file-url"?: string | null
           "Voice-links"?: string | null
           "Voix-off"?: string | null
           whalesync_postgres_id?: string
@@ -306,6 +308,7 @@ export type Database = {
           "Test voix autre colonne"?: string | null
           "Voice overs list string"?: string | null
           "Voice-file"?: string | null
+          "Voice-file-url"?: string | null
           "Voice-links"?: string | null
           "Voix-off"?: string | null
           whalesync_postgres_id?: string

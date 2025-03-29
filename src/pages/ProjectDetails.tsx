@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, Building, User, Clock, FileText, Image, Film } from 'lucide-react';
+import { ArrowLeft, Calendar, Building, User, Clock, FileText, Image, Film, Headphones } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/StatusBadge';
@@ -10,9 +10,11 @@ import { useToast } from '@/hooks/use-toast';
 import AnimationPreview from '@/components/AnimationPreview';
 import StoryboardPreview from '@/components/StoryboardPreview';
 import ScriptPreview from '@/components/ScriptPreview';
+import VoiceOverPreview from '@/components/VoiceOverPreview';
 import ProjectTimeline from '@/components/ProjectTimeline';
 import ProjectCalendar from '@/components/ProjectCalendar';
 import CollapsiblePreview from '@/components/CollapsiblePreview';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 const ProjectDetails = () => {
   const { projectId } = useParams<{ projectId: string; }>();
@@ -20,6 +22,7 @@ const ProjectDetails = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [voiceOverOpen, setVoiceOverOpen] = useState(false);
 
   useEffect(() => {
     const loadProject = async () => {
@@ -31,6 +34,12 @@ const ProjectDetails = () => {
         setIsLoading(true);
         const data = await fetchProjectById(projectId);
         setProject(data);
+        
+        // Set voiceOverOpen based on current phase
+        if (data && data.Phase) {
+          setVoiceOverOpen(data.Phase.toLowerCase().includes('voice'));
+        }
+        
         if (!data) {
           toast({
             title: "Project not found",
@@ -90,6 +99,9 @@ const ProjectDetails = () => {
   // Access the Logo url more explicitly
   const logoUrl = project["Logo url"] || null;
   console.log('Logo URL (explicit):', logoUrl);
+  
+  // Check for Voice-file-url
+  console.log('Voice file URL:', project["Voice-file-url"]);
 
   return <div className="flex min-h-screen flex-col bg-gray-50">
       <header className="sticky top-0 z-10 bg-white border-b">
@@ -209,6 +221,42 @@ const ProjectDetails = () => {
               >
                 <ScriptPreview scriptUrl={project["Script"]} />
               </CollapsiblePreview>
+            )}
+            
+            {project["Voice-file-url"] && (
+              <Card className="mt-6">
+                <CardHeader className="py-4">
+                  <div className="flex items-center justify-between w-full">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Headphones className="h-5 w-5" />
+                      Voice-Over Preview
+                    </CardTitle>
+                    <CollapsibleTrigger
+                      onClick={() => setVoiceOverOpen(!voiceOverOpen)}
+                      className="rounded-full h-6 w-6 inline-flex items-center justify-center hover:bg-gray-100"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 15 15"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className={`transform transition-transform ${voiceOverOpen ? 'rotate-180' : ''}`}
+                      >
+                        <path
+                          d="M3.13523 6.15803C3.3241 5.95657 3.64052 5.94637 3.84197 6.13523L7.5 9.56464L11.158 6.13523C11.3595 5.94637 11.6759 5.95657 11.8648 6.15803C12.0536 6.35949 12.0434 6.67591 11.842 6.86477L7.84197 10.6148C7.64964 10.7951 7.35036 10.7951 7.15803 10.6148L3.15803 6.86477C2.95657 6.67591 2.94637 6.35949 3.13523 6.15803Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </CollapsibleTrigger>
+                  </div>
+                </CardHeader>
+                <CollapsibleContent open={voiceOverOpen}>
+                  <CardContent className="pt-0">
+                    <VoiceOverPreview voiceFileUrl={project["Voice-file-url"] || ''} />
+                  </CardContent>
+                </CollapsibleContent>
+              </Card>
             )}
             
             {project["Animation"] && (
