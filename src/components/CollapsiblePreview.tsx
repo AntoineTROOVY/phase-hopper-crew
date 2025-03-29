@@ -36,6 +36,8 @@ const CollapsiblePreview = ({
   externalUrl
 }: CollapsiblePreviewProps) => {
   const isCurrentPhasePreview = currentPhase.includes(relevantPhase);
+  // Only make Voice-Over preview collapsible
+  const isVoiceOverPreview = relevantPhase.toLowerCase() === 'voice';
   const [isOpen, setIsOpen] = useState(true);
   
   const [isApproved, setIsApproved] = useState(false);
@@ -70,7 +72,6 @@ const CollapsiblePreview = ({
   
   const previewStatus = determinePreviewStatus();
   const isToReview = previewStatus === 'To Review';
-  const isVoiceOver = relevantPhase.toLowerCase() === 'voice';
   
   const statusStyles = {
     'In Progress': 'bg-blue-100 text-blue-800 border-blue-200',
@@ -143,19 +144,21 @@ const CollapsiblePreview = ({
   };
 
   const toggleCollapse = () => {
-    setIsOpen(!isOpen);
+    if (isVoiceOverPreview) {
+      setIsOpen(!isOpen);
+    }
   };
 
   return (
     <Card className={`mt-6 ${isToReview ? 'border-2 border-amber-500' : ''}`}>
-      <CardHeader className="py-4 cursor-pointer" onClick={toggleCollapse}>
+      <CardHeader className={`py-4 ${isVoiceOverPreview ? 'cursor-pointer' : ''}`} onClick={isVoiceOverPreview ? toggleCollapse : undefined}>
         <div className="flex items-center justify-between w-full">
           <CardTitle className="text-lg flex items-center gap-2">
             {icon}
             {title}
           </CardTitle>
           <div className="flex items-center gap-2">
-            {externalUrl && !isToReview && !isVoiceOver && (
+            {externalUrl && !isToReview && !isVoiceOverPreview && (
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -169,16 +172,20 @@ const CollapsiblePreview = ({
             <Badge variant="outline" className={statusStyles[previewStatus]}>
               {previewStatus}
             </Badge>
-            <button 
-              className="ml-2 text-gray-500 hover:text-gray-700" 
-              aria-label={isOpen ? "Collapse" : "Expand"}
-            >
-              {isOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-            </button>
+            {/* Only show chevron for Voice-Over Preview */}
+            {isVoiceOverPreview && (
+              <button 
+                className="ml-2 text-gray-500 hover:text-gray-700" 
+                aria-label={isOpen ? "Collapse" : "Expand"}
+              >
+                {isOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+              </button>
+            )}
           </div>
         </div>
       </CardHeader>
-      {isOpen && (
+      {/* Only show content for Voice-Over Preview if isOpen is true */}
+      {(!isVoiceOverPreview || isOpen) && (
         <>
           <CardContent className="p-0">
             {isToReview && <p className="text-sm text-gray-500 mb-3 pt-2 px-6">{getInstructions()}</p>}
