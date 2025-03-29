@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Check, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
@@ -35,11 +34,10 @@ const CollapsiblePreview = ({
   projectStatus,
   externalUrl
 }: CollapsiblePreviewProps) => {
-  const isCurrentPhasePreview = currentPhase.includes(relevantPhase);
-  // Only make Voice-Over preview collapsible
   const isVoiceOverPreview = relevantPhase.toLowerCase() === 'voice';
   const [isOpen, setIsOpen] = useState(true);
   
+  const isCurrentPhasePreview = currentPhase.includes(relevantPhase);
   const [isApproved, setIsApproved] = useState(false);
   const [holdProgress, setHoldProgress] = useState(0);
   const [isHolding, setIsHolding] = useState(false);
@@ -151,7 +149,10 @@ const CollapsiblePreview = ({
 
   return (
     <Card className={`mt-6 ${isToReview ? 'border-2 border-amber-500' : ''}`}>
-      <CardHeader className={`py-4 ${isVoiceOverPreview ? 'cursor-pointer' : ''}`} onClick={isVoiceOverPreview ? toggleCollapse : undefined}>
+      <CardHeader 
+        className={`py-4 ${isVoiceOverPreview ? 'cursor-pointer' : ''}`} 
+        onClick={isVoiceOverPreview ? toggleCollapse : undefined}
+      >
         <div className="flex items-center justify-between w-full">
           <CardTitle className="text-lg flex items-center gap-2">
             {icon}
@@ -172,7 +173,6 @@ const CollapsiblePreview = ({
             <Badge variant="outline" className={statusStyles[previewStatus]}>
               {previewStatus}
             </Badge>
-            {/* Only show chevron for Voice-Over Preview */}
             {isVoiceOverPreview && (
               <button 
                 className="ml-2 text-gray-500 hover:text-gray-700" 
@@ -184,7 +184,7 @@ const CollapsiblePreview = ({
           </div>
         </div>
       </CardHeader>
-      {/* Only show content for Voice-Over Preview if isOpen is true */}
+      
       {(!isVoiceOverPreview || isOpen) && (
         <>
           <CardContent className="p-0">
