@@ -195,7 +195,7 @@ const VoiceOverPreview = ({ voiceFileUrl }: VoiceOverPreviewProps) => {
       <div className="bg-white p-3 border-b flex justify-between items-center">
         <h3 className="font-medium flex items-center">
           <Headphones className="h-5 w-5 mr-2" />
-          Voice-Over Files
+          Voice-Over Preview
         </h3>
         <CollapsibleTrigger asChild>
           <button className="p-1 hover:bg-gray-100 rounded">
