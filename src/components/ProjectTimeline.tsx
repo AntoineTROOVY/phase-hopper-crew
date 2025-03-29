@@ -139,22 +139,23 @@ const ProjectTimeline = ({ currentPhase, status = '' }: ProjectTimelineProps) =>
       </div>
       
       <div className="relative flex flex-col sm:flex-row justify-between items-center w-full">
-        {/* Connector line */}
+        {/* Desktop connector lines - we'll add both bg colors and show/hide based on progress */}
         <div className="hidden sm:block absolute top-7 left-0 right-0 h-0.5 bg-gray-200 z-0" />
+        
+        {/* Progress line (blue) that grows based on current phase */}
+        <div 
+          className="hidden sm:block absolute top-7 left-0 h-0.5 bg-[#4E90FF] z-0" 
+          style={{
+            width: `${Math.min(100, (currentPhaseIndex / (phases.length - 1)) * 100)}%`,
+            transition: 'width 0.5s ease-in-out'
+          }}
+        />
         
         {phases.map((phase, index) => {
           const isCurrentPhase = phase === normalizedCurrentPhase;
           const isPastPhase = currentPhaseIndex >= 0 && index < currentPhaseIndex;
           const isFuturePhase = currentPhaseIndex >= 0 && index > currentPhaseIndex;
           
-          // Determine connector color/style between this phase and next
-          const connectorClass = isPastPhase 
-            ? "bg-[#4E90FF]" // Solid blue for completed phases
-            : "bg-gray-200"; // Dashed or light for upcoming phases
-          
-          // Calculate the width needed to connect this phase to the next (except last phase)
-          const showConnector = index < phases.length - 1;
-
           // Get current phase progress percentage
           const progressPercentage = getProgressPercentage(isPastPhase, isCurrentPhase, status);
           
@@ -166,9 +167,14 @@ const ProjectTimeline = ({ currentPhase, status = '' }: ProjectTimelineProps) =>
           
           return (
             <div key={phase} className="flex flex-col items-center mb-4 sm:mb-0 z-10">
-              {/* If not the first phase on mobile, show a connector */}
-              {index > 0 && index <= currentPhaseIndex && (
-                <div className="block sm:hidden h-6 w-0.5 bg-[#4E90FF] -mt-2 mb-2" />
+              {/* Mobile view: vertical connector lines between circles */}
+              {index > 0 && (
+                <div 
+                  className={cn(
+                    "block sm:hidden h-6 w-0.5 -mt-2 mb-2",
+                    index <= currentPhaseIndex ? "bg-[#4E90FF]" : "bg-gray-200"
+                  )}
+                />
               )}
               
               {/* Phase icon circle with progress ring */}
@@ -215,9 +221,14 @@ const ProjectTimeline = ({ currentPhase, status = '' }: ProjectTimelineProps) =>
                 </div>
               </div>
               
-              {/* If not the last phase and on mobile view, show a connector to the next phase */}
-              {showConnector && isFuturePhase && (
-                <div className="block sm:hidden h-6 w-0.5 bg-gray-200 mt-2 mb-2" />
+              {/* Mobile view: connecting line after the circle */}
+              {index < phases.length - 1 && (
+                <div 
+                  className={cn(
+                    "block sm:hidden h-6 w-0.5 mt-2 mb-2",
+                    index < currentPhaseIndex ? "bg-[#4E90FF]" : "bg-gray-200"
+                  )}
+                />
               )}
               
               {/* Phase name */}
