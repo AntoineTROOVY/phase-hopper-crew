@@ -119,7 +119,7 @@ const ProjectDetails = () => {
       <main className="container mx-auto py-6 px-4 sm:px-6 lg:px-8 flex-1">
         <Card className="mb-6">
           <CardContent className="pt-6">
-            <ProjectTimeline currentPhase={project["Phase"] || ''} />
+            <ProjectTimeline currentPhase={project["Phase"] || ''} status={project["Status"] || ''} />
           </CardContent>
         </Card>
         

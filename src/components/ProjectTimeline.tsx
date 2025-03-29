@@ -32,9 +32,10 @@ const phaseIcons: Record<string, React.ReactNode> = {
 
 interface ProjectTimelineProps {
   currentPhase: string;
+  status?: string;
 }
 
-const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
+const ProjectTimeline = ({ currentPhase, status = '' }: ProjectTimelineProps) => {
   // Function to normalize phase names for comparison
   const normalizePhase = (phase: string): ProjectPhase => {
     // Map of possible phase variations to standardized phase names with emojis
@@ -112,6 +113,22 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
     };
   };
 
+  // Determine phase status text based on relative position and project status
+  const getPhaseStatus = (index: number) => {
+    // If this phase is before the current phase, it's completed
+    if (currentPhaseIndex > index) return "Completed";
+    
+    // If this phase is after the current phase, it's not started
+    if (currentPhaseIndex < index) return "Not Started";
+    
+    // This is the current phase, determine status based on project status
+    if (status?.toLowerCase().includes('review')) return "In Review";
+    if (status?.toLowerCase().includes('approved')) return "Approved";
+    
+    // Default for current phase
+    return "In Progress";
+  };
+
   return (
     <div className="space-y-4 mb-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
@@ -136,10 +153,13 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
           const showConnector = index < phases.length - 1;
 
           // Get current phase progress percentage
-          const progressPercentage = getProgressPercentage(isPastPhase, isCurrentPhase);
+          const progressPercentage = getProgressPercentage(isPastPhase, isCurrentPhase, status);
           
           // Calculate arc properties
           const arcProps = drawArc(progressPercentage);
+
+          // Get the phase status text
+          const phaseStatus = getPhaseStatus(index);
           
           return (
             <div key={phase} className="flex flex-col items-center mb-4 sm:mb-0 z-10">
@@ -157,7 +177,7 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
                     cx="28" 
                     cy="28" 
                     r="24" 
-                    fill="transparent" 
+                    fill="white" 
                     stroke={isFuturePhase ? "#E5E7EB" : isCurrentPhase ? "#E5E7EB" : "#4E90FF"} 
                     strokeWidth="2"
                   />
@@ -185,9 +205,7 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
                 <div 
                   className={cn(
                     "flex items-center justify-center w-14 h-14 rounded-full z-10",
-                    isCurrentPhase ? "text-[#4E90FF]" : 
-                    isPastPhase ? "text-white" : 
-                    "text-gray-400"
+                    isCurrentPhase || isPastPhase ? "text-[#4E90FF]" : "text-gray-400"
                   )}
                 >
                   {phaseIcons[phase]}
@@ -212,15 +230,12 @@ const ProjectTimeline = ({ currentPhase }: ProjectTimelineProps) => {
               {/* Phase status */}
               <p className={cn(
                 "text-xs mt-1",
-                isCurrentPhase ? "text-[#4E90FF]" : 
-                isPastPhase ? "text-green-600" : 
+                phaseStatus === "In Review" ? "text-[#4E90FF]" :
+                phaseStatus === "In Progress" ? "text-[#4E90FF]" : 
+                phaseStatus === "Completed" ? "text-green-600" : 
                 "text-gray-400"
               )}>
-                {isCurrentPhase 
-                  ? "In Progress" 
-                  : isPastPhase 
-                    ? "Completed" 
-                    : "Not Started"}
+                {phaseStatus}
               </p>
             </div>
           );
