@@ -1,8 +1,9 @@
 
 import React from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Calendar, Building, User, Clock } from 'lucide-react';
+import { Calendar, Building, User, Clock, Image } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import StatusBadge from './StatusBadge';
 import { PipelineProject } from '@/services/projectService';
 
@@ -27,6 +28,16 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   // Create the project link with the SlackID parameter preserved
   const projectLink = `/project/${encodeURIComponent(project["ID-PROJET"] || '')}${slackId ? `?slack-id=${slackId}` : ''}`;
 
+  // Get company initials for the avatar fallback
+  const getCompanyInitials = (name: string | null | undefined) => {
+    if (!name) return 'CO';
+    const words = name.trim().split(/\s+/);
+    if (words.length >= 2) {
+      return `${words[0][0]}${words[1][0]}`.toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  };
+
   return (
     <Link 
       to={projectLink}
@@ -35,9 +46,19 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
       <Card className="h-full">
         <CardHeader className="p-4 pb-2">
           <div className="flex justify-between items-start">
-            <div>
-              <h3 className="text-lg font-semibold truncate">{project["Company"] || 'Untitled Project'}</h3>
-              <p className="text-sm text-gray-500 truncate">ID: {project["ID-PROJET"] || 'N/A'}</p>
+            <div className="flex items-center gap-3">
+              <Avatar className="h-10 w-10 border">
+                {project["Logo url"] ? (
+                  <AvatarImage src={project["Logo url"]} alt={project["Company"] || 'Company'} />
+                ) : null}
+                <AvatarFallback className="bg-primary-100 text-primary-700">
+                  {getCompanyInitials(project["Company"])}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h3 className="text-lg font-semibold truncate">{project["Company"] || 'Untitled Project'}</h3>
+                <p className="text-sm text-gray-500 truncate">ID: {project["ID-PROJET"] || 'N/A'}</p>
+              </div>
             </div>
             <StatusBadge status={project["Status"] || 'Unknown'} />
           </div>
