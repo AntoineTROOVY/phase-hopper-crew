@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, ChevronDown, Headphones } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
@@ -125,7 +124,7 @@ const AudioPlayer = ({ url, filename }: AudioFile) => {
               return (
                 <div 
                   key={i} 
-                  className={`w-[2px] ${isPlayed ? 'bg-blue-500' : 'bg-gray-300'}`}
+                  className={`w-[3px] ${isPlayed ? 'bg-blue-500' : 'bg-gray-300'}`}
                   style={{ height: `${height}%` }}
                 />
               );
