@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Building, User, Clock, FileText, Image, Film, Headphones } from 'lucide-react';
@@ -87,21 +86,11 @@ const ProjectDetails = () => {
   }
 
   console.log('Project Logo URL:', project["Logo url"]);
-  console.log('Logo URL (explicit):', project["Logo url"] || null);
+  
+  const logoUrl = project["Logo url"] || null;
+  console.log('Logo URL (explicit):', logoUrl);
+  
   console.log('Voice file URL:', project["Voice-file-url"]);
-  console.log('Project phase:', project["Phase"]);
-  console.log('Project status:', project["Status"]);
-
-  // Define logoUrl variable properly from project data
-  const logoUrl = project["Logo url"] || '';
-
-  // Determine if we should show the Voice-Over preview section
-  // We show it if either:
-  // 1. There are voice files available, or
-  // 2. The current phase is Voice-over (regardless of whether there are files)
-  const showVoiceOverPreview = 
-    Boolean(project["Voice-file-url"]) || 
-    (project["Phase"] && project["Phase"].toLowerCase().includes('voice'));
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
@@ -226,7 +215,7 @@ const ProjectDetails = () => {
               </CollapsiblePreview>
             )}
             
-            {showVoiceOverPreview && (
+            {project["Voice-file-url"] && (
               <CollapsiblePreview 
                 title="Voice-Over Preview" 
                 icon={<Headphones className="h-5 w-5" />}

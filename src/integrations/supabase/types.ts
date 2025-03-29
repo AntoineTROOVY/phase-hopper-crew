@@ -447,42 +447,6 @@ export type Database = {
         }
         Relationships: []
       }
-      "Voice-overs": {
-        Row: {
-          Gender: string | null
-          Language: string | null
-          Link: string | null
-          Name: string
-          "OPERATIONS TEMPLATE": string | null
-          "PIPELINE PROJECT": string | null
-          Preview: string | null
-          "Profil pic": string | null
-          whalesync_postgres_id: string
-        }
-        Insert: {
-          Gender?: string | null
-          Language?: string | null
-          Link?: string | null
-          Name: string
-          "OPERATIONS TEMPLATE"?: string | null
-          "PIPELINE PROJECT"?: string | null
-          Preview?: string | null
-          "Profil pic"?: string | null
-          whalesync_postgres_id?: string
-        }
-        Update: {
-          Gender?: string | null
-          Language?: string | null
-          Link?: string | null
-          Name?: string
-          "OPERATIONS TEMPLATE"?: string | null
-          "PIPELINE PROJECT"?: string | null
-          Preview?: string | null
-          "Profil pic"?: string | null
-          whalesync_postgres_id?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
