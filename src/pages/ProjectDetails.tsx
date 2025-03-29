@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Building, User, Clock, FileText, Image, Film, Headphones } from 'lucide-react';
@@ -90,8 +91,9 @@ const ProjectDetails = () => {
   const shouldShowVoiceOver = 
     (project["Voice-file-url"] && project["Voice-file-url"].length > 0) || 
     (project["Phase"]?.toLowerCase().includes('voice') && 
-     project["Status"]?.toLowerCase().includes('not') && 
-     project["Status"]?.toLowerCase().includes('start'));
+     ((project["Status"]?.toLowerCase().includes('not') && 
+       project["Status"]?.toLowerCase().includes('start')) ||
+      (project["Status"]?.toLowerCase().includes('in progress'))));
 
   console.log('Languages for project:', project["Langues"]);
 
