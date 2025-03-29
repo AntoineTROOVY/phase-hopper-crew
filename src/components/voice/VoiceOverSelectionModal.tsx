@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { Filter, Check } from 'lucide-react';
+import { Filter, Check, AlertCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import AudioPlayer from './AudioPlayer';
@@ -41,6 +42,7 @@ const VoiceOverSelectionModal = ({
   const [selectedVoiceOvers, setSelectedVoiceOvers] = useState<string[]>([]);
   const [projectLanguages, setProjectLanguages] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -127,6 +129,7 @@ const VoiceOverSelectionModal = ({
     };
 
     setIsSubmitting(true);
+    setError(null);
 
     try {
       const response = await fetch('https://hook.eu2.make.com/ydu459dw7hdi4vx6lrzc7v3bq9aoty1g', {
@@ -141,24 +144,28 @@ const VoiceOverSelectionModal = ({
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      toast({
-        title: "Selection submitted",
-        description: "Your voice-over selections have been submitted successfully.",
-        variant: "default"
-      });
-
-      onOpenChange(false);
+      const data = await response.json();
       
-      if (onSelectionComplete) {
-        onSelectionComplete();
+      if (data.status === "confirmed") {
+        toast({
+          title: "Selection submitted",
+          description: "Your voice-over selections have been submitted successfully.",
+          variant: "default"
+        });
+
+        onOpenChange(false);
+        
+        if (onSelectionComplete) {
+          onSelectionComplete();
+        }
+      } else if (data.status === "error") {
+        setError(data.message || "An error occurred while processing your request. Please try again.");
+      } else {
+        setError("Unexpected response from server. Please try again.");
       }
     } catch (error) {
       console.error('Error submitting voice-over selection:', error);
-      toast({
-        title: "Submission error",
-        description: "Failed to submit your voice-over selections. Please try again.",
-        variant: "destructive"
-      });
+      setError("Failed to submit your voice-over selections. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -186,6 +193,13 @@ const VoiceOverSelectionModal = ({
               Selected: {selectedVoiceOvers.length} of {projectLanguages.length}
             </p>
           </div>
+        )}
+        
+        {error && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         )}
         
         <div className="bg-gray-50 p-4 rounded-md mb-4">
@@ -293,7 +307,7 @@ const VoiceOverSelectionModal = ({
             disabled={selectedVoiceOvers.length === 0 || isSubmitting}
             className="min-w-32"
           >
-            {isSubmitting ? "Submitting..." : "Confirm selection"}
+            {isSubmitting ? "Processing..." : "Confirm selection"}
           </Button>
         </div>
       </DialogContent>
