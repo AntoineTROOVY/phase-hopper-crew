@@ -1,20 +1,24 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, ChevronDown, Headphones } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+
 interface VoiceOverPreviewProps {
   voiceFileUrl: string;
 }
+
 interface AudioFile {
   url: string;
   filename: string;
 }
+
 const formatTime = (seconds: number): string => {
   const mins = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 };
+
 const AudioPlayer = ({
   url,
   filename
@@ -25,6 +29,7 @@ const AudioPlayer = ({
   const [duration, setDuration] = React.useState(0);
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const waveformRef = React.useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const audio = audioRef.current;
     if (audio) {
@@ -37,6 +42,7 @@ const AudioPlayer = ({
       return () => audio.removeEventListener('loadedmetadata', updateDuration);
     }
   }, []);
+
   const togglePlay = () => {
     if (audioRef.current) {
       if (isPlaying) {
@@ -47,6 +53,7 @@ const AudioPlayer = ({
       setIsPlaying(!isPlaying);
     }
   };
+
   const handleVolumeChange = (values: number[]) => {
     const newVolume = values[0];
     setVolume(newVolume);
@@ -54,12 +61,14 @@ const AudioPlayer = ({
       audioRef.current.volume = newVolume;
     }
   };
+
   const updateProgress = () => {
     if (audioRef.current) {
       const value = audioRef.current.currentTime / audioRef.current.duration * 100;
       setProgress(value);
     }
   };
+
   const seekAudio = (e: React.MouseEvent<HTMLDivElement>) => {
     if (audioRef.current && waveformRef.current) {
       const rect = waveformRef.current.getBoundingClientRect();
@@ -69,6 +78,7 @@ const AudioPlayer = ({
       setProgress(clickPosition * 100);
     }
   };
+
   return <div className="bg-white rounded-lg p-3 mb-4 border border-gray-100">
       <div className="text-sm font-medium text-gray-700 mb-2 truncate" title={filename}>
         {filename}
@@ -121,10 +131,12 @@ const AudioPlayer = ({
       </div>
     </div>;
 };
+
 const VoiceOverPreview = ({
   voiceFileUrl
 }: VoiceOverPreviewProps) => {
   const [isOpen, setIsOpen] = useState(true);
+
   const parseVoiceFileUrl = (urlString: string): AudioFile[] => {
     if (!urlString) return [];
 
@@ -139,19 +151,42 @@ const VoiceOverPreview = ({
       };
     }).filter(file => file.url && file.filename);
   };
+
   const audioFiles = parseVoiceFileUrl(voiceFileUrl);
+
   if (!audioFiles.length) {
     return <div className="p-4 text-center text-gray-500">
         No voice-over files available
       </div>;
   }
-  return <Collapsible open={isOpen} onOpenChange={setIsOpen} className="border rounded-lg overflow-hidden">
-      
-      <CollapsibleContent>
-        <div className="p-3">
-          {audioFiles.map((file, index) => <AudioPlayer key={index} url={file.url} filename={file.filename} />)}
+
+  return (
+    <div className="border rounded-lg overflow-hidden">
+      <div 
+        className="flex items-center justify-between p-4 bg-white cursor-pointer"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className="flex items-center gap-2">
+          <Headphones className="h-5 w-5 text-blue-500" />
+          <h3 className="font-medium">Voice-Over Preview</h3>
+          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+            Approved
+          </span>
         </div>
-      </CollapsibleContent>
-    </Collapsible>;
+        <ChevronDown 
+          className={`h-5 w-5 transition-transform ${isOpen ? 'transform rotate-180' : ''}`} 
+        />
+      </div>
+      
+      {isOpen && (
+        <div className="p-3">
+          {audioFiles.map((file, index) => (
+            <AudioPlayer key={index} url={file.url} filename={file.filename} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 };
+
 export default VoiceOverPreview;
