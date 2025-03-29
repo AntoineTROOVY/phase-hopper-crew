@@ -89,8 +89,8 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="pb-4 overflow-x-auto">
-        <div className="min-w-[240px]">
+      <CardContent className="pb-4">
+        <div className="w-full max-w-full overflow-x-hidden">
           <Calendar
             mode="single"
             month={currentMonth}
@@ -102,15 +102,16 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
             classNames={{
               day_selected: "", // Override default selected styling
               day_today: "border border-[#4E90FF]",
-              day: "h-9 w-9 p-0 font-normal rounded-lg border border-gray-200",
-              cell: "p-1", // Added padding between cells
-              month: "space-y-4 max-w-full", // Reduced vertical spacing and width control
-              row: "flex w-full mt-2 flex-wrap sm:flex-nowrap", // Flexible row wrapping
-              caption: "flex justify-center pt-1 relative items-center mb-2", // Reduced space below the month caption
+              day: "p-0 font-normal rounded-lg border border-gray-200 aspect-square flex items-center justify-center text-xs sm:text-sm",
+              cell: "p-0.5 sm:p-1", // Smaller padding on mobile
+              month: "space-y-2 max-w-full", // Reduced vertical spacing and width control
+              row: "flex w-full mt-1 flex-wrap justify-around", // Flexible row wrapping
+              caption: "flex justify-center pt-1 relative items-center mb-1", // Reduced space below the month caption
               table: "w-full border-collapse", // Full width table
               caption_label: "text-sm font-medium px-6", // Add horizontal padding to month label
-              head_row: "flex flex-wrap sm:flex-nowrap", // Responsive head row
+              head_row: "flex w-full justify-around", // Responsive head row
               nav: "hidden", // Hide default navigation since we have custom buttons
+              head_cell: "text-muted-foreground rounded-md text-[0.7rem] sm:text-[0.8rem] w-7 sm:w-9 font-normal"
             }}
             modifiersClassNames={{
               selected: "",
@@ -130,13 +131,13 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
                 return (
                   <button
                     {...props}
-                    className={`h-9 w-9 p-0 font-normal aria-selected:opacity-100 relative ${customClasses}`}
+                    className={`aspect-square w-7 sm:w-9 flex items-center justify-center font-normal aria-selected:opacity-100 relative ${customClasses}`}
                     disabled={true} // Make calendar read-only
                   >
                     <div>{date.getDate()}</div>
                     {isEndDate && (
                       <span className="absolute -top-1 -right-1 bg-white rounded-full">
-                        <Package className="h-3.5 w-3.5 text-[#4E90FF]" />
+                        <Package className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-[#4E90FF]" />
                       </span>
                     )}
                   </button>
