@@ -134,6 +134,13 @@ const CollapsiblePreview = ({
     }
   };
 
+  const openExternalLink = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (externalUrl) {
+      window.open(externalUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   return (
     <Card className={`mt-6 ${isToReview ? 'border-2 border-amber-500' : ''}`}>
       <CardHeader className="py-4">
@@ -146,7 +153,17 @@ const CollapsiblePreview = ({
             <Badge variant="outline" className={statusStyles[previewStatus]}>
               {previewStatus}
             </Badge>
-            {/* Removed the external URL button from here as it will be moved to footer */}
+            {externalUrl && !isToReview && relevantPhase.toLowerCase() !== 'voice' && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-gray-500 hover:text-gray-700 ml-2"
+                onClick={openExternalLink}
+              >
+                <ExternalLink className="h-4 w-4 mr-1" />
+                Open
+              </Button>
+            )}
           </div>
         </div>
       </CardHeader>
