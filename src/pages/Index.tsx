@@ -2,10 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import ProjectCard from '@/components/ProjectCard';
 import ProjectFilter from '@/components/ProjectFilter';
-import { Card, CardContent } from '@/components/ui/card';
 import { fetchProjects, PipelineProject } from '@/services/projectService';
 import { useToast } from '@/hooks/use-toast';
 import { useSearchParams } from 'react-router-dom';
+import AppHeader from '@/components/AppHeader';
+import AppFooter from '@/components/AppFooter';
+import { useBranding } from '@/contexts/BrandingContext';
 
 const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -15,6 +17,7 @@ const Dashboard = () => {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const slackId = searchParams.get('slack-id');
+  const { company, isLoading: isBrandingLoading } = useBranding();
 
   useEffect(() => {
     const loadProjects = async () => {
@@ -57,7 +60,7 @@ const Dashboard = () => {
     setFilteredProjects(filtered);
   }, [searchQuery, projects]);
 
-  if (isLoading) {
+  if (isLoading || isBrandingLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
@@ -70,16 +73,10 @@ const Dashboard = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
-      <header className="sticky top-0 z-10 bg-white border-b">
-        <div className="container mx-auto py-4">
-          <h1 className="text-2xl font-bold text-gray-900">Keyframe Project Manager</h1>
-          {slackId && (
-            <p className="text-sm text-gray-500 mt-1">
-              Viewing projects for Slack ID: {slackId}
-            </p>
-          )}
-        </div>
-      </header>
+      <AppHeader 
+        title="Project Manager" 
+        subtitle={slackId ? `Company: ${company?.["Company Name"] || slackId}` : undefined}
+      />
       
       <main className="container mx-auto py-6 px-4 sm:px-6 lg:px-8 flex-1">
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
@@ -102,11 +99,7 @@ const Dashboard = () => {
         </div>
       </main>
       
-      <footer className="bg-white border-t py-4">
-        <div className="container mx-auto text-center text-sm text-gray-500">
-          Keyframe Project Manager © {new Date().getFullYear()}
-        </div>
-      </footer>
+      <AppFooter />
     </div>
   );
 };

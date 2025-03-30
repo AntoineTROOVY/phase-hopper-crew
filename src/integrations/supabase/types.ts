@@ -16,8 +16,11 @@ export type Database = {
           "Company Name": string
           Country: string | null
           "Full address": string | null
+          "Interface logo url": string | null
+          "Interface name": string | null
           Language: string | null
           "Legal company name for invoice": string | null
+          "Logo url": string | null
           "PIPELINE PROJECT": string | null
           Role: string | null
           SIREN: string | null
@@ -33,8 +36,11 @@ export type Database = {
           "Company Name": string
           Country?: string | null
           "Full address"?: string | null
+          "Interface logo url"?: string | null
+          "Interface name"?: string | null
           Language?: string | null
           "Legal company name for invoice"?: string | null
+          "Logo url"?: string | null
           "PIPELINE PROJECT"?: string | null
           Role?: string | null
           SIREN?: string | null
@@ -50,8 +56,11 @@ export type Database = {
           "Company Name"?: string
           Country?: string | null
           "Full address"?: string | null
+          "Interface logo url"?: string | null
+          "Interface name"?: string | null
           Language?: string | null
           "Legal company name for invoice"?: string | null
+          "Logo url"?: string | null
           "PIPELINE PROJECT"?: string | null
           Role?: string | null
           SIREN?: string | null

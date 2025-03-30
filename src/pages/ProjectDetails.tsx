@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, Building, User, Clock, FileText, Image, Film, Headphones, Package } from 'lucide-react';
+import { Calendar, Building, User, Clock, FileText, Image, Film, Headphones, Package } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/StatusBadge';
@@ -14,6 +15,8 @@ import ProjectTimeline from '@/components/ProjectTimeline';
 import ProjectCalendar from '@/components/ProjectCalendar';
 import CollapsiblePreview from '@/components/CollapsiblePreview';
 import VariationsPreview from '@/components/VariationsPreview';
+import AppHeader from '@/components/AppHeader';
+import AppFooter from '@/components/AppFooter';
 
 const ProjectDetails = () => {
   const {
@@ -100,21 +103,11 @@ const ProjectDetails = () => {
   console.log('Languages for project:', project["Langues"]);
 
   return <div className="flex min-h-screen flex-col bg-gray-50">
-      <header className="sticky top-0 z-10 bg-white border-b">
-        <div className="container mx-auto py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" asChild>
-              <Link to="/">
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Project Details</h1>
-              <p className="text-sm text-gray-500">ID: {project["ID-PROJET"]}</p>
-            </div>
-          </div>
-        </div>
-      </header>
+      <AppHeader 
+        title="Project Details" 
+        subtitle={`ID: ${project["ID-PROJET"]}`} 
+        showBackButton={true}
+      />
       
       <main className="container mx-auto py-6 px-4 sm:px-6 lg:px-8 flex-1">
         <Card className="mb-6">
@@ -248,11 +241,7 @@ const ProjectDetails = () => {
         </div>
       </main>
       
-      <footer className="bg-white border-t py-4">
-        <div className="container mx-auto text-center text-sm text-gray-500">
-          Keyframe Project Manager © {new Date().getFullYear()}
-        </div>
-      </footer>
+      <AppFooter />
     </div>;
 };
 
