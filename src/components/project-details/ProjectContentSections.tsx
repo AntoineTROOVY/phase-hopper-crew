@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { FileText, Mic, Image, Film, Package } from 'lucide-react';
 import CollapsiblePreview from '@/components/CollapsiblePreview';
 import ScriptPreview from '@/components/ScriptPreview';
 import VoiceOverPreview from '@/components/VoiceOverPreview';
+import VariationsSelectionModal from '@/components/variations/VariationsSelectionModal';
 import { PipelineProject } from '@/services/projectService';
 
 interface ProjectContentSectionsProps {
@@ -11,6 +12,8 @@ interface ProjectContentSectionsProps {
 }
 
 const ProjectContentSections = ({ project }: ProjectContentSectionsProps) => {
+  const [variationsModalOpen, setVariationsModalOpen] = useState(false);
+  
   // Helper to determine if voice over section should be shown
   const shouldShowVoiceOver = project["Voice-file-url"] && 
     project["Voice-file-url"].length > 0 || 
@@ -36,6 +39,15 @@ const ProjectContentSections = ({ project }: ProjectContentSectionsProps) => {
     project["Status"]?.toLowerCase().includes('not') && 
     project["Status"]?.toLowerCase().includes('start') &&
     (!project["Variations-url"] || project["Variations-url"].length === 0);
+
+  const handleVariationsRequest = () => {
+    setVariationsModalOpen(true);
+  };
+
+  const handleVariationsComplete = () => {
+    // This would typically refresh the data or update UI state
+    console.log("Variations requested successfully");
+  };
 
   return (
     <>
@@ -125,7 +137,7 @@ const ProjectContentSections = ({ project }: ProjectContentSectionsProps) => {
                 </p>
                 <button 
                   className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-md flex items-center gap-2"
-                  onClick={() => alert("Ask for variations functionality will be implemented later")}
+                  onClick={handleVariationsRequest}
                 >
                   <Package className="h-4 w-4" />
                   Ask for variations
@@ -139,6 +151,14 @@ const ProjectContentSections = ({ project }: ProjectContentSectionsProps) => {
           </div>
         </CollapsiblePreview>
       )}
+      
+      <VariationsSelectionModal 
+        open={variationsModalOpen}
+        onOpenChange={setVariationsModalOpen}
+        projectId={project["ID-PROJET"]}
+        languages={project["Langues"]}
+        onSelectionComplete={handleVariationsComplete}
+      />
     </>
   );
 };
