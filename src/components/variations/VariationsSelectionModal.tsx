@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { Package, Check, AlertCircle, Plus } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Package, Check, AlertCircle, Plus, X } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
@@ -149,6 +149,7 @@ const VariationsSelectionModal = ({
     setVoiceOverModalOpen(true);
   };
 
+  // Modified to only handle local state, not send to API
   const handleVoiceOverSelected = (voiceName: string) => {
     if (!currentLanguage) return;
 
@@ -249,16 +250,26 @@ const VariationsSelectionModal = ({
     return availableLanguages.filter(lang => !selectedLanguages.includes(lang));
   };
 
+  // Helper to determine if a language was added by the client
+  const isLanguageAddedByClient = (language: string) => {
+    if (!languages) return true; // If no original languages, all are added
+    const originalLanguages = languages.split(',').map(lang => lang.trim());
+    return !originalLanguages.includes(language);
+  };
+
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-xl">Select Variations</DialogTitle>
+            <DialogDescription className="text-sm text-gray-600">
+              Select one aspect ratio variation for each language. For additional languages, you'll need to select a voice-over as well.
+            </DialogDescription>
           </DialogHeader>
           
           <div className="bg-blue-50 p-4 rounded-md mb-4">
-            <h3 className="font-medium mb-2">Select one aspect ratio variation and voice-over for each language:</h3>
+            <h3 className="font-medium mb-2">Select format and voice-over for each language:</h3>
             <p className="text-sm text-blue-600">
               These additional formats will be created alongside your main video.
             </p>
@@ -276,38 +287,42 @@ const VariationsSelectionModal = ({
               <div key={index} className="border rounded-lg p-4 bg-white">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-medium text-lg">{item.language}</h3>
-                  {!languages?.includes(item.language) && (
+                  {isLanguageAddedByClient(item.language) && (
                     <Button 
                       variant="outline" 
                       size="sm"
                       onClick={() => handleRemoveLanguage(item.language)}
                     >
+                      <X className="h-4 w-4 mr-1" />
                       Remove
                     </Button>
                   )}
                 </div>
 
-                <div className="mb-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <h4 className="font-medium">Voice-Over Selection</h4>
-                    <Button 
-                      variant={item.voiceOver ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => handleOpenVoiceOverModal(item.language)}
-                    >
-                      {item.voiceOver ? "Change Voice" : "Select Voice"}
-                    </Button>
+                {/* Voice-Over Selection - Only visible for client-added languages */}
+                {isLanguageAddedByClient(item.language) && (
+                  <div className="mb-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <h4 className="font-medium">Voice-Over Selection</h4>
+                      <Button 
+                        variant={item.voiceOver ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handleOpenVoiceOverModal(item.language)}
+                      >
+                        {item.voiceOver ? "Change Voice" : "Select Voice"}
+                      </Button>
+                    </div>
+                    {item.voiceOver ? (
+                      <div className="p-3 bg-amber-50 border border-amber-200 rounded-md">
+                        <p>Selected voice: <span className="font-medium">{item.voiceOver}</span></p>
+                      </div>
+                    ) : (
+                      <div className="p-3 bg-gray-50 border border-gray-200 rounded-md text-gray-500">
+                        No voice-over selected
+                      </div>
+                    )}
                   </div>
-                  {item.voiceOver ? (
-                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-md">
-                      <p>Selected voice: <span className="font-medium">{item.voiceOver}</span></p>
-                    </div>
-                  ) : (
-                    <div className="p-3 bg-gray-50 border border-gray-200 rounded-md text-gray-500">
-                      No voice-over selected
-                    </div>
-                  )}
-                </div>
+                )}
                 
                 <h4 className="font-medium mb-2">Format Selection</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -400,16 +415,16 @@ const VariationsSelectionModal = ({
         </SheetContent>
       </Sheet>
 
-      {/* Voice Over Selection Modal */}
-      <VoiceOverSelectionModal 
-        open={voiceOverModalOpen}
-        onOpenChange={setVoiceOverModalOpen}
-        projectId={projectId}
-        languages={currentLanguage || undefined}
-        onSelectionComplete={() => {
-          // We'll handle selection directly via callback
-        }}
-      />
+      {/* Custom Voice Over Selection Modal for Variations */}
+      {voiceOverModalOpen && (
+        <VoiceOverSelectionModal 
+          open={voiceOverModalOpen}
+          onOpenChange={setVoiceOverModalOpen}
+          projectId={projectId}
+          languages={currentLanguage || undefined}
+          onSelectionComplete={handleVoiceOverSelected}
+        />
+      )}
     </>
   );
 };

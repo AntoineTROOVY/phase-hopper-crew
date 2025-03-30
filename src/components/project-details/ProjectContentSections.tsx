@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { FileText, Mic, Image, Film, Package } from 'lucide-react';
 import CollapsiblePreview from '@/components/CollapsiblePreview';
@@ -5,9 +6,11 @@ import ScriptPreview from '@/components/ScriptPreview';
 import VoiceOverPreview from '@/components/VoiceOverPreview';
 import VariationsSelectionModal from '@/components/variations/VariationsSelectionModal';
 import { PipelineProject } from '@/services/projectService';
+
 interface ProjectContentSectionsProps {
   project: PipelineProject;
 }
+
 const ProjectContentSections = ({
   project
 }: ProjectContentSectionsProps) => {
@@ -25,13 +28,16 @@ const ProjectContentSections = ({
 
   // Determine if variations section is in "Not started" state
   const isVariationsNotStarted = isVariationsPhase && project["Status"]?.toLowerCase().includes('not') && project["Status"]?.toLowerCase().includes('start') && (!project["Variations-url"] || project["Variations-url"].length === 0);
+  
   const handleVariationsRequest = () => {
     setVariationsModalOpen(true);
   };
+  
   const handleVariationsComplete = () => {
     // This would typically refresh the data or update UI state
     console.log("Variations requested successfully");
   };
+  
   return <>
       {project["Script"] && <CollapsiblePreview title="Script Preview" icon={<FileText className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Copywriting" projectStatus={project["Status"]} externalUrl={project["Script"]} projectId={project["ID-PROJET"] || ''}>
           <ScriptPreview scriptUrl={project["Script"]} />
@@ -42,11 +48,11 @@ const ProjectContentSections = ({
         </CollapsiblePreview>}
       
       {project["Storyboard"] && <CollapsiblePreview title="Storyboard" icon={<Image className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Storyboard" projectStatus={project["Status"]} externalUrl={project["Storyboard"]} projectId={project["ID-PROJET"] || ''}>
-          
+          {/* Content for Storyboard preview */}
         </CollapsiblePreview>}
       
       {project["Animation"] && <CollapsiblePreview title="Animation" icon={<Film className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Animation" projectStatus={project["Status"]} externalUrl={project["Animation"]} projectId={project["ID-PROJET"] || ''}>
-          
+          {/* Content for Animation preview */}
         </CollapsiblePreview>}
       
       {shouldShowVariations && <CollapsiblePreview title="Variations" icon={<Package className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Variations" projectStatus={project["Status"]} externalUrl={project["Variations-url"] || ''} projectId={project["ID-PROJET"] || ''} initialOpen={isVariationsPhase} highlightAction={isVariationsNotStarted}>
@@ -68,4 +74,5 @@ const ProjectContentSections = ({
       <VariationsSelectionModal open={variationsModalOpen} onOpenChange={setVariationsModalOpen} projectId={project["ID-PROJET"]} languages={project["Langues"]} onSelectionComplete={handleVariationsComplete} />
     </>;
 };
+
 export default ProjectContentSections;
