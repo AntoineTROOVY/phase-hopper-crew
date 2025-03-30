@@ -19,9 +19,23 @@ const ProjectContentSections = ({ project }: ProjectContentSectionsProps) => {
     project["Status"]?.toLowerCase().includes('start') || 
     project["Status"]?.toLowerCase().includes('in progress'));
   
+  // Helper to determine if variations section should be shown
+  const shouldShowVariations = 
+    project["Variations-url"] && project["Variations-url"].length > 0 || 
+    project["Phase"]?.toLowerCase().includes('variations') && 
+    (project["Status"]?.toLowerCase().includes('not') && 
+    project["Status"]?.toLowerCase().includes('start'));
+  
   // Helper for phase checks
   const isVoiceOverPhase = project["Phase"]?.includes("🎙️Voice-over") || false;
   const isVariationsPhase = project["Phase"]?.includes("📦 Variations") || false;
+  
+  // Determine if variations section is in "Not started" state
+  const isVariationsNotStarted = 
+    isVariationsPhase && 
+    project["Status"]?.toLowerCase().includes('not') && 
+    project["Status"]?.toLowerCase().includes('start') &&
+    (!project["Variations-url"] || project["Variations-url"].length === 0);
 
   return (
     <>
@@ -68,7 +82,11 @@ const ProjectContentSections = ({ project }: ProjectContentSectionsProps) => {
           projectStatus={project["Status"]} 
           externalUrl={project["Storyboard"]} 
           projectId={project["ID-PROJET"] || ''}
-        />
+        >
+          <div className="text-center py-4 text-gray-500">
+            Open link to view storyboard
+          </div>
+        </CollapsiblePreview>
       )}
       
       {project["Animation"] && (
@@ -80,20 +98,46 @@ const ProjectContentSections = ({ project }: ProjectContentSectionsProps) => {
           projectStatus={project["Status"]} 
           externalUrl={project["Animation"]} 
           projectId={project["ID-PROJET"] || ''}
-        />
+        >
+          <div className="text-center py-4 text-gray-500">
+            Open link to view animation
+          </div>
+        </CollapsiblePreview>
       )}
       
-      {project["Variations-url"] && (
+      {shouldShowVariations && (
         <CollapsiblePreview 
           title="Variations" 
           icon={<Package className="h-5 w-5" />} 
           currentPhase={project["Phase"] || ''} 
           relevantPhase="Variations" 
           projectStatus={project["Status"]} 
-          externalUrl={project["Variations-url"]} 
+          externalUrl={project["Variations-url"] || ''} 
           projectId={project["ID-PROJET"] || ''}
           initialOpen={isVariationsPhase}
-        />
+          highlightAction={isVariationsNotStarted}
+        >
+          <div className="text-center py-4">
+            {isVariationsNotStarted ? (
+              <div className="flex flex-col items-center">
+                <p className="text-amber-600 mb-4">
+                  No variations have been requested yet. Please request variations to proceed.
+                </p>
+                <button 
+                  className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-md flex items-center gap-2"
+                  onClick={() => alert("Ask for variations functionality will be implemented later")}
+                >
+                  <Package className="h-4 w-4" />
+                  Ask for variations
+                </button>
+              </div>
+            ) : (
+              <div className="text-gray-500">
+                Open link to view variations
+              </div>
+            )}
+          </div>
+        </CollapsiblePreview>
       )}
     </>
   );

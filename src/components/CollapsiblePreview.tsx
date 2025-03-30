@@ -28,6 +28,7 @@ interface CollapsiblePreviewProps {
   externalUrl?: string;
   projectId?: string;
   initialOpen?: boolean;
+  highlightAction?: boolean;
 }
 
 const CollapsiblePreview = ({ 
@@ -39,7 +40,8 @@ const CollapsiblePreview = ({
   projectStatus,
   externalUrl,
   projectId,
-  initialOpen = true
+  initialOpen = true,
+  highlightAction = false
 }: CollapsiblePreviewProps) => {
   const isVoiceOverPreview = relevantPhase.toLowerCase() === 'voice';
   const [isOpen, setIsOpen] = useState(initialOpen);
@@ -239,7 +241,7 @@ const CollapsiblePreview = ({
     : children;
 
   return (
-    <Card className={`mt-6 ${isToReview ? 'border-2 border-amber-500' : ''}`}>
+    <Card className={`mt-6 ${isToReview ? 'border-2 border-amber-500' : ''} ${highlightAction ? 'border-2 border-amber-500 shadow-md shadow-amber-100' : ''}`}>
       <CardHeader 
         className={`py-4 ${isVoiceOverPreview ? 'cursor-pointer' : ''}`} 
         onClick={isVoiceOverPreview ? toggleCollapse : undefined}
