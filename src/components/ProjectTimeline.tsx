@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { FileText, Headphones, Image, Film, Package } from 'lucide-react';
+import { FileText, Mic, Image, Film, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Define phase types with emoji prefixes
@@ -24,7 +24,7 @@ const phases: ProjectPhase[] = [
 // Define phase icons mapping
 const phaseIcons: Record<string, React.ReactNode> = {
   '📝 Copywriting': <FileText className="h-6 w-6" />,
-  '🎙️Voice-over': <Headphones className="h-6 w-6" />,
+  '🎙️Voice-over': <Mic className="h-6 w-6" />,
   '🖼️ Storyboard': <Image className="h-6 w-6" />,
   '🎞️ Animation': <Film className="h-6 w-6" />,
   '📦 Variations': <Package className="h-6 w-6" />

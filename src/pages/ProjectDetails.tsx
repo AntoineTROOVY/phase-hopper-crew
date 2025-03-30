@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Calendar, Building, User, Clock, FileText, Image, Film, Headphones, Package } from 'lucide-react';
+import { Calendar, Building, User, Clock, FileText, Image, Film, Mic, Package } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/StatusBadge';
@@ -185,7 +184,7 @@ const ProjectDetails = () => {
             
             {shouldShowVoiceOver && <CollapsiblePreview 
                 title="Voice-Over Preview" 
-                icon={<Headphones className="h-5 w-5" />} 
+                icon={<Mic className="h-5 w-5" />} 
                 currentPhase={project["Phase"] || ''} 
                 relevantPhase="Voice" 
                 projectStatus={project["Status"]} 
