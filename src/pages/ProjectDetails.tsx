@@ -32,10 +32,6 @@ const ProjectDetails = () => {
         const data = await fetchProjectById(projectId);
         setProject(data);
         
-        // Log the project data for debugging
-        console.log('Project data loaded:', data);
-        console.log('Brief main url:', data?.["Brief main"]);
-        
         if (!data) {
           toast({
             title: "Project not found",
@@ -66,8 +62,6 @@ const ProjectDetails = () => {
   if (!project) {
     return <NotFoundState projectId={projectId} />;
   }
-
-  console.log('Languages for project:', project["Langues"]);
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">

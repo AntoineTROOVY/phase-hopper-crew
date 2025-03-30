@@ -4,9 +4,6 @@ import { FileText, Mic, Image, Film, Package } from 'lucide-react';
 import CollapsiblePreview from '@/components/CollapsiblePreview';
 import ScriptPreview from '@/components/ScriptPreview';
 import VoiceOverPreview from '@/components/VoiceOverPreview';
-import StoryboardPreview from '@/components/StoryboardPreview';
-import AnimationPreview from '@/components/AnimationPreview';
-import VariationsPreview from '@/components/VariationsPreview';
 import { PipelineProject } from '@/services/projectService';
 
 interface ProjectContentSectionsProps {
@@ -64,35 +61,31 @@ const ProjectContentSections = ({ project }: ProjectContentSectionsProps) => {
       
       {project["Storyboard"] && (
         <CollapsiblePreview 
-          title="Storyboard Preview" 
+          title="Storyboard" 
           icon={<Image className="h-5 w-5" />} 
           currentPhase={project["Phase"] || ''} 
           relevantPhase="Storyboard" 
           projectStatus={project["Status"]} 
           externalUrl={project["Storyboard"]} 
           projectId={project["ID-PROJET"] || ''}
-        >
-          <StoryboardPreview storyboardUrl={project["Storyboard"]} />
-        </CollapsiblePreview>
+        />
       )}
       
       {project["Animation"] && (
         <CollapsiblePreview 
-          title="Animation Preview" 
+          title="Animation" 
           icon={<Film className="h-5 w-5" />} 
           currentPhase={project["Phase"] || ''} 
           relevantPhase="Animation" 
           projectStatus={project["Status"]} 
           externalUrl={project["Animation"]} 
           projectId={project["ID-PROJET"] || ''}
-        >
-          <AnimationPreview animationUrl={project["Animation"]} />
-        </CollapsiblePreview>
+        />
       )}
       
       {project["Variations-url"] && (
         <CollapsiblePreview 
-          title="Variations Preview" 
+          title="Variations" 
           icon={<Package className="h-5 w-5" />} 
           currentPhase={project["Phase"] || ''} 
           relevantPhase="Variations" 
@@ -100,9 +93,7 @@ const ProjectContentSections = ({ project }: ProjectContentSectionsProps) => {
           externalUrl={project["Variations-url"]} 
           projectId={project["ID-PROJET"] || ''}
           initialOpen={isVariationsPhase}
-        >
-          <VariationsPreview variationsUrl={project["Variations-url"]} />
-        </CollapsiblePreview>
+        />
       )}
     </>
   );
