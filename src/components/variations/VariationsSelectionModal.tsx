@@ -2,8 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { Package, Check, AlertCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
@@ -13,6 +11,7 @@ interface AspectRatioOption {
   name: string;
   ratio: number;
   description: string;
+  image: string;
 }
 
 interface LanguageSelection {
@@ -33,31 +32,36 @@ const aspectRatioOptions: AspectRatioOption[] = [
     id: 'square', 
     name: 'Square (1:1)', 
     ratio: 1, 
-    description: 'Perfect for Instagram posts and profile pictures'
+    description: 'Perfect for Instagram posts and profile pictures',
+    image: 'public/lovable-uploads/551f47cd-0d38-4fa1-8966-7ab196f8fcbb.png'
   },
   { 
-    id: 'portrait', 
+    id: 'portrait_2_3', 
+    name: 'Portrait (2:3)', 
+    ratio: 2/3, 
+    description: 'Optimized for Pinterest pins and some mobile formats',
+    image: 'public/lovable-uploads/fb9309c2-e856-4d7d-a56b-aebe9ca4ce2a.png'
+  },
+  { 
+    id: 'portrait_4_5', 
+    name: 'Portrait (4:5)', 
+    ratio: 4/5, 
+    description: 'Great for Instagram and Facebook photos',
+    image: 'public/lovable-uploads/e7cda177-68ca-4aec-a3e4-ea817eda5a12.png'
+  },
+  { 
+    id: 'portrait_9_16', 
     name: 'Portrait (9:16)', 
     ratio: 9/16, 
-    description: 'Ideal for Stories, Reels, and TikTok'
+    description: 'Ideal for Stories, Reels, and TikTok',
+    image: 'public/lovable-uploads/da9d3614-e386-49b2-b639-b5aab97c4eeb.png'
   },
   { 
-    id: 'landscape', 
+    id: 'landscape_16_9', 
     name: 'Landscape (16:9)', 
     ratio: 16/9, 
-    description: 'Standard for YouTube, presentations, and websites'
-  },
-  { 
-    id: 'wide', 
-    name: 'Wide (21:9)', 
-    ratio: 21/9, 
-    description: 'Cinematic look for film content'
-  },
-  { 
-    id: 'pinterest', 
-    name: 'Pinterest (2:3)', 
-    ratio: 2/3, 
-    description: 'Optimized for Pinterest pins'
+    description: 'Standard for YouTube, presentations, and websites',
+    image: 'public/lovable-uploads/337c0929-f433-496e-8822-804a09e659bc.png'
   }
 ];
 
@@ -184,7 +188,7 @@ const VariationsSelectionModal = ({
             <div key={index} className="border rounded-lg p-4 bg-white">
               <h3 className="font-medium text-lg mb-4">{item.language}</h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {aspectRatioOptions.map((ratio) => (
                   <div 
                     key={ratio.id}
@@ -202,12 +206,12 @@ const VariationsSelectionModal = ({
                       )}
                     </div>
                     
-                    <div className="relative h-24 w-full bg-gray-100 rounded overflow-hidden mb-2">
-                      <AspectRatio ratio={ratio.ratio} className="flex items-center justify-center">
-                        <div className="text-xs text-gray-500">
-                          {ratio.ratio.toFixed(2)}
-                        </div>
-                      </AspectRatio>
+                    <div className="relative h-32 w-full mb-2 flex items-center justify-center bg-gray-50 rounded overflow-hidden">
+                      <img 
+                        src={ratio.image} 
+                        alt={ratio.name} 
+                        className="max-h-full max-w-full object-contain"
+                      />
                     </div>
                     
                     <p className="text-sm text-gray-500">{ratio.description}</p>
