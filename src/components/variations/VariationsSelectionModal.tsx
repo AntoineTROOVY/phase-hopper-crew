@@ -149,7 +149,7 @@ const VariationsSelectionModal = ({
     setVoiceOverModalOpen(true);
   };
 
-  // Modified to only handle local state, not send to API
+  // Handle voice-over selection without HTTP request
   const handleVoiceOverSelected = (voiceName: string) => {
     if (!currentLanguage) return;
 
@@ -188,7 +188,7 @@ const VariationsSelectionModal = ({
     }
 
     // Check if all languages have a selection and voice over
-    const incomplete = languageSelections.some(item => !item.selectedRatio || !item.voiceOver);
+    const incomplete = languageSelections.some(item => !item.selectedRatio || (!item.voiceOver && isLanguageAddedByClient(item.language)));
     
     if (incomplete) {
       setError("Please select an aspect ratio and voice-over for each language.");
@@ -422,7 +422,7 @@ const VariationsSelectionModal = ({
           onOpenChange={setVoiceOverModalOpen}
           projectId={projectId}
           languages={currentLanguage || undefined}
-          onSelectionComplete={handleVoiceOverSelected}
+          onVoiceSelected={handleVoiceOverSelected}
         />
       )}
     </>

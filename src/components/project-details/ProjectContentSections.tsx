@@ -49,10 +49,16 @@ const ProjectContentSections = ({
       
       {project["Storyboard"] && <CollapsiblePreview title="Storyboard" icon={<Image className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Storyboard" projectStatus={project["Status"]} externalUrl={project["Storyboard"]} projectId={project["ID-PROJET"] || ''}>
           {/* Content for Storyboard preview */}
+          <div className="text-gray-500 p-4 text-center">
+            Open link to view storyboard
+          </div>
         </CollapsiblePreview>}
       
       {project["Animation"] && <CollapsiblePreview title="Animation" icon={<Film className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Animation" projectStatus={project["Status"]} externalUrl={project["Animation"]} projectId={project["ID-PROJET"] || ''}>
           {/* Content for Animation preview */}
+          <div className="text-gray-500 p-4 text-center">
+            Open link to view animation
+          </div>
         </CollapsiblePreview>}
       
       {shouldShowVariations && <CollapsiblePreview title="Variations" icon={<Package className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Variations" projectStatus={project["Status"]} externalUrl={project["Variations-url"] || ''} projectId={project["ID-PROJET"] || ''} initialOpen={isVariationsPhase} highlightAction={isVariationsNotStarted}>
