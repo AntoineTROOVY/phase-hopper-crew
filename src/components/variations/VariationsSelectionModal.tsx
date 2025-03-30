@@ -33,35 +33,35 @@ const aspectRatioOptions: AspectRatioOption[] = [
     name: 'Square (1:1)', 
     ratio: 1, 
     description: 'Perfect for Instagram posts and profile pictures',
-    image: 'public/lovable-uploads/551f47cd-0d38-4fa1-8966-7ab196f8fcbb.png'
+    image: 'https://i.ibb.co/3q2D9ZH/1-1.png'
   },
   { 
     id: 'portrait_2_3', 
     name: 'Portrait (2:3)', 
     ratio: 2/3, 
     description: 'Optimized for Pinterest pins and some mobile formats',
-    image: 'public/lovable-uploads/fb9309c2-e856-4d7d-a56b-aebe9ca4ce2a.png'
+    image: 'https://i.ibb.co/4ZHT9WKv/2-3.png'
   },
   { 
     id: 'portrait_4_5', 
     name: 'Portrait (4:5)', 
     ratio: 4/5, 
     description: 'Great for Instagram and Facebook photos',
-    image: 'public/lovable-uploads/e7cda177-68ca-4aec-a3e4-ea817eda5a12.png'
+    image: 'https://i.ibb.co/fgK0Kpw/4-5.png'
   },
   { 
     id: 'portrait_9_16', 
     name: 'Portrait (9:16)', 
     ratio: 9/16, 
     description: 'Ideal for Stories, Reels, and TikTok',
-    image: 'public/lovable-uploads/da9d3614-e386-49b2-b639-b5aab97c4eeb.png'
+    image: 'https://i.ibb.co/Hp2Cwr8t/9-16.png'
   },
   { 
     id: 'landscape_16_9', 
     name: 'Landscape (16:9)', 
     ratio: 16/9, 
     description: 'Standard for YouTube, presentations, and websites',
-    image: 'public/lovable-uploads/337c0929-f433-496e-8822-804a09e659bc.png'
+    image: 'https://i.ibb.co/nMS0H8g9/16-9.png'
   }
 ];
 
