@@ -31,6 +31,11 @@ const ProjectDetails = () => {
         setIsLoading(true);
         const data = await fetchProjectById(projectId);
         setProject(data);
+        
+        // Log the project data for debugging
+        console.log('Project data loaded:', data);
+        console.log('Brief main url:', data?.["Brief main"]);
+        
         if (!data) {
           toast({
             title: "Project not found",
