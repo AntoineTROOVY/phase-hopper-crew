@@ -85,11 +85,11 @@ const ProjectInfo = ({ project }: ProjectInfoProps) => {
                 <p className="text-sm text-gray-500">{project["Phase"] || 'N/A'}</p>
               </div>
             </div>
-            {briefUrl && (
-              <div className="flex items-center gap-3">
-                <NotepadText className="h-5 w-5 text-gray-400" />
-                <div>
-                  <p className="text-sm font-medium">Brief</p>
+            <div className="flex items-center gap-3">
+              <NotepadText className="h-5 w-5 text-gray-400" />
+              <div>
+                <p className="text-sm font-medium">Brief</p>
+                {briefUrl ? (
                   <p className="text-sm text-gray-500 flex items-center gap-2">
                     Available
                     <Button 
@@ -101,9 +101,11 @@ const ProjectInfo = ({ project }: ProjectInfoProps) => {
                       <ExternalLink className="h-3.5 w-3.5" />
                     </Button>
                   </p>
-                </div>
+                ) : (
+                  <p className="text-sm text-gray-500">Not available</p>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </div>
       </CardContent>
