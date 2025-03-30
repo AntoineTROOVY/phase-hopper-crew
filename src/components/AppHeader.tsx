@@ -27,27 +27,30 @@ const AppHeader: React.FC<AppHeaderProps> = ({
   return (
     <header className="sticky top-0 z-10 bg-white border-b">
       <div className="container mx-auto py-4">
-        <div className="flex items-center gap-4">
-          {showBackButton && (
-            <Button variant="ghost" size="icon" asChild>
-              <Link to={backLink}>
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-            </Button>
-          )}
-          
-          <div className="flex items-center gap-3">
-            {interfaceLogo && (
+        <div className="flex items-center">
+          {interfaceLogo && (
+            <div className="mr-auto">
               <img 
                 src={interfaceLogo} 
                 alt={interfaceName} 
-                className="h-8 w-auto object-contain" 
+                className="h-12 w-auto object-contain mr-4" 
                 onError={(e) => {
                   console.error('Error loading interface logo:', e);
                   e.currentTarget.style.display = 'none';
                 }}
               />
+            </div>
+          )}
+          
+          <div className="flex items-center gap-3">
+            {showBackButton && (
+              <Button variant="ghost" size="icon" asChild>
+                <Link to={backLink}>
+                  <ArrowLeft className="h-5 w-5" />
+                </Link>
+              </Button>
             )}
+            
             <div>
               <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
               {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
