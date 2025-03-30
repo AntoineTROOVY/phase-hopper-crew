@@ -1,34 +1,24 @@
 
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Calendar, Building, User, Clock, FileText, Image, Film, Mic, Package, NotepadText, ExternalLink } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import StatusBadge from '@/components/StatusBadge';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Card, CardContent } from '@/components/ui/card';
 import { fetchProjectById, PipelineProject } from '@/services/projectService';
 import { useToast } from '@/hooks/use-toast';
-import AnimationPreview from '@/components/AnimationPreview';
-import StoryboardPreview from '@/components/StoryboardPreview';
-import ScriptPreview from '@/components/ScriptPreview';
-import VoiceOverPreview from '@/components/VoiceOverPreview';
 import ProjectTimeline from '@/components/ProjectTimeline';
 import ProjectCalendar from '@/components/ProjectCalendar';
-import CollapsiblePreview from '@/components/CollapsiblePreview';
-import VariationsPreview from '@/components/VariationsPreview';
 import AppHeader from '@/components/AppHeader';
 import AppFooter from '@/components/AppFooter';
+import ProjectInfo from '@/components/project-details/ProjectInfo';
+import ProjectContentSections from '@/components/project-details/ProjectContentSections';
+import ProjectStatusCard from '@/components/project-details/ProjectStatusCard';
+import LoadingState from '@/components/project-details/LoadingState';
+import NotFoundState from '@/components/project-details/NotFoundState';
 
 const ProjectDetails = () => {
-  const {
-    projectId
-  } = useParams<{
-    projectId: string;
-  }>();
+  const { projectId } = useParams<{ projectId: string }>();
   const [project, setProject] = useState<PipelineProject | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,52 +54,18 @@ const ProjectDetails = () => {
     loadProject();
   }, [projectId, toast, navigate]);
 
-  const formatDate = (dateString: string | null | undefined) => {
-    if (!dateString) return 'Not set';
-    try {
-      return new Date(dateString).toLocaleDateString();
-    } catch (e) {
-      return dateString;
-    }
-  };
-
   if (isLoading) {
-    return <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Loading project details...</h2>
-          <p className="text-gray-500">Please wait while we fetch your data.</p>
-        </div>
-      </div>;
+    return <LoadingState />;
   }
 
   if (!project) {
-    return <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Project not found</h2>
-          <p className="text-gray-500 mb-4">The project you're looking for doesn't exist.</p>
-          <Button asChild>
-            <Link to="/">Go back to dashboard</Link>
-          </Button>
-        </div>
-      </div>;
+    return <NotFoundState projectId={projectId} />;
   }
-
-  const logoUrl = project["Logo url"] || '';
-  const shouldShowVoiceOver = project["Voice-file-url"] && project["Voice-file-url"].length > 0 || project["Phase"]?.toLowerCase().includes('voice') && (project["Status"]?.toLowerCase().includes('not') && project["Status"]?.toLowerCase().includes('start') || project["Status"]?.toLowerCase().includes('in progress'));
-  
-  const isVoiceOverPhase = project["Phase"]?.includes("🎙️Voice-over") || false;
-  const isVariationsPhase = project["Phase"]?.includes("📦 Variations") || false;
-  const briefUrl = project["Brief main"] || '';
 
   console.log('Languages for project:', project["Langues"]);
 
-  const openBrief = (url: string) => {
-    if (url) {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
-  };
-
-  return <div className="flex min-h-screen flex-col bg-gray-50">
+  return (
+    <div className="flex min-h-screen flex-col bg-gray-50">
       <AppHeader 
         title="Project Details" 
         subtitle={`ID: ${project["ID-PROJET"]}`} 
@@ -125,150 +81,25 @@ const ProjectDetails = () => {
         
         <div className="grid gap-6 md:grid-cols-3">
           <div className="md:col-span-2">
-            <Card>
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-4">
-                    {logoUrl && <div className="flex-shrink-0">
-                        <img src={logoUrl} alt={`${project["Company"]} logo`} className="h-12 w-auto object-contain rounded-md" onError={e => {
-                      console.error('Error loading logo:', e);
-                      e.currentTarget.style.display = 'none';
-                    }} />
-                      </div>}
-                    <div>
-                      <h2 className="text-xl font-semibold">{project["Company"] || 'Untitled Project'}</h2>
-                      
-                    </div>
-                  </div>
-                  <StatusBadge status={project["Status"] || 'Unknown'} />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4 mt-4">
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="flex items-center gap-3">
-                      <Calendar className="h-5 w-5 text-gray-400" />
-                      <div>
-                        <p className="text-sm font-medium">Start Date</p>
-                        <p className="text-sm text-gray-500">{formatDate(project["Date de début"])}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Calendar className="h-5 w-5 text-gray-400" />
-                      <div>
-                        <p className="text-sm font-medium">Deadline</p>
-                        <p className="text-sm text-gray-500">{formatDate(project["Deadline"])}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Clock className="h-5 w-5 text-gray-400" />
-                      <div>
-                        <p className="text-sm font-medium">Duration</p>
-                        <p className="text-sm text-gray-500">{project["Duration"] || 'N/A'}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Building className="h-5 w-5 text-gray-400" />
-                      <div>
-                        <p className="text-sm font-medium">Company</p>
-                        <p className="text-sm text-gray-500">{project["Company"] || 'N/A'}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <User className="h-5 w-5 text-gray-400" />
-                      <div>
-                        <p className="text-sm font-medium">Phase</p>
-                        <p className="text-sm text-gray-500">{project["Phase"] || 'N/A'}</p>
-                      </div>
-                    </div>
-                    {briefUrl && (
-                      <div className="flex items-center gap-3">
-                        <NotepadText className="h-5 w-5 text-gray-400" />
-                        <div>
-                          <p className="text-sm font-medium">Brief</p>
-                          <p className="text-sm text-gray-500 flex items-center gap-2">
-                            Available
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="h-6 px-2 py-1" 
-                              onClick={() => openBrief(briefUrl)}
-                            >
-                              <ExternalLink className="h-3.5 w-3.5" />
-                            </Button>
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <ProjectInfo project={project} />
             
-            {project["Script"] && <CollapsiblePreview title="Script Preview" icon={<FileText className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Copywriting" projectStatus={project["Status"]} externalUrl={project["Script"]} projectId={project["ID-PROJET"] || ''}>
-                <ScriptPreview scriptUrl={project["Script"]} />
-              </CollapsiblePreview>}
-            
-            {shouldShowVoiceOver && <CollapsiblePreview 
-                title="Voice-Over Preview" 
-                icon={<Mic className="h-5 w-5" />} 
-                currentPhase={project["Phase"] || ''} 
-                relevantPhase="Voice" 
-                projectStatus={project["Status"]} 
-                projectId={project["ID-PROJET"] || ''}
-                initialOpen={isVoiceOverPhase}
-              >
-                <VoiceOverPreview voiceFileUrl={project["Voice-file-url"] || ''} phase={project["Phase"] || ''} status={project["Status"] || ''} projectId={project["ID-PROJET"] || ''} languages={project["Langues"] || ''} />
-              </CollapsiblePreview>}
-            
-            {project["Storyboard"] && <CollapsiblePreview title="Storyboard Preview" icon={<Image className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Storyboard" projectStatus={project["Status"]} externalUrl={project["Storyboard"]} projectId={project["ID-PROJET"] || ''}>
-                <StoryboardPreview storyboardUrl={project["Storyboard"]} />
-              </CollapsiblePreview>}
-            
-            {project["Animation"] && <CollapsiblePreview title="Animation Preview" icon={<Film className="h-5 w-5" />} currentPhase={project["Phase"] || ''} relevantPhase="Animation" projectStatus={project["Status"]} externalUrl={project["Animation"]} projectId={project["ID-PROJET"] || ''}>
-                <AnimationPreview animationUrl={project["Animation"]} />
-              </CollapsiblePreview>}
-            
-            {project["Variations-url"] && <CollapsiblePreview 
-                title="Variations Preview" 
-                icon={<Package className="h-5 w-5" />} 
-                currentPhase={project["Phase"] || ''} 
-                relevantPhase="Variations" 
-                projectStatus={project["Status"]} 
-                externalUrl={project["Variations-url"]} 
-                projectId={project["ID-PROJET"] || ''}
-                initialOpen={isVariationsPhase}
-              >
-                <VariationsPreview variationsUrl={project["Variations-url"]} />
-              </CollapsiblePreview>}
+            <ProjectContentSections project={project} />
           </div>
           
           <div className="space-y-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <h3 className="font-semibold">Project Status</h3>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm font-medium">Current Status</p>
-                    <StatusBadge status={project["Status"] || 'Unknown'} className="mt-1" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Phase</p>
-                    <p className="text-sm mt-1">{project["Phase"] || 'N/A'}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <ProjectStatusCard project={project} />
             
-            <ProjectCalendar startDate={project["Date de début"]} endDate={project["Deadline"]} />
+            <ProjectCalendar 
+              startDate={project["Date de début"]} 
+              endDate={project["Deadline"]} 
+            />
           </div>
         </div>
       </main>
       
       <AppFooter />
-    </div>;
+    </div>
+  );
 };
 
 export default ProjectDetails;
