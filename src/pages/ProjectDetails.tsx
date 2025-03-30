@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Calendar, Building, User, Clock, FileText, Image, Film, Mic, Package } from 'lucide-react';
+import { Calendar, Building, User, Clock, FileText, Image, Film, Mic, Package, NotepadText, ExternalLink } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/StatusBadge';
@@ -98,8 +99,15 @@ const ProjectDetails = () => {
   
   const isVoiceOverPhase = project["Phase"]?.includes("🎙️Voice-over") || false;
   const isVariationsPhase = project["Phase"]?.includes("📦 Variations") || false;
+  const briefUrl = project["Brief main"] || '';
 
   console.log('Languages for project:', project["Langues"]);
+
+  const openBrief = (url: string) => {
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
 
   return <div className="flex min-h-screen flex-col bg-gray-50">
       <AppHeader 
@@ -173,6 +181,22 @@ const ProjectDetails = () => {
                         <p className="text-sm text-gray-500">{project["Phase"] || 'N/A'}</p>
                       </div>
                     </div>
+                    {briefUrl && (
+                      <div className="flex items-center gap-3">
+                        <NotepadText className="h-5 w-5 text-gray-400" />
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-medium">Brief</p>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-6 px-2 py-1" 
+                            onClick={() => openBrief(briefUrl)}
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
