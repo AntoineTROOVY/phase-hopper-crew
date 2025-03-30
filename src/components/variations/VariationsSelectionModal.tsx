@@ -1,10 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import { Package, Check, AlertCircle } from 'lucide-react';
+import { Package, Check, AlertCircle, Plus } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import VoiceOverSelectionModal from '@/components/voice/VoiceOverSelectionModal';
 
 interface AspectRatioOption {
   id: string;
@@ -17,6 +20,7 @@ interface AspectRatioOption {
 interface LanguageSelection {
   language: string;
   selectedRatio: string | null;
+  voiceOver: string | null;
 }
 
 interface VariationsSelectionModalProps {
@@ -65,6 +69,16 @@ const aspectRatioOptions: AspectRatioOption[] = [
   }
 ];
 
+const availableLanguages = [
+  'French',
+  'English',
+  'Italian',
+  'Spanish',
+  'Arabic',
+  'Dutch',
+  'German'
+];
+
 const VariationsSelectionModal = ({ 
   open, 
   onOpenChange, 
@@ -75,6 +89,10 @@ const VariationsSelectionModal = ({
   const [languageSelections, setLanguageSelections] = useState<LanguageSelection[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [addLanguageOpen, setAddLanguageOpen] = useState(false);
+  const [selectedNewLanguage, setSelectedNewLanguage] = useState<string | null>(null);
+  const [voiceOverModalOpen, setVoiceOverModalOpen] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -83,7 +101,8 @@ const VariationsSelectionModal = ({
       setLanguageSelections(
         languageArray.map(language => ({
           language,
-          selectedRatio: null
+          selectedRatio: null,
+          voiceOver: null
         }))
       );
     }
@@ -99,6 +118,64 @@ const VariationsSelectionModal = ({
     );
   };
 
+  const handleAddLanguage = () => {
+    if (!selectedNewLanguage) return;
+    
+    // Check if language already exists
+    if (languageSelections.some(item => item.language === selectedNewLanguage)) {
+      toast({
+        title: "Language already added",
+        description: `${selectedNewLanguage} is already in your selections.`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLanguageSelections(prev => [
+      ...prev, 
+      { 
+        language: selectedNewLanguage, 
+        selectedRatio: null,
+        voiceOver: null
+      }
+    ]);
+    
+    setAddLanguageOpen(false);
+    setSelectedNewLanguage(null);
+  };
+
+  const handleOpenVoiceOverModal = (language: string) => {
+    setCurrentLanguage(language);
+    setVoiceOverModalOpen(true);
+  };
+
+  const handleVoiceOverSelected = (voiceName: string) => {
+    if (!currentLanguage) return;
+
+    setLanguageSelections(prev => 
+      prev.map(item => 
+        item.language === currentLanguage 
+          ? { ...item, voiceOver: voiceName } 
+          : item
+      )
+    );
+    setVoiceOverModalOpen(false);
+  };
+
+  const handleRemoveLanguage = (language: string) => {
+    // Only allow removing added languages, not original ones
+    if (languages && languages.split(',').map(lang => lang.trim()).includes(language)) {
+      toast({
+        title: "Cannot remove",
+        description: "You cannot remove languages from the original project.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLanguageSelections(prev => prev.filter(item => item.language !== language));
+  };
+
   const handleSubmit = async () => {
     if (!projectId) {
       toast({
@@ -109,11 +186,11 @@ const VariationsSelectionModal = ({
       return;
     }
 
-    // Check if all languages have a selection
-    const incomplete = languageSelections.some(item => !item.selectedRatio);
+    // Check if all languages have a selection and voice over
+    const incomplete = languageSelections.some(item => !item.selectedRatio || !item.voiceOver);
     
     if (incomplete) {
-      setError("Please select an aspect ratio for each language.");
+      setError("Please select an aspect ratio and voice-over for each language.");
       return;
     }
 
@@ -126,7 +203,8 @@ const VariationsSelectionModal = ({
         "ID-PROJET": projectId,
         "variations": languageSelections.map(item => ({
           language: item.language,
-          aspectRatio: item.selectedRatio
+          aspectRatio: item.selectedRatio,
+          voiceOver: item.voiceOver
         }))
       };
 
@@ -162,77 +240,177 @@ const VariationsSelectionModal = ({
     return selection?.selectedRatio === ratioId;
   };
 
+  const getSelectedLanguages = () => {
+    return languageSelections.map(item => item.language);
+  };
+
+  const getAvailableLanguages = () => {
+    const selectedLanguages = getSelectedLanguages();
+    return availableLanguages.filter(lang => !selectedLanguages.includes(lang));
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-xl">Select Variations</DialogTitle>
-        </DialogHeader>
-        
-        <div className="bg-blue-50 p-4 rounded-md mb-4">
-          <h3 className="font-medium mb-2">Select one aspect ratio variation for each language:</h3>
-          <p className="text-sm text-blue-600">
-            These additional formats will be created alongside your main video.
-          </p>
-        </div>
-        
-        {error && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-        
-        <div className="space-y-6">
-          {languageSelections.map((item, index) => (
-            <div key={index} className="border rounded-lg p-4 bg-white">
-              <h3 className="font-medium text-lg mb-4">{item.language}</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {aspectRatioOptions.map((ratio) => (
-                  <div 
-                    key={ratio.id}
-                    className={`border rounded-lg p-3 cursor-pointer transition-all ${
-                      isRatioSelected(item.language, ratio.id) 
-                        ? 'border-amber-500 bg-amber-50' 
-                        : 'hover:border-gray-400'
-                    }`}
-                    onClick={() => handleRatioSelection(item.language, ratio.id)}
-                  >
-                    <div className="flex justify-between items-center mb-2">
-                      <h4 className="font-medium">{ratio.name}</h4>
-                      {isRatioSelected(item.language, ratio.id) && (
-                        <Check className="h-5 w-5 text-amber-500" />
-                      )}
-                    </div>
-                    
-                    <div className="relative h-32 w-full mb-2 flex items-center justify-center bg-gray-50 rounded overflow-hidden">
-                      <img 
-                        src={ratio.image} 
-                        alt={ratio.name} 
-                        className="max-h-full max-w-full object-contain"
-                      />
-                    </div>
-                    
-                    <p className="text-sm text-gray-500">{ratio.description}</p>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Select Variations</DialogTitle>
+          </DialogHeader>
+          
+          <div className="bg-blue-50 p-4 rounded-md mb-4">
+            <h3 className="font-medium mb-2">Select one aspect ratio variation and voice-over for each language:</h3>
+            <p className="text-sm text-blue-600">
+              These additional formats will be created alongside your main video.
+            </p>
+          </div>
+          
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          
+          <div className="space-y-6">
+            {languageSelections.map((item, index) => (
+              <div key={index} className="border rounded-lg p-4 bg-white">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-medium text-lg">{item.language}</h3>
+                  {!languages?.includes(item.language) && (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleRemoveLanguage(item.language)}
+                    >
+                      Remove
+                    </Button>
+                  )}
+                </div>
+
+                <div className="mb-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <h4 className="font-medium">Voice-Over Selection</h4>
+                    <Button 
+                      variant={item.voiceOver ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleOpenVoiceOverModal(item.language)}
+                    >
+                      {item.voiceOver ? "Change Voice" : "Select Voice"}
+                    </Button>
                   </div>
-                ))}
+                  {item.voiceOver ? (
+                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-md">
+                      <p>Selected voice: <span className="font-medium">{item.voiceOver}</span></p>
+                    </div>
+                  ) : (
+                    <div className="p-3 bg-gray-50 border border-gray-200 rounded-md text-gray-500">
+                      No voice-over selected
+                    </div>
+                  )}
+                </div>
+                
+                <h4 className="font-medium mb-2">Format Selection</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {aspectRatioOptions.map((ratio) => (
+                    <div 
+                      key={ratio.id}
+                      className={`border rounded-lg p-3 cursor-pointer transition-all ${
+                        isRatioSelected(item.language, ratio.id) 
+                          ? 'border-amber-500 bg-amber-50' 
+                          : 'hover:border-gray-400'
+                      }`}
+                      onClick={() => handleRatioSelection(item.language, ratio.id)}
+                    >
+                      <div className="flex justify-between items-center mb-2">
+                        <h4 className="font-medium">{ratio.name}</h4>
+                        {isRatioSelected(item.language, ratio.id) && (
+                          <Check className="h-5 w-5 text-amber-500" />
+                        )}
+                      </div>
+                      
+                      <div className="relative h-32 w-full mb-2 flex items-center justify-center bg-gray-50 rounded overflow-hidden">
+                        <img 
+                          src={ratio.image} 
+                          alt={ratio.name} 
+                          className="max-h-full max-w-full object-contain"
+                        />
+                      </div>
+                      
+                      <p className="text-sm text-gray-500">{ratio.description}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
+            ))}
+          </div>
+          
+          {getAvailableLanguages().length > 0 && (
+            <div className="mt-4">
+              <Button 
+                variant="outline" 
+                className="flex items-center gap-2"
+                onClick={() => setAddLanguageOpen(true)}
+              >
+                <Plus className="h-4 w-4" />
+                Add Language
+              </Button>
             </div>
-          ))}
-        </div>
-        
-        <div className="mt-6 flex justify-end">
-          <Button 
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="min-w-32"
-          >
-            {isSubmitting ? "Processing..." : "Request variations"}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+          )}
+          
+          <div className="mt-6 flex justify-end">
+            <Button 
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="min-w-32"
+            >
+              {isSubmitting ? "Processing..." : "Request variations"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Language Sheet */}
+      <Sheet open={addLanguageOpen} onOpenChange={setAddLanguageOpen}>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Add Language</SheetTitle>
+          </SheetHeader>
+          <div className="py-6">
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Select Language</label>
+              <Select onValueChange={setSelectedNewLanguage}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose a language" />
+                </SelectTrigger>
+                <SelectContent>
+                  {getAvailableLanguages().map((lang) => (
+                    <SelectItem key={lang} value={lang}>{lang}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button 
+              onClick={handleAddLanguage}
+              disabled={!selectedNewLanguage}
+              className="w-full"
+            >
+              Add Language
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Voice Over Selection Modal */}
+      <VoiceOverSelectionModal 
+        open={voiceOverModalOpen}
+        onOpenChange={setVoiceOverModalOpen}
+        projectId={projectId}
+        languages={currentLanguage || undefined}
+        onSelectionComplete={() => {
+          // We'll handle selection directly via callback
+        }}
+      />
+    </>
   );
 };
 

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Filter, Check, AlertCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -25,6 +24,7 @@ interface VoiceOverSelectionModalProps {
   projectId?: string;
   languages?: string;
   onSelectionComplete?: () => void;
+  onVoiceSelected?: (voiceName: string) => void;
 }
 
 const VoiceOverSelectionModal = ({ 
@@ -32,7 +32,8 @@ const VoiceOverSelectionModal = ({
   onOpenChange, 
   projectId, 
   languages,
-  onSelectionComplete 
+  onSelectionComplete,
+  onVoiceSelected
 }: VoiceOverSelectionModalProps) => {
   const [voiceOvers, setVoiceOvers] = useState<VoiceOver[]>([]);
   const [filteredVoiceOvers, setFilteredVoiceOvers] = useState<VoiceOver[]>([]);
@@ -101,6 +102,11 @@ const VoiceOverSelectionModal = ({
   };
 
   const toggleVoiceOverSelection = (voiceOverName: string) => {
+    if (onVoiceSelected) {
+      setSelectedVoiceOvers([voiceOverName]);
+      return;
+    }
+
     setSelectedVoiceOvers(prev => {
       if (prev.includes(voiceOverName)) {
         return prev.filter(name => name !== voiceOverName);
@@ -114,6 +120,11 @@ const VoiceOverSelectionModal = ({
   };
 
   const handleConfirmSelection = async () => {
+    if (onVoiceSelected && selectedVoiceOvers.length === 1) {
+      onVoiceSelected(selectedVoiceOvers[0]);
+      return;
+    }
+
     if (!projectId) {
       toast({
         title: "Error",
@@ -178,7 +189,7 @@ const VoiceOverSelectionModal = ({
           <DialogTitle className="text-xl">Select a Voice-Over</DialogTitle>
         </DialogHeader>
         
-        {projectLanguages.length > 0 && (
+        {projectLanguages.length > 0 && !onVoiceSelected && (
           <div className="bg-blue-50 p-4 rounded-md mb-4">
             <h3 className="font-medium mb-2">You selected the following languages for your video:</h3>
             <ul className="list-disc pl-5 mb-2">
@@ -191,6 +202,15 @@ const VoiceOverSelectionModal = ({
             </p>
             <p className="text-sm text-blue-600 mt-1">
               Selected: {selectedVoiceOvers.length} of {projectLanguages.length}
+            </p>
+          </div>
+        )}
+        
+        {onVoiceSelected && (
+          <div className="bg-blue-50 p-4 rounded-md mb-4">
+            <h3 className="font-medium mb-2">Select a voice-over for this language:</h3>
+            <p className="font-medium text-blue-700">
+              {languages}
             </p>
           </div>
         )}
@@ -304,10 +324,14 @@ const VoiceOverSelectionModal = ({
         <div className="mt-6 flex justify-end">
           <Button 
             onClick={handleConfirmSelection}
-            disabled={selectedVoiceOvers.length === 0 || isSubmitting}
+            disabled={
+              selectedVoiceOvers.length === 0 || 
+              isSubmitting ||
+              (!onVoiceSelected && selectedVoiceOvers.length !== projectLanguages.length)
+            }
             className="min-w-32"
           >
-            {isSubmitting ? "Processing..." : "Confirm selection"}
+            {isSubmitting ? "Processing..." : onVoiceSelected ? "Select Voice" : "Confirm selection"}
           </Button>
         </div>
       </DialogContent>
