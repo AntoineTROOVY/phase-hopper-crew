@@ -33,7 +33,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
               <img 
                 src={interfaceLogo} 
                 alt={interfaceName} 
-                className="h-12 w-auto object-contain" 
+                className="h-16 w-auto object-contain" 
                 onError={(e) => {
                   console.error('Error loading interface logo:', e);
                   e.currentTarget.style.display = 'none';
