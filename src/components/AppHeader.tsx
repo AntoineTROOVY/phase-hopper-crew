@@ -29,7 +29,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
       <div className="container mx-auto py-4">
         <div className="flex items-center">
           {interfaceLogo && (
-            <div className="flex-shrink-0 -ml-4 mr-6">
+            <div className="mr-8 -ml-4">
               <img 
                 src={interfaceLogo} 
                 alt={interfaceName} 
