@@ -184,16 +184,19 @@ const ProjectDetails = () => {
                     {briefUrl && (
                       <div className="flex items-center gap-3">
                         <NotepadText className="h-5 w-5 text-gray-400" />
-                        <div className="flex items-center gap-2">
+                        <div>
                           <p className="text-sm font-medium">Brief</p>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="h-6 px-2 py-1" 
-                            onClick={() => openBrief(briefUrl)}
-                          >
-                            <ExternalLink className="h-3.5 w-3.5" />
-                          </Button>
+                          <p className="text-sm text-gray-500 flex items-center gap-2">
+                            Available
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-6 px-2 py-1" 
+                              onClick={() => openBrief(briefUrl)}
+                            >
+                              <ExternalLink className="h-3.5 w-3.5" />
+                            </Button>
+                          </p>
                         </div>
                       </div>
                     )}
