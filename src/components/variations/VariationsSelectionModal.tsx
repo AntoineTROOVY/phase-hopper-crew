@@ -260,20 +260,13 @@ const VariationsSelectionModal = ({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto p-6">
+          <DialogHeader className="mb-4">
             <DialogTitle className="text-xl">Select Variations</DialogTitle>
             <DialogDescription className="text-sm text-gray-600">
-              Select one aspect ratio variation for each language. For additional languages, you'll need to select a voice-over as well.
+              Choose your format variations for each language
             </DialogDescription>
           </DialogHeader>
-          
-          <div className="bg-blue-50 p-4 rounded-md mb-4">
-            <h3 className="font-medium mb-2">Select format and voice-over for each language:</h3>
-            <p className="text-sm text-blue-600">
-              These additional formats will be created alongside your main video.
-            </p>
-          </div>
           
           {error && (
             <Alert variant="destructive" className="mb-4">
@@ -282,101 +275,93 @@ const VariationsSelectionModal = ({
             </Alert>
           )}
           
-          <div className="space-y-6">
+          <div className="space-y-4">
             {languageSelections.map((item, index) => (
               <div key={index} className="border rounded-lg p-4 bg-white">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-medium text-lg">{item.language}</h3>
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="font-medium">{item.language}</h3>
                   {isLanguageAddedByClient(item.language) && (
                     <Button 
-                      variant="outline" 
+                      variant="ghost" 
                       size="sm"
                       onClick={() => handleRemoveLanguage(item.language)}
                     >
-                      <X className="h-4 w-4 mr-1" />
-                      Remove
+                      <X className="h-4 w-4" />
                     </Button>
                   )}
                 </div>
 
                 {/* Voice-Over Selection - Only visible for client-added languages */}
                 {isLanguageAddedByClient(item.language) && (
-                  <div className="mb-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <h4 className="font-medium">Voice-Over Selection</h4>
+                  <div className="mb-3">
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm text-gray-500">Voice-Over</p>
                       <Button 
-                        variant={item.voiceOver ? "default" : "outline"}
+                        variant={item.voiceOver ? "secondary" : "outline"}
                         size="sm"
                         onClick={() => handleOpenVoiceOverModal(item.language)}
                       >
-                        {item.voiceOver ? "Change Voice" : "Select Voice"}
+                        {item.voiceOver ? item.voiceOver : "Select Voice"}
                       </Button>
                     </div>
-                    {item.voiceOver ? (
-                      <div className="p-3 bg-amber-50 border border-amber-200 rounded-md">
-                        <p>Selected voice: <span className="font-medium">{item.voiceOver}</span></p>
-                      </div>
-                    ) : (
-                      <div className="p-3 bg-gray-50 border border-gray-200 rounded-md text-gray-500">
-                        No voice-over selected
-                      </div>
-                    )}
                   </div>
                 )}
                 
-                <h4 className="font-medium mb-2">Format Selection</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {aspectRatioOptions.map((ratio) => (
-                    <div 
-                      key={ratio.id}
-                      className={`border rounded-lg p-3 cursor-pointer transition-all ${
-                        isRatioSelected(item.language, ratio.id) 
-                          ? 'border-amber-500 bg-amber-50' 
-                          : 'hover:border-gray-400'
-                      }`}
-                      onClick={() => handleRatioSelection(item.language, ratio.id)}
-                    >
-                      <div className="flex justify-between items-center mb-2">
-                        <h4 className="font-medium">{ratio.name}</h4>
-                        {isRatioSelected(item.language, ratio.id) && (
-                          <Check className="h-5 w-5 text-amber-500" />
-                        )}
+                <div className="mb-2">
+                  <p className="text-sm text-gray-500 mb-2">Format</p>
+                  <div className="grid grid-cols-5 gap-2">
+                    {aspectRatioOptions.map((ratio) => (
+                      <div 
+                        key={ratio.id}
+                        className={`flex flex-col items-center justify-center p-2 border rounded cursor-pointer transition-all ${
+                          isRatioSelected(item.language, ratio.id) 
+                            ? 'border-blue-500 bg-blue-50' 
+                            : 'hover:border-gray-300'
+                        }`}
+                        onClick={() => handleRatioSelection(item.language, ratio.id)}
+                        title={ratio.description}
+                      >
+                        <div className="relative w-full aspect-square mb-1 flex items-center justify-center">
+                          {isRatioSelected(item.language, ratio.id) && (
+                            <div className="absolute top-0 right-0 -mt-1 -mr-1 bg-blue-500 rounded-full p-0.5">
+                              <Check className="h-3 w-3 text-white" />
+                            </div>
+                          )}
+                          <img 
+                            src={ratio.image} 
+                            alt={ratio.name} 
+                            className="max-h-full max-w-full object-contain"
+                          />
+                        </div>
+                        <span className="text-xs text-center truncate w-full">
+                          {ratio.name.replace(' (', '\n(')}
+                        </span>
                       </div>
-                      
-                      <div className="relative h-32 w-full mb-2 flex items-center justify-center bg-gray-50 rounded overflow-hidden">
-                        <img 
-                          src={ratio.image} 
-                          alt={ratio.name} 
-                          className="max-h-full max-w-full object-contain"
-                        />
-                      </div>
-                      
-                      <p className="text-sm text-gray-500">{ratio.description}</p>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
           
-          {getAvailableLanguages().length > 0 && (
-            <div className="mt-4">
+          <div className="mt-4 flex items-center justify-between">
+            {getAvailableLanguages().length > 0 ? (
               <Button 
                 variant="outline" 
-                className="flex items-center gap-2"
+                className="flex items-center gap-1"
                 onClick={() => setAddLanguageOpen(true)}
+                size="sm"
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-3 w-3" />
                 Add Language
               </Button>
-            </div>
-          )}
-          
-          <div className="mt-6 flex justify-end">
+            ) : (
+              <div></div>
+            )}
+            
             <Button 
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="min-w-32"
             >
               {isSubmitting ? "Processing..." : "Request variations"}
             </Button>
@@ -386,13 +371,12 @@ const VariationsSelectionModal = ({
 
       {/* Add Language Sheet */}
       <Sheet open={addLanguageOpen} onOpenChange={setAddLanguageOpen}>
-        <SheetContent>
+        <SheetContent className="sm:max-w-xs">
           <SheetHeader>
             <SheetTitle>Add Language</SheetTitle>
           </SheetHeader>
           <div className="py-6">
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Select Language</label>
               <Select onValueChange={setSelectedNewLanguage}>
                 <SelectTrigger>
                   <SelectValue placeholder="Choose a language" />
