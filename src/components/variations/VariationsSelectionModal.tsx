@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Package, Check, AlertCircle, Plus, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -121,7 +120,6 @@ const VariationsSelectionModal = ({
   const handleAddLanguage = () => {
     if (!selectedNewLanguage) return;
     
-    // Check if language already exists
     if (languageSelections.some(item => item.language === selectedNewLanguage)) {
       toast({
         title: "Language already added",
@@ -149,7 +147,6 @@ const VariationsSelectionModal = ({
     setVoiceOverModalOpen(true);
   };
 
-  // Handle voice-over selection without HTTP request
   const handleVoiceOverSelected = (voiceName: string) => {
     if (!currentLanguage) return;
 
@@ -164,7 +161,6 @@ const VariationsSelectionModal = ({
   };
 
   const handleRemoveLanguage = (language: string) => {
-    // Only allow removing added languages, not original ones
     if (languages && languages.split(',').map(lang => lang.trim()).includes(language)) {
       toast({
         title: "Cannot remove",
@@ -187,7 +183,6 @@ const VariationsSelectionModal = ({
       return;
     }
 
-    // Check if all languages have a selection and voice over
     const incomplete = languageSelections.some(item => !item.selectedRatio || (!item.voiceOver && isLanguageAddedByClient(item.language)));
     
     if (incomplete) {
@@ -199,7 +194,6 @@ const VariationsSelectionModal = ({
     setError(null);
 
     try {
-      // Prepare payload with project ID and selected aspect ratios
       const payload = {
         "ID-PROJET": projectId,
         "variations": languageSelections.map(item => ({
@@ -209,10 +203,8 @@ const VariationsSelectionModal = ({
         }))
       };
 
-      // In a real implementation, this would send data to a backend
       console.log("Variations submission payload:", payload);
       
-      // Simulate API call with timeout
       setTimeout(() => {
         toast({
           title: "Variations requested",
@@ -250,9 +242,8 @@ const VariationsSelectionModal = ({
     return availableLanguages.filter(lang => !selectedLanguages.includes(lang));
   };
 
-  // Helper to determine if a language was added by the client
   const isLanguageAddedByClient = (language: string) => {
-    if (!languages) return true; // If no original languages, all are added
+    if (!languages) return true;
     const originalLanguages = languages.split(',').map(lang => lang.trim());
     return !originalLanguages.includes(language);
   };
@@ -291,7 +282,6 @@ const VariationsSelectionModal = ({
                   )}
                 </div>
 
-                {/* Voice-Over Selection - Only visible for client-added languages */}
                 {isLanguageAddedByClient(item.language) && (
                   <div className="mb-3">
                     <div className="flex justify-between items-center">
@@ -369,7 +359,6 @@ const VariationsSelectionModal = ({
         </DialogContent>
       </Dialog>
 
-      {/* Add Language Sheet */}
       <Sheet open={addLanguageOpen} onOpenChange={setAddLanguageOpen}>
         <SheetContent className="sm:max-w-xs">
           <SheetHeader>
@@ -399,7 +388,6 @@ const VariationsSelectionModal = ({
         </SheetContent>
       </Sheet>
 
-      {/* Custom Voice Over Selection Modal for Variations */}
       {voiceOverModalOpen && (
         <VoiceOverSelectionModal 
           open={voiceOverModalOpen}

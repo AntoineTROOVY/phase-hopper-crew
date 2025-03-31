@@ -228,24 +228,24 @@ const Dashboard = () => {
               <ProjectFilter searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
               
               <div className="flex flex-wrap gap-2 items-center w-full sm:w-auto">
-                <Select value={phaseFilter || ''} onValueChange={(value) => setPhaseFilter(value || null)}>
+                <Select value={phaseFilter || 'all'} onValueChange={(value) => setPhaseFilter(value === 'all' ? null : value)}>
                   <SelectTrigger className="w-[130px] bg-white h-9">
                     <SelectValue placeholder="Phase" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Phases</SelectItem>
+                    <SelectItem value="all">All Phases</SelectItem>
                     {phases.map((phase) => (
                       <SelectItem key={phase} value={phase}>{phase}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
                 
-                <Select value={statusFilter || ''} onValueChange={(value) => setStatusFilter(value || null)}>
+                <Select value={statusFilter || 'all'} onValueChange={(value) => setStatusFilter(value === 'all' ? null : value)}>
                   <SelectTrigger className="w-[130px] bg-white h-9">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Statuses</SelectItem>
+                    <SelectItem value="all">All Statuses</SelectItem>
                     {statuses.map((status) => (
                       <SelectItem key={status} value={status}>{status}</SelectItem>
                     ))}
