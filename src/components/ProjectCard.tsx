@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Calendar, Building, User, Clock, Image } from 'lucide-react';
+import { Calendar, Building, User, Clock } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import StatusBadge from './StatusBadge';
@@ -38,12 +38,18 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
     return name.slice(0, 2).toUpperCase();
   };
 
+  // Check if the project is in review status
+  const isInReview = project["Status"]?.toLowerCase().includes('review') || false;
+  
+  // Check if the project is completed (Phase is "📦 Variations" and Status is "Approved")
+  const isCompleted = project["Phase"] === '📦 Variations' && project["Status"] === 'Approved';
+
   return (
     <Link 
       to={projectLink}
       className="block transition-transform hover:scale-[1.02] focus:outline-none"
     >
-      <Card className="h-full">
+      <Card className={`h-full ${isInReview ? 'ring-2 ring-orange-500' : ''} ${isCompleted ? 'bg-green-50' : ''}`}>
         <CardHeader className="p-4 pb-2">
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
