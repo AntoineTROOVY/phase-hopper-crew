@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Calendar, Building, User, Clock } from 'lucide-react';
@@ -6,18 +5,16 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import StatusBadge from './StatusBadge';
 import { PipelineProject } from '@/services/projectService';
-
 interface ProjectCardProps {
   project: PipelineProject;
 }
-
-const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({
+  project
+}) => {
   const [searchParams] = useSearchParams();
   const slackId = searchParams.get('slack-id');
-  
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return 'Not set';
-    
     try {
       return new Date(dateString).toLocaleDateString();
     } catch (e) {
@@ -40,23 +37,16 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
 
   // Check if the project is in review status
   const isInReview = project["Status"]?.toLowerCase().includes('review') || false;
-  
+
   // Check if the project is completed (Phase is "📦 Variations" and Status is "Approved")
   const isCompleted = project["Phase"] === '📦 Variations' && project["Status"] === 'Approved';
-
-  return (
-    <Link 
-      to={projectLink}
-      className="block transition-transform hover:scale-[1.02] focus:outline-none"
-    >
+  return <Link to={projectLink} className="block transition-transform hover:scale-[1.02] focus:outline-none">
       <Card className={`h-full ${isInReview ? 'ring-2 ring-orange-500' : ''} ${isCompleted ? 'bg-green-50' : ''}`}>
         <CardHeader className="p-4 pb-2">
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
               <Avatar className="h-10 w-10 border">
-                {project["Logo url"] ? (
-                  <AvatarImage src={project["Logo url"]} alt={project["Company"] || 'Company'} />
-                ) : null}
+                {project["Logo url"] ? <AvatarImage src={project["Logo url"]} alt={project["Company"] || 'Company'} /> : null}
                 <AvatarFallback className="bg-primary-100 text-primary-700">
                   {getCompanyInitials(project["Company"])}
                 </AvatarFallback>
@@ -71,10 +61,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         </CardHeader>
         <CardContent className="p-4 pt-2 pb-2">
           <div className="grid gap-2">
-            <div className="flex items-center gap-2">
-              <Building className="h-4 w-4 text-gray-400" />
-              <span className="text-sm truncate">{project["Client"] || 'No client'}</span>
-            </div>
+            
             <div className="flex items-center gap-2">
               <User className="h-4 w-4 text-gray-400" />
               <span className="text-sm truncate">Phase: {project["Phase"] || 'N/A'}</span>
@@ -96,8 +83,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           </div>
         </CardFooter>
       </Card>
-    </Link>
-  );
+    </Link>;
 };
-
 export default ProjectCard;
