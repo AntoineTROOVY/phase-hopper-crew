@@ -21,6 +21,7 @@ interface LanguageSelection {
   language: string;
   selectedRatio: string | null;
   voiceOver: string | null;
+  isOriginalLanguage: boolean;
 }
 
 interface VariationsSelectionModalProps {
@@ -79,6 +80,14 @@ const availableLanguages = [
   'German'
 ];
 
+const formatMap: Record<string, string> = {
+  '16:9': 'landscape_16_9',
+  '1:1': 'square',
+  '4:5': 'portrait_4_5',
+  '2:3': 'portrait_2_3',
+  '9:16': 'portrait_9_16'
+};
+
 const VariationsSelectionModal = ({ 
   open, 
   onOpenChange, 
@@ -93,6 +102,7 @@ const VariationsSelectionModal = ({
   const [selectedNewLanguage, setSelectedNewLanguage] = useState<string | null>(null);
   const [voiceOverModalOpen, setVoiceOverModalOpen] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState<string | null>(null);
+  const [initialFormat, setInitialFormat] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -102,7 +112,8 @@ const VariationsSelectionModal = ({
         languageArray.map(language => ({
           language,
           selectedRatio: null,
-          voiceOver: null
+          voiceOver: null,
+          isOriginalLanguage: true // Mark as original language
         }))
       );
     }
@@ -135,7 +146,8 @@ const VariationsSelectionModal = ({
       { 
         language: selectedNewLanguage, 
         selectedRatio: null,
-        voiceOver: null
+        voiceOver: null,
+        isOriginalLanguage: false // Mark as added language
       }
     ]);
     
@@ -162,7 +174,9 @@ const VariationsSelectionModal = ({
   };
 
   const handleRemoveLanguage = (language: string) => {
-    if (languages && languages.split(',').map(lang => lang.trim()).includes(language)) {
+    const selection = languageSelections.find(item => item.language === language);
+    
+    if (selection?.isOriginalLanguage) {
       toast({
         title: "Cannot remove",
         description: "You cannot remove languages from the original project.",
@@ -184,7 +198,10 @@ const VariationsSelectionModal = ({
       return;
     }
 
-    const incomplete = languageSelections.some(item => !item.selectedRatio || (!item.voiceOver && isLanguageAddedByClient(item.language)));
+    const incomplete = languageSelections.some(
+      item => !item.selectedRatio || 
+      (!item.voiceOver && !item.isOriginalLanguage)
+    );
     
     if (incomplete) {
       setError("Please select an aspect ratio and voice-over for each language.");
@@ -196,10 +213,8 @@ const VariationsSelectionModal = ({
 
     try {
       // Separate original and additional languages
-      const originalLanguagesList = languages ? languages.split(',').map(lang => lang.trim()) : [];
-      
       const originalLanguages = languageSelections
-        .filter(item => originalLanguagesList.includes(item.language))
+        .filter(item => item.isOriginalLanguage)
         .map(item => ({
           language: item.language,
           aspectRatio: item.selectedRatio,
@@ -207,7 +222,7 @@ const VariationsSelectionModal = ({
         }));
       
       const additionalLanguages = languageSelections
-        .filter(item => !originalLanguagesList.includes(item.language))
+        .filter(item => !item.isOriginalLanguage)
         .map(item => ({
           language: item.language,
           aspectRatio: item.selectedRatio,
@@ -222,7 +237,7 @@ const VariationsSelectionModal = ({
           language: item.language,
           aspectRatio: item.selectedRatio,
           voiceOver: item.voiceOver,
-          isAdditional: !originalLanguagesList.includes(item.language)
+          isAdditional: !item.isOriginalLanguage
         }))
       };
 
@@ -268,6 +283,19 @@ const VariationsSelectionModal = ({
     }
   };
 
+  // Helper to get filtered aspect ratio options for a language
+  const getFilteredRatioOptionsForLanguage = (language: string) => {
+    const selection = languageSelections.find(item => item.language === language);
+    
+    // If it's an original language and we have an initial format, filter out that format
+    if (selection?.isOriginalLanguage && initialFormat) {
+      return aspectRatioOptions.filter(option => option.id !== formatMap[initialFormat]);
+    }
+    
+    // For new languages, show all formats
+    return aspectRatioOptions;
+  };
+
   const isRatioSelected = (language: string, ratioId: string) => {
     const selection = languageSelections.find(item => item.language === language);
     return selection?.selectedRatio === ratioId;
@@ -280,12 +308,6 @@ const VariationsSelectionModal = ({
   const getAvailableLanguages = () => {
     const selectedLanguages = getSelectedLanguages();
     return availableLanguages.filter(lang => !selectedLanguages.includes(lang));
-  };
-
-  const isLanguageAddedByClient = (language: string) => {
-    if (!languages) return true;
-    const originalLanguages = languages.split(',').map(lang => lang.trim());
-    return !originalLanguages.includes(language);
   };
 
   return (
@@ -311,7 +333,7 @@ const VariationsSelectionModal = ({
               <div key={index} className="border rounded-lg p-4 bg-white">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="font-medium">{item.language}</h3>
-                  {isLanguageAddedByClient(item.language) && (
+                  {!item.isOriginalLanguage && (
                     <Button 
                       variant="ghost" 
                       size="sm"
@@ -322,7 +344,7 @@ const VariationsSelectionModal = ({
                   )}
                 </div>
 
-                {isLanguageAddedByClient(item.language) && (
+                {!item.isOriginalLanguage && (
                   <div className="mb-3">
                     <div className="flex justify-between items-center">
                       <p className="text-sm text-gray-500">Voice-Over</p>
@@ -340,7 +362,7 @@ const VariationsSelectionModal = ({
                 <div className="mb-2">
                   <p className="text-sm text-gray-500 mb-2">Format</p>
                   <div className="grid grid-cols-5 gap-2">
-                    {aspectRatioOptions.map((ratio) => (
+                    {getFilteredRatioOptionsForLanguage(item.language).map((ratio) => (
                       <div 
                         key={ratio.id}
                         className={`flex flex-col items-center justify-center p-2 border rounded cursor-pointer transition-all ${
