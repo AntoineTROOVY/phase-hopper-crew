@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Package, Check, AlertCircle, Plus, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -194,18 +195,55 @@ const VariationsSelectionModal = ({
     setError(null);
 
     try {
-      const payload = {
-        "ID-PROJET": projectId,
-        "variations": languageSelections.map(item => ({
+      // Separate original and additional languages
+      const originalLanguagesList = languages ? languages.split(',').map(lang => lang.trim()) : [];
+      
+      const originalLanguages = languageSelections
+        .filter(item => originalLanguagesList.includes(item.language))
+        .map(item => ({
           language: item.language,
           aspectRatio: item.selectedRatio,
           voiceOver: item.voiceOver
+        }));
+      
+      const additionalLanguages = languageSelections
+        .filter(item => !originalLanguagesList.includes(item.language))
+        .map(item => ({
+          language: item.language,
+          aspectRatio: item.selectedRatio,
+          voiceOver: item.voiceOver
+        }));
+
+      const payload = {
+        "ID-PROJET": projectId,
+        "originalLanguages": originalLanguages,
+        "additionalLanguages": additionalLanguages,
+        "allVariations": languageSelections.map(item => ({
+          language: item.language,
+          aspectRatio: item.selectedRatio,
+          voiceOver: item.voiceOver,
+          isAdditional: !originalLanguagesList.includes(item.language)
         }))
       };
 
       console.log("Variations submission payload:", payload);
       
-      setTimeout(() => {
+      // Send data to the provided webhook
+      const response = await fetch('https://hook.eu2.make.com/fg20rowz6slw99pnpyv310y2ez0esovu', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.status === "confirmed") {
         toast({
           title: "Variations requested",
           description: "Your aspect ratio variations have been requested successfully.",
@@ -217,13 +255,15 @@ const VariationsSelectionModal = ({
         if (onSelectionComplete) {
           onSelectionComplete();
         }
-        
-        setIsSubmitting(false);
-      }, 1000);
-      
+      } else if (data.status === "error") {
+        setError(data.message || "An error occurred while processing your request. Please try again.");
+      } else {
+        setError("Unexpected response from server. Please try again.");
+      }
     } catch (error) {
       console.error('Error submitting variation selection:', error);
       setError("Failed to submit your variation selections. Please try again.");
+    } finally {
       setIsSubmitting(false);
     }
   };

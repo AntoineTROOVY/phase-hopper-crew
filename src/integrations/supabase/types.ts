@@ -327,6 +327,57 @@ export type Database = {
         }
         Relationships: []
       }
+      VARIATIONS: {
+        Row: {
+          Cost: number | null
+          Duration: string | null
+          Format: string | null
+          ID: number
+          Language: string | null
+          "Langues (from Project)": string | null
+          "Link (from Voicer)": string | null
+          "Name (from Voicer)": string | null
+          Phrase: string | null
+          "Phrase copy": string | null
+          Project: string | null
+          "Record-id-project": string | null
+          Voicer: string | null
+          whalesync_postgres_id: string
+        }
+        Insert: {
+          Cost?: number | null
+          Duration?: string | null
+          Format?: string | null
+          ID: number
+          Language?: string | null
+          "Langues (from Project)"?: string | null
+          "Link (from Voicer)"?: string | null
+          "Name (from Voicer)"?: string | null
+          Phrase?: string | null
+          "Phrase copy"?: string | null
+          Project?: string | null
+          "Record-id-project"?: string | null
+          Voicer?: string | null
+          whalesync_postgres_id?: string
+        }
+        Update: {
+          Cost?: number | null
+          Duration?: string | null
+          Format?: string | null
+          ID?: number
+          Language?: string | null
+          "Langues (from Project)"?: string | null
+          "Link (from Voicer)"?: string | null
+          "Name (from Voicer)"?: string | null
+          Phrase?: string | null
+          "Phrase copy"?: string | null
+          Project?: string | null
+          "Record-id-project"?: string | null
+          Voicer?: string | null
+          whalesync_postgres_id?: string
+        }
+        Relationships: []
+      }
       "Voice-overs": {
         Row: {
           Gender: string | null
