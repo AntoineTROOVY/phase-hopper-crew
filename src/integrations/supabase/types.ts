@@ -173,6 +173,7 @@ export type Database = {
       }
       "PIPELINE PROJECTS": {
         Row: {
+          Additionals_formats: string | null
           Animation: string | null
           "Assigned members": string | null
           Autonumber: number | null
@@ -189,7 +190,6 @@ export type Database = {
           Duration: string | null
           Email: string | null
           "First name": string | null
-          Format: string | null
           "Google doc id": string | null
           "Hook varitions": string | null
           "ID-PROJET": string
@@ -224,6 +224,7 @@ export type Database = {
           whalesync_postgres_id: string
         }
         Insert: {
+          Additionals_formats?: string | null
           Animation?: string | null
           "Assigned members"?: string | null
           Autonumber?: number | null
@@ -240,7 +241,6 @@ export type Database = {
           Duration?: string | null
           Email?: string | null
           "First name"?: string | null
-          Format?: string | null
           "Google doc id"?: string | null
           "Hook varitions"?: string | null
           "ID-PROJET": string
@@ -275,6 +275,7 @@ export type Database = {
           whalesync_postgres_id?: string
         }
         Update: {
+          Additionals_formats?: string | null
           Animation?: string | null
           "Assigned members"?: string | null
           Autonumber?: number | null
@@ -291,7 +292,6 @@ export type Database = {
           Duration?: string | null
           Email?: string | null
           "First name"?: string | null
-          Format?: string | null
           "Google doc id"?: string | null
           "Hook varitions"?: string | null
           "ID-PROJET"?: string

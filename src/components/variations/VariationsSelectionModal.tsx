@@ -8,7 +8,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import VoiceOverSelectionModal from '@/components/voice/VoiceOverSelectionModal';
-import { fetchProjectById } from '@/services/projectService';
 
 interface AspectRatioOption {
   id: string;
@@ -22,7 +21,6 @@ interface LanguageSelection {
   language: string;
   selectedRatio: string | null;
   voiceOver: string | null;
-  initialFormat?: string | null;
 }
 
 interface VariationsSelectionModalProps {
@@ -71,17 +69,6 @@ const aspectRatioOptions: AspectRatioOption[] = [
   }
 ];
 
-const formatToRatioId = (format: string): string | null => {
-  switch(format.trim()) {
-    case '1:1': return 'square';
-    case '2:3': return 'portrait_2_3';
-    case '4:5': return 'portrait_4_5';
-    case '9:16': return 'portrait_9_16';
-    case '16:9': return 'landscape_16_9';
-    default: return null;
-  }
-};
-
 const availableLanguages = [
   'French',
   'English',
@@ -106,103 +93,20 @@ const VariationsSelectionModal = ({
   const [selectedNewLanguage, setSelectedNewLanguage] = useState<string | null>(null);
   const [voiceOverModalOpen, setVoiceOverModalOpen] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState<string | null>(null);
-  const [initialFormats, setInitialFormats] = useState<Map<string, string>>(new Map());
   const { toast } = useToast();
 
-  // Function to fetch and extract initial formats for languages
-  const fetchInitialFormats = async () => {
-    if (!projectId) return;
-
-    try {
-      const project = await fetchProjectById(projectId);
-      
-      if (project && project["Variations-url"]) {
-        const formatsString = project["Variations-url"];
-        
-        // Parse the formats string (expecting format like "EN:16:9,FR:1:1,ES:9:16")
-        const formatPairs = formatsString.split(',');
-        const newFormatsMap = new Map<string, string>();
-        
-        formatPairs.forEach(pair => {
-          const [lang, format] = pair.split(':');
-          if (lang && format) {
-            const language = getFullLanguageName(lang.trim());
-            if (language) {
-              newFormatsMap.set(language, format.trim());
-            }
-          }
-        });
-        
-        setInitialFormats(newFormatsMap);
-        
-        // Update language selections with initial formats
-        if (languages) {
-          const languageArray = languages.split(',').map(lang => lang.trim());
-          setLanguageSelections(
-            languageArray.map(language => {
-              const initialFormat = newFormatsMap.get(language) || null;
-              const initialRatioId = initialFormat ? formatToRatioId(initialFormat) : null;
-              
-              return {
-                language,
-                selectedRatio: initialRatioId,
-                voiceOver: null,
-                initialFormat
-              };
-            })
-          );
-        }
-      } else {
-        // If no formats are found, initialize without initial formats
-        if (languages) {
-          const languageArray = languages.split(',').map(lang => lang.trim());
-          setLanguageSelections(
-            languageArray.map(language => ({
-              language,
-              selectedRatio: null,
-              voiceOver: null,
-              initialFormat: null
-            }))
-          );
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching initial formats:", error);
-      // Initialize without formats if there's an error
-      if (languages) {
-        const languageArray = languages.split(',').map(lang => lang.trim());
-        setLanguageSelections(
-          languageArray.map(language => ({
-            language,
-            selectedRatio: null,
-            voiceOver: null,
-            initialFormat: null
-          }))
-        );
-      }
-    }
-  };
-
-  // Convert language code to full name
-  const getFullLanguageName = (code: string): string | null => {
-    const languageMap: Record<string, string> = {
-      'EN': 'English',
-      'FR': 'French',
-      'IT': 'Italian',
-      'ES': 'Spanish',
-      'AR': 'Arabic',
-      'NL': 'Dutch',
-      'DE': 'German'
-    };
-    
-    return languageMap[code] || null;
-  };
-
   useEffect(() => {
-    if (open && projectId) {
-      fetchInitialFormats();
+    if (languages) {
+      const languageArray = languages.split(',').map(lang => lang.trim());
+      setLanguageSelections(
+        languageArray.map(language => ({
+          language,
+          selectedRatio: null,
+          voiceOver: null
+        }))
+      );
     }
-  }, [open, projectId, languages]);
+  }, [languages]);
 
   const handleRatioSelection = (language: string, ratioId: string) => {
     setLanguageSelections(prev => 
@@ -231,8 +135,7 @@ const VariationsSelectionModal = ({
       { 
         language: selectedNewLanguage, 
         selectedRatio: null,
-        voiceOver: null,
-        initialFormat: null
+        voiceOver: null
       }
     ]);
     
@@ -300,8 +203,7 @@ const VariationsSelectionModal = ({
         .map(item => ({
           language: item.language,
           aspectRatio: item.selectedRatio,
-          voiceOver: item.voiceOver,
-          initialFormat: item.initialFormat
+          voiceOver: item.voiceOver
         }));
       
       const additionalLanguages = languageSelections
@@ -320,8 +222,7 @@ const VariationsSelectionModal = ({
           language: item.language,
           aspectRatio: item.selectedRatio,
           voiceOver: item.voiceOver,
-          isAdditional: !originalLanguagesList.includes(item.language),
-          initialFormat: item.initialFormat
+          isAdditional: !originalLanguagesList.includes(item.language)
         }))
       };
 
@@ -387,25 +288,6 @@ const VariationsSelectionModal = ({
     return !originalLanguages.includes(language);
   };
 
-  // Filter aspect ratios for original languages that already have a format
-  const getAvailableAspectRatios = (language: string) => {
-    const selection = languageSelections.find(item => item.language === language);
-    
-    // For languages added by the client, show all aspect ratios
-    if (isLanguageAddedByClient(language)) {
-      return aspectRatioOptions;
-    }
-    
-    // For original languages with an initial format, filter out that format
-    if (selection?.initialFormat) {
-      const initialRatioId = formatToRatioId(selection.initialFormat);
-      return aspectRatioOptions.filter(ratio => ratio.id !== initialRatioId);
-    }
-    
-    // Default: show all aspect ratios
-    return aspectRatioOptions;
-  };
-
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -455,22 +337,10 @@ const VariationsSelectionModal = ({
                   </div>
                 )}
                 
-                {/* Show initial format for original languages */}
-                {!isLanguageAddedByClient(item.language) && item.initialFormat && (
-                  <div className="mb-3 p-2 bg-gray-50 rounded border">
-                    <p className="text-sm text-gray-500">Current Format</p>
-                    <p className="font-medium">{item.initialFormat}</p>
-                  </div>
-                )}
-                
                 <div className="mb-2">
-                  <p className="text-sm text-gray-500 mb-2">
-                    {!isLanguageAddedByClient(item.language) && item.initialFormat 
-                      ? "Additional Format" 
-                      : "Format"}
-                  </p>
+                  <p className="text-sm text-gray-500 mb-2">Format</p>
                   <div className="grid grid-cols-5 gap-2">
-                    {getAvailableAspectRatios(item.language).map((ratio) => (
+                    {aspectRatioOptions.map((ratio) => (
                       <div 
                         key={ratio.id}
                         className={`flex flex-col items-center justify-center p-2 border rounded cursor-pointer transition-all ${
