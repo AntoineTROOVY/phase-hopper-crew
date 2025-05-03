@@ -85,6 +85,11 @@ const ProjectContentSections = ({
           projectId={project["ID-PROJET"] || ''}
         >
           {/* Content for Storyboard preview */}
+          <div className="text-center py-4">
+            <div className="text-gray-500">
+              Open link to view storyboard
+            </div>
+          </div>
         </CollapsiblePreview>
       )}
       
@@ -134,7 +139,7 @@ const ProjectContentSections = ({
                 </button>
               </div>
             ) : (
-              <div className="text-gray-500">
+              <div className="text-gray-400">
                 Open link to view variations
               </div>
             )}

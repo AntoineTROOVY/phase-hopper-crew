@@ -30,72 +30,79 @@ const ProjectInfo = ({ project }: ProjectInfoProps) => {
   };
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
+    <Card className="glass-card backdrop-blur animate-fade-in">
+      <CardHeader className="pb-2 border-b border-[#2a2f3b]">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-4">
             {logoUrl && <div className="flex-shrink-0">
-                <img src={logoUrl} alt={`${project["Company"]} logo`} className="h-12 w-auto object-contain rounded-md" onError={e => {
-              console.error('Error loading logo:', e);
-              e.currentTarget.style.display = 'none';
-            }} />
+                <div className="p-2 bg-white/5 rounded-lg border border-[#2a2f3b] shadow-inner-glow">
+                  <img 
+                    src={logoUrl} 
+                    alt={`${project["Company"]} logo`} 
+                    className="h-12 w-auto object-contain rounded-md" 
+                    onError={e => {
+                      console.error('Error loading logo:', e);
+                      e.currentTarget.style.display = 'none';
+                    }} 
+                  />
+                </div>
               </div>}
             <div>
-              <h2 className="text-xl font-semibold">{project["Company"] || 'Untitled Project'}</h2>
+              <h2 className="text-xl font-semibold text-white tracking-wide">{project["Company"] || 'Untitled Project'}</h2>
             </div>
           </div>
-          <StatusBadge status={project["Status"] || 'Unknown'} />
+          <StatusBadge status={project["Status"] || 'Unknown'} className="shadow-glow-sm" />
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4 mt-4">
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="flex items-center gap-3">
-              <Calendar className="h-5 w-5 text-gray-400" />
+        <div className="grid gap-6 mt-6">
+          <div className="grid sm:grid-cols-2 gap-6">
+            <div className="flex items-start gap-3 group transition-all duration-300 hover:translate-y-[-3px] p-3 rounded-lg bg-black/20 border border-[#2a2f3b]">
+              <Calendar className="h-5 w-5 text-glow-blue mt-0.5" />
               <div>
-                <p className="text-sm font-medium">Start Date</p>
+                <p className="text-sm font-medium text-gray-300">Start Date</p>
                 <p className="text-sm text-gray-500">{formatDate(project["Date de début"])}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Calendar className="h-5 w-5 text-gray-400" />
+            <div className="flex items-start gap-3 group transition-all duration-300 hover:translate-y-[-3px] p-3 rounded-lg bg-black/20 border border-[#2a2f3b]">
+              <Calendar className="h-5 w-5 text-glow-blue mt-0.5" />
               <div>
-                <p className="text-sm font-medium">Deadline</p>
+                <p className="text-sm font-medium text-gray-300">Deadline</p>
                 <p className="text-sm text-gray-500">{formatDate(project["Deadline"])}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Clock className="h-5 w-5 text-gray-400" />
+            <div className="flex items-start gap-3 group transition-all duration-300 hover:translate-y-[-3px] p-3 rounded-lg bg-black/20 border border-[#2a2f3b]">
+              <Clock className="h-5 w-5 text-glow-blue mt-0.5" />
               <div>
-                <p className="text-sm font-medium">Duration</p>
+                <p className="text-sm font-medium text-gray-300">Duration</p>
                 <p className="text-sm text-gray-500">{project["Duration"] || 'N/A'}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Building className="h-5 w-5 text-gray-400" />
+            <div className="flex items-start gap-3 group transition-all duration-300 hover:translate-y-[-3px] p-3 rounded-lg bg-black/20 border border-[#2a2f3b]">
+              <Building className="h-5 w-5 text-glow-blue mt-0.5" />
               <div>
-                <p className="text-sm font-medium">Company</p>
+                <p className="text-sm font-medium text-gray-300">Company</p>
                 <p className="text-sm text-gray-500">{project["Company"] || 'N/A'}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <User className="h-5 w-5 text-gray-400" />
+            <div className="flex items-start gap-3 group transition-all duration-300 hover:translate-y-[-3px] p-3 rounded-lg bg-black/20 border border-[#2a2f3b]">
+              <User className="h-5 w-5 text-glow-blue mt-0.5" />
               <div>
-                <p className="text-sm font-medium">Phase</p>
+                <p className="text-sm font-medium text-gray-300">Phase</p>
                 <p className="text-sm text-gray-500">{project["Phase"] || 'N/A'}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <NotepadText className="h-5 w-5 text-gray-400" />
+            <div className="flex items-start gap-3 group transition-all duration-300 hover:translate-y-[-3px] p-3 rounded-lg bg-black/20 border border-[#2a2f3b]">
+              <NotepadText className="h-5 w-5 text-glow-blue mt-0.5" />
               <div>
-                <p className="text-sm font-medium">Brief</p>
+                <p className="text-sm font-medium text-gray-300">Brief</p>
                 {briefUrl ? (
                   <p className="text-sm text-gray-500 flex items-center gap-2">
                     Available
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="h-6 px-2 py-1" 
+                      className="h-6 px-2 py-1 text-glow-blue hover:bg-glow-blue/10 hover:shadow-glow-sm transition-all duration-300" 
                       onClick={() => openBrief(briefUrl)}
                     >
                       <ExternalLink className="h-3.5 w-3.5" />
