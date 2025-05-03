@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -19,10 +18,6 @@ export default {
 			}
 		},
 		extend: {
-			fontFamily: {
-				sans: ['Inter', 'system-ui', 'sans-serif'],
-				display: ['Inter', 'system-ui', 'sans-serif'],
-			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -66,10 +61,6 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				},
-				glow: {
-					blue: '#4E90FF',
-					soft: 'rgba(78, 144, 255, 0.2)',
 				}
 			},
 			borderRadius: {
@@ -93,37 +84,11 @@ export default {
 					to: {
 						height: '0'
 					}
-				},
-				'pulse-glow': {
-					'0%, 100%': { 
-						boxShadow: '0 0 10px 2px rgba(78, 144, 255, 0.2)' 
-					},
-					'50%': { 
-						boxShadow: '0 0 15px 4px rgba(78, 144, 255, 0.4)' 
-					},
-				},
-				'fade-in': {
-					'0%': { opacity: '0', transform: 'translateY(5px)' },
-					'100%': { opacity: '1', transform: 'translateY(0)' },
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out',
-				'pulse-glow': 'pulse-glow 3s ease-in-out infinite',
-				'fade-in': 'fade-in 0.3s ease-out',
-			},
-			boxShadow: {
-				'glow-sm': '0 0 10px rgba(78, 144, 255, 0.3)',
-				'glow-md': '0 0 15px rgba(78, 144, 255, 0.4)',
-				'glow-lg': '0 0 25px rgba(78, 144, 255, 0.5)',
-				'inner-glow': 'inset 0 0 15px rgba(78, 144, 255, 0.2)',
-				'card-dark': '0 4px 20px rgba(0, 0, 0, 0.5)',
-			},
-			backgroundImage: {
-				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-				'gradient-glass': 'linear-gradient(180deg, rgba(13, 17, 20, 0.8) 0%, rgba(13, 17, 20, 0.95) 100%)',
-				'card-gradient': 'linear-gradient(135deg, rgba(13, 17, 20, 0.95) 0%, rgba(22, 28, 36, 0.8) 100%)',
+				'accordion-up': 'accordion-up 0.2s ease-out'
 			}
 		}
 	},
