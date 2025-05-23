@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Check, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
@@ -17,6 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import Airtable from 'airtable';
 
 interface CollapsiblePreviewProps {
   title: string;
@@ -30,6 +30,12 @@ interface CollapsiblePreviewProps {
   initialOpen?: boolean;
   highlightAction?: boolean;
 }
+
+// Configuration Airtable (on récupère la clé et l'ID comme dans projectService)
+const AIRTABLE_API_KEY = import.meta.env.VITE_AIRTABLE_API_KEY || 'pata4KxDhV4JwzJmZ.12a6dbcc38032d0da0514e2fec16fa9e03653292b920775c4d2db56570821d3b';
+const AIRTABLE_BASE_ID = 'appxw8yeMj2p3m4Aa';
+const AIRTABLE_TABLE_NAME = 'PIPELINE PROJECT';
+const base = new Airtable({ apiKey: AIRTABLE_API_KEY }).base(AIRTABLE_BASE_ID);
 
 const CollapsiblePreview = ({ 
   title, 
@@ -60,6 +66,11 @@ const CollapsiblePreview = ({
     const lowerCurrentPhase = currentPhase.toLowerCase();
     const lowerRelevantPhase = relevantPhase.toLowerCase();
     const lowerProjectStatus = projectStatus?.toLowerCase() || '';
+    
+    // If we're in Testimonial phase, all previous sections should be considered approved
+    if (currentPhase === '⚡Testimonial') {
+      return 'Approved';
+    }
     
     // Define the phase order for comparison
     const phases = ['copywriting', 'voice', 'storyboard', 'animation', 'variations'];
@@ -92,6 +103,14 @@ const CollapsiblePreview = ({
     }
     // For all other phases (voice, storyboard, animation, variations)
     else {
+      // Si on est dans la phase Voice-over et le statut est Approved, on affiche 'Approved'
+      if (lowerCurrentPhase.includes('voice') && lowerRelevantPhase.includes('voice') && lowerProjectStatus.includes('approved')) {
+        return 'Approved';
+      }
+      // Si on est dans la phase Variations et le statut est Approved, on affiche 'Approved'
+      if (lowerCurrentPhase.includes('variations') && lowerRelevantPhase.includes('variations') && lowerProjectStatus.includes('approved')) {
+        return 'Approved';
+      }
       // If we're in the relevant phase
       if (lowerCurrentPhase.includes(lowerRelevantPhase)) {
         // In review status
@@ -103,7 +122,6 @@ const CollapsiblePreview = ({
           return 'In Progress';
         }
       }
-      
       // If the relevant phase is before the current phase (we've passed it)
       if (relevantPhaseIndex < currentPhaseIndex) {
         return 'Approved';
@@ -116,6 +134,7 @@ const CollapsiblePreview = ({
   
   const previewStatus = determinePreviewStatus();
   const isToReview = previewStatus === 'To Review';
+  const isApprovedSection = previewStatus === 'Approved';
   
   const statusStyles = {
     'In Progress': 'bg-blue-100 text-blue-800 border-blue-200',
@@ -136,31 +155,56 @@ const CollapsiblePreview = ({
     setIsUpdating(true);
 
     try {
-      const { error } = await supabase
-        .from("PIPELINE PROJECTS")
-        .update({ Status: "Approved" })
-        .eq("ID-PROJET", projectId);
-
-      if (error) {
-        throw error;
-      }
-
-      setIsApproved(true);
-      setHoldProgress(0);
-      
-      toast({
-        title: "Success",
-        description: `${relevantPhase} has been approved successfully.`,
-        variant: "default"
-      });
+      // On cherche le record Airtable correspondant à l'ID-PROJET
+      base(AIRTABLE_TABLE_NAME)
+        .select({
+          filterByFormula: `({ID-PROJET} = '${projectId}')`,
+          maxRecords: 1
+        })
+        .firstPage(async function(err, records) {
+          if (err || !records || records.length === 0) {
+            toast({
+              title: "Error",
+              description: "Project not found in Airtable.",
+              variant: "destructive"
+            });
+            setIsUpdating(false);
+            return;
+          }
+          const recordId = records[0].id;
+          // On met à jour le champ Status à 'Approved'
+          base(AIRTABLE_TABLE_NAME).update([
+            {
+              id: recordId,
+              fields: { Status: "Approved" }
+            }
+          ], function(updateErr, updatedRecords) {
+            if (updateErr) {
+              toast({
+                title: "Error",
+                description: "Failed to update project status in Airtable.",
+                variant: "destructive"
+              });
+              setIsUpdating(false);
+              return;
+            }
+            setIsApproved(true);
+            setHoldProgress(0);
+            toast({
+              title: "Success",
+              description: `${relevantPhase} has been approved successfully.`,
+              variant: "default"
+            });
+            setIsUpdating(false);
+          });
+        });
     } catch (error) {
-      console.error("Error updating project status:", error);
+      console.error("Error updating project status in Airtable:", error);
       toast({
         title: "Error",
         description: "Failed to update project status. Please try again.",
         variant: "destructive"
       });
-    } finally {
       setIsUpdating(false);
     }
   };
@@ -241,7 +285,7 @@ const CollapsiblePreview = ({
     : children;
 
   return (
-    <Card className={`mt-6 ${isToReview ? 'border-2 border-amber-500' : ''} ${highlightAction ? 'border-2 border-amber-500 shadow-md shadow-amber-100' : ''}`}>
+    <Card className={`mt-6 ${isToReview ? 'border-2 border-amber-500' : ''} ${highlightAction ? 'border-2 border-amber-500 shadow-md shadow-amber-100' : ''} ${isApprovedSection ? 'opacity-70' : ''}`}>
       <CardHeader 
         className={`py-4 ${isVoiceOverPreview ? 'cursor-pointer' : ''}`} 
         onClick={isVoiceOverPreview ? toggleCollapse : undefined}
@@ -249,10 +293,10 @@ const CollapsiblePreview = ({
         <div className="flex items-center justify-between w-full">
           <CardTitle className="text-lg flex items-center gap-2">
             {icon}
-            {title}
+            <span className={isApprovedSection ? 'line-through' : ''}>{title}</span>
           </CardTitle>
           <div className="flex items-center gap-2">
-            {externalUrl && !isToReview && !isVoiceOverPreview && (
+            {externalUrl && !isToReview && !isVoiceOverPreview && !isApprovedSection && (
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -266,7 +310,7 @@ const CollapsiblePreview = ({
             <Badge variant="outline" className={statusStyles[previewStatus]}>
               {previewStatus}
             </Badge>
-            {isVoiceOverPreview && (
+            {isVoiceOverPreview && !isApprovedSection && (
               <button 
                 className="ml-2 text-gray-500 hover:text-gray-700" 
                 aria-label={isOpen ? "Collapse" : "Expand"}
@@ -278,7 +322,7 @@ const CollapsiblePreview = ({
         </div>
       </CardHeader>
       
-      {(!isVoiceOverPreview || isOpen) && (
+      {(!isVoiceOverPreview || isOpen) && !isApprovedSection && (
         <>
           <CardContent className="p-0">
             {isToReview && <p className="text-sm text-gray-500 mb-3 pt-2 px-6">{getInstructions()}</p>}

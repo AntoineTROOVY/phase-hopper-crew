@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import AudioPlayer from './AudioPlayer';
+import { fetchVoiceOversFromAirtable, AirtableVoiceOver, fetchAirtableRecordIdByProjectId, updateProjectVoiceOvers } from '@/services/projectService';
 
 interface VoiceOver {
   Name: string;
@@ -24,7 +25,7 @@ interface VoiceOverSelectionModalProps {
   projectId?: string;
   languages?: string;
   onSelectionComplete?: () => void;
-  onVoiceSelected?: (voiceName: string) => void;
+  onVoiceSelected?: (voiceId: string, voiceName: string) => void;
 }
 
 const VoiceOverSelectionModal = ({ 
@@ -35,8 +36,8 @@ const VoiceOverSelectionModal = ({
   onSelectionComplete,
   onVoiceSelected
 }: VoiceOverSelectionModalProps) => {
-  const [voiceOvers, setVoiceOvers] = useState<VoiceOver[]>([]);
-  const [filteredVoiceOvers, setFilteredVoiceOvers] = useState<VoiceOver[]>([]);
+  const [voiceOvers, setVoiceOvers] = useState<AirtableVoiceOver[]>([]);
+  const [filteredVoiceOvers, setFilteredVoiceOvers] = useState<AirtableVoiceOver[]>([]);
   const [languageFilter, setLanguageFilter] = useState<string | null>(null);
   const [genderFilter, setGenderFilter] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -44,12 +45,19 @@ const VoiceOverSelectionModal = ({
   const [projectLanguages, setProjectLanguages] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
     if (languages) {
       const languageArray = languages.split(',').map(lang => lang.trim());
       setProjectLanguages(languageArray);
+      
+      // On définit la langue comme filtre par défaut, que ce soit en mode sélection de voix 
+      // ou en mode normal avec une seule langue
+      if (languageArray.length === 1) {
+        setLanguageFilter(languageArray[0]);
+      }
     }
   }, [languages]);
 
@@ -57,16 +65,30 @@ const VoiceOverSelectionModal = ({
     const fetchVoiceOvers = async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase
-          .from('Voice-overs')
-          .select('*');
+        const data = await fetchVoiceOversFromAirtable();
+        setVoiceOvers(data || []);
         
-        if (error) {
-          throw error;
+        // Extraire toutes les langues disponibles des voix
+        const uniqueLanguages = Array.from(new Set(data.map(vo => vo.Language))).filter(Boolean);
+        setAvailableLanguages(uniqueLanguages);
+        
+        // Filtrer automatiquement si une langue est spécifiée
+        let languageToFilter = null;
+        
+        // Si on a une langue unique ou en mode sélection de voix
+        if (languages) {
+          const languageArray = languages.split(',').map(lang => lang.trim());
+          if (languageArray.length === 1) {
+            languageToFilter = languageArray[0];
+          }
         }
         
-        setVoiceOvers(data || []);
+        if (languageToFilter) {
+          setLanguageFilter(languageToFilter);
+          setFilteredVoiceOvers(data.filter(vo => vo.Language === languageToFilter) || []);
+        } else {
         setFilteredVoiceOvers(data || []);
+        }
       } catch (error) {
         console.error('Error fetching voice-overs:', error);
       } finally {
@@ -77,7 +99,7 @@ const VoiceOverSelectionModal = ({
     if (open) {
       fetchVoiceOvers();
     }
-  }, [open]);
+  }, [open, languages]);
 
   useEffect(() => {
     let result = [...voiceOvers];
@@ -101,18 +123,24 @@ const VoiceOverSelectionModal = ({
     setGenderFilter(value === "all" ? null : value);
   };
 
-  const toggleVoiceOverSelection = (voiceOverName: string) => {
+  const toggleVoiceOverSelection = (voiceOverId: string) => {
     if (onVoiceSelected) {
-      setSelectedVoiceOvers([voiceOverName]);
+      const selected = voiceOvers.find(vo => vo.id === voiceOverId);
+      setSelectedVoiceOvers([voiceOverId]);
+      if (selected) {
+        onVoiceSelected(voiceOverId, selected.Name);
+      } else {
+        onVoiceSelected(voiceOverId, '');
+      }
       return;
     }
 
     setSelectedVoiceOvers(prev => {
-      if (prev.includes(voiceOverName)) {
-        return prev.filter(name => name !== voiceOverName);
+      if (prev.includes(voiceOverId)) {
+        return prev.filter(id => id !== voiceOverId);
       } else {
         if (prev.length < projectLanguages.length) {
-          return [...prev, voiceOverName];
+          return [...prev, voiceOverId];
         }
         return prev;
       }
@@ -120,63 +148,46 @@ const VoiceOverSelectionModal = ({
   };
 
   const handleConfirmSelection = async () => {
-    if (onVoiceSelected && selectedVoiceOvers.length === 1) {
-      onVoiceSelected(selectedVoiceOvers[0]);
-      return;
-    }
-
     if (!projectId) {
       toast({
-        title: "Error",
+        title: "Erreur",
         description: "Project ID is missing. Cannot submit selection.",
         variant: "destructive"
       });
       return;
     }
-
-    const payload = {
-      "ID-PROJET": projectId,
-      "voiceOverNames": selectedVoiceOvers
-    };
-
+    if (selectedVoiceOvers.length === 0) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez sélectionner au moins une voix-off.",
+        variant: "destructive"
+      });
+      return;
+    }
     setIsSubmitting(true);
     setError(null);
-
     try {
-      const response = await fetch('https://hook.eu2.make.com/ydu459dw7hdi4vx6lrzc7v3bq9aoty1g', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      // On récupère le vrai record ID du projet dans Airtable
+      const airtableProjectRecordId = await fetchAirtableRecordIdByProjectId(projectId);
+      if (!airtableProjectRecordId) {
+        setError("Impossible de trouver le projet dans Airtable. Veuillez réessayer.");
+        setIsSubmitting(false);
+        return;
       }
-
-      const data = await response.json();
-      
-      if (data.status === "confirmed") {
-        toast({
-          title: "Selection submitted",
-          description: "Your voice-over selections have been submitted successfully.",
-          variant: "default"
-        });
-
-        onOpenChange(false);
-        
-        if (onSelectionComplete) {
-          onSelectionComplete();
-        }
-      } else if (data.status === "error") {
-        setError(data.message || "An error occurred while processing your request. Please try again.");
-      } else {
-        setError("Unexpected response from server. Please try again.");
+      // On met à jour le champ Voix-off avec les record IDs sélectionnés
+      await updateProjectVoiceOvers(airtableProjectRecordId, selectedVoiceOvers);
+      toast({
+        title: "Sélection enregistrée",
+        description: "Votre sélection de voix-off a bien été enregistrée dans Airtable.",
+        variant: "default"
+      });
+      onOpenChange(false);
+      if (onSelectionComplete) {
+        onSelectionComplete();
       }
     } catch (error) {
-      console.error('Error submitting voice-over selection:', error);
-      setError("Failed to submit your voice-over selections. Please try again.");
+      console.error('Error updating voice-over selection:', error);
+      setError("Échec de l'enregistrement de votre sélection. Veuillez réessayer.");
     } finally {
       setIsSubmitting(false);
     }
@@ -230,15 +241,19 @@ const VoiceOverSelectionModal = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium block mb-1">Language</label>
-              <Select onValueChange={handleLanguageChange} defaultValue="all">
+              <Select 
+                onValueChange={handleLanguageChange} 
+                defaultValue={languageFilter || "all"}
+                value={languageFilter || "all"}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select language" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Languages</SelectItem>
-                  <SelectItem value="French">French</SelectItem>
-                  <SelectItem value="English UK">English UK</SelectItem>
-                  <SelectItem value="English US">English US</SelectItem>
+                  {availableLanguages.map((language) => (
+                    <SelectItem key={language} value={language}>{language}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -281,7 +296,7 @@ const VoiceOverSelectionModal = ({
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <Avatar className="h-12 w-12">
-                      <AvatarImage src={voiceOver["Profil pic"]} alt={voiceOver.Name} />
+                      <AvatarImage src={voiceOver.ProfilPic && voiceOver.ProfilPic[0]?.url} alt={voiceOver.Name} />
                       <AvatarFallback>{voiceOver.Name.substring(0, 2)}</AvatarFallback>
                     </Avatar>
                     <div>
@@ -294,12 +309,12 @@ const VoiceOverSelectionModal = ({
                     </div>
                   </div>
                   <Button
-                    variant={selectedVoiceOvers.includes(voiceOver.Name) ? "default" : "outline"}
-                    onClick={() => toggleVoiceOverSelection(voiceOver.Name)}
-                    disabled={selectedVoiceOvers.length >= projectLanguages.length && !selectedVoiceOvers.includes(voiceOver.Name)}
+                    variant={selectedVoiceOvers.includes(voiceOver.id) ? "default" : "outline"}
+                    onClick={() => toggleVoiceOverSelection(voiceOver.id)}
+                    disabled={selectedVoiceOvers.length >= projectLanguages.length && !selectedVoiceOvers.includes(voiceOver.id)}
                     className="min-w-24"
                   >
-                    {selectedVoiceOvers.includes(voiceOver.Name) ? (
+                    {selectedVoiceOvers.includes(voiceOver.id) ? (
                       <>
                         <Check className="mr-1 h-4 w-4" /> 
                         Selected
@@ -310,9 +325,9 @@ const VoiceOverSelectionModal = ({
                   </Button>
                 </div>
                 
-                {voiceOver.Preview && (
+                {voiceOver.Preview && voiceOver.Preview.length > 0 && voiceOver.Preview[0].url && (
                   <AudioPlayer 
-                    url={voiceOver.Preview} 
+                    url={voiceOver.Preview[0].url} 
                     filename={`${voiceOver.Name} (Preview)`} 
                   />
                 )}

@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { format, isWithinInterval, isSameDay, startOfMonth, endOfMonth, isSameMonth, addMonths, subMonths } from 'date-fns';
+import { format, isWithinInterval, isSameDay, startOfMonth, endOfMonth, isSameMonth, addMonths, subMonths, differenceInDays } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Package, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -23,6 +22,10 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
   // Get the first and last day of the month to properly bound the view
   const firstDayOfMonth = startOfMonth(currentMonth);
   const lastDayOfMonth = endOfMonth(currentMonth);
+  
+  // Calculate days remaining until delivery
+  const today = new Date();
+  const daysRemaining = end ? differenceInDays(end, today) : null;
   
   const navigateMonth = (direction: 'next' | 'prev') => {
     setCurrentMonth(prev => 
@@ -61,6 +64,23 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
     return format(date, 'MMM dd, yyyy');
   };
   
+  // Helper function to display delivery message
+  const getDeliveryMessage = () => {
+    if (!end) return null;
+    
+    if (daysRemaining === null) return null;
+    
+    if (daysRemaining < 0) {
+      return <div className="text-sm text-amber-500 font-medium">Livraison dépassée de {Math.abs(daysRemaining)} jours</div>;
+    } else if (daysRemaining === 0) {
+      return <div className="text-sm text-green-500 font-medium">Livraison prévue aujourd'hui</div>;
+    } else if (daysRemaining === 1) {
+      return <div className="text-sm text-blue-500 font-medium">Livraison prévue demain</div>;
+    } else {
+      return <div className="text-sm text-blue-500 font-medium">Livraison prévue dans {daysRemaining} jours</div>;
+    }
+  };
+  
   return (
     <Card className="overflow-hidden">
       <CardHeader className="pb-2 flex flex-row items-center justify-between">
@@ -71,6 +91,7 @@ const ProjectCalendar = ({ startDate, endDate }: ProjectCalendarProps) => {
               {formatDate(start)} - {formatDate(end)}
             </div>
           )}
+          {getDeliveryMessage()}
         </div>
         <div className="flex space-x-1">
           <Button 

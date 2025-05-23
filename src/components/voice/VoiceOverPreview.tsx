@@ -1,12 +1,13 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AudioPlayer from './AudioPlayer';
 import VoiceOverSelectionModal from './VoiceOverSelectionModal';
 import { parseVoiceFileUrl } from './voiceUtils';
 
 interface VoiceOverPreviewProps {
-  voiceFileUrl: string;
+  voiceFileUrl?: string;
+  voiceFile?: any[] | null;
   phase?: string;
   status?: string;
   projectId?: string;
@@ -15,6 +16,7 @@ interface VoiceOverPreviewProps {
 
 const VoiceOverPreview = ({
   voiceFileUrl,
+  voiceFile,
   phase,
   status,
   projectId,
@@ -22,8 +24,30 @@ const VoiceOverPreview = ({
 }: VoiceOverPreviewProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showVoiceOverPrompt, setShowVoiceOverPrompt] = useState(true);
+  const [projectLanguages, setProjectLanguages] = useState<string[]>([]);
+  const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   
-  const audioFiles = parseVoiceFileUrl(voiceFileUrl);
+  useEffect(() => {
+    if (languages) {
+      const languageArray = languages.split(',').map(lang => lang.trim());
+      setProjectLanguages(languageArray);
+      
+      // Si une seule langue est disponible, la sélectionner automatiquement
+      if (languageArray.length === 1) {
+        setSelectedLanguage(languageArray[0]);
+      }
+    }
+  }, [languages]);
+  
+  let audioFiles: { url: string; filename: string }[] = [];
+  if (voiceFile && Array.isArray(voiceFile) && voiceFile.length > 0) {
+    audioFiles = voiceFile.map((att: any) => ({
+      url: att.url,
+      filename: att.filename
+    })).filter(file => file.url && file.filename);
+  } else {
+    audioFiles = parseVoiceFileUrl(voiceFileUrl || '');
+  }
   
   const isVoiceOverPhaseNotStarted = 
     phase?.toLowerCase().includes('voice') && 
@@ -40,6 +64,16 @@ const VoiceOverPreview = ({
     setShowVoiceOverPrompt(false);
   };
 
+  const handleLanguageChange = (value: string) => {
+    setSelectedLanguage(value);
+  };
+
+  const handleOpenVoiceOverModal = () => {
+    if (selectedLanguage || projectLanguages.length === 1) {
+      setIsModalOpen(true);
+    }
+  };
+
   if (isVoiceOverPhaseNotStarted && showVoiceOverPrompt) {
     return (
       <>
@@ -47,9 +81,27 @@ const VoiceOverPreview = ({
           <p className="text-amber-800 font-medium mb-4">
             You need to select a VoiceOver for your project
           </p>
+          
+          {projectLanguages.length > 1 && (
+            <div className="mb-4">
+              <label className="text-sm font-medium block mb-2">Select a language first:</label>
+              <Select onValueChange={handleLanguageChange} value={selectedLanguage || ""}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select language" />
+                </SelectTrigger>
+                <SelectContent>
+                  {projectLanguages.map((language) => (
+                    <SelectItem key={language} value={language}>{language}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+          
           <Button 
             className="bg-primary text-white"
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleOpenVoiceOverModal}
+            disabled={projectLanguages.length > 1 && !selectedLanguage}
           >
             Select a VoiceOver
           </Button>
@@ -59,7 +111,7 @@ const VoiceOverPreview = ({
           open={isModalOpen} 
           onOpenChange={setIsModalOpen}
           projectId={projectId}
-          languages={languages}
+          languages={selectedLanguage || languages}
           onSelectionComplete={handleSelectionComplete}
         />
       </>

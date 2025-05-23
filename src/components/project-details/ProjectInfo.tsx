@@ -1,10 +1,10 @@
-
 import React from 'react';
-import { Calendar, Building, User, Clock, NotepadText, ExternalLink } from 'lucide-react';
+import { Calendar, Building, User, Clock, NotepadText, ExternalLink, FilePlus2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import StatusBadge from '@/components/StatusBadge';
 import { PipelineProject } from '@/services/projectService';
+import ProjectContentLinks from '@/components/project-details/ProjectContentLinks';
 
 interface ProjectInfoProps {
   project: PipelineProject;
@@ -13,6 +13,38 @@ interface ProjectInfoProps {
 const ProjectInfo = ({ project }: ProjectInfoProps) => {
   const logoUrl = project["Logo url"] || '';
   const briefUrl = project["Brief main"] || '';
+  const hookVariations = project["Hook variations"];
+
+  // Function to format hook variations
+  const formatHookVariations = () => {
+    if (!hookVariations || hookVariations === "N/A" || Array.isArray(hookVariations) && hookVariations.includes("N/A")) {
+      return null;
+    }
+    
+    let variationCount = 0;
+    if (typeof hookVariations === 'string') {
+      const match = hookVariations.match(/(\d+)\s+hook\s+variation/i);
+      if (match && match[1]) {
+        variationCount = parseInt(match[1], 10);
+      }
+    } else if (Array.isArray(hookVariations)) {
+      // Find the highest number if multiple options are selected
+      hookVariations.forEach(variation => {
+        const match = variation.match(/(\d+)\s+hook\s+variation/i);
+        if (match && match[1]) {
+          const count = parseInt(match[1], 10);
+          if (count > variationCount) variationCount = count;
+        }
+      });
+    }
+    
+    if (variationCount > 0) {
+      // Toujours afficher 3s quelle que soit la valeur
+      return `+${variationCount} (3s)`;
+    }
+    
+    return null;
+  };
 
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return 'Not set';
@@ -28,6 +60,8 @@ const ProjectInfo = ({ project }: ProjectInfoProps) => {
       window.open(url, '_blank', 'noopener,noreferrer');
     }
   };
+
+  const hookVariationsFormatted = formatHookVariations();
 
   return (
     <Card>
@@ -71,13 +105,15 @@ const ProjectInfo = ({ project }: ProjectInfoProps) => {
                 <p className="text-sm text-gray-500">{project["Duration"] || 'N/A'}</p>
               </div>
             </div>
+            {hookVariationsFormatted && (
             <div className="flex items-center gap-3">
-              <Building className="h-5 w-5 text-gray-400" />
+                <FilePlus2 className="h-5 w-5 text-gray-400" />
               <div>
-                <p className="text-sm font-medium">Company</p>
-                <p className="text-sm text-gray-500">{project["Company"] || 'N/A'}</p>
+                  <p className="text-sm font-medium">Hook Variation</p>
+                  <p className="text-sm text-gray-500">{hookVariationsFormatted}</p>
+                </div>
               </div>
-            </div>
+            )}
             <div className="flex items-center gap-3">
               <User className="h-5 w-5 text-gray-400" />
               <div>
@@ -106,6 +142,11 @@ const ProjectInfo = ({ project }: ProjectInfoProps) => {
                 )}
               </div>
             </div>
+          </div>
+          
+          {/* Project Content Links */}
+          <div className="mt-6">
+            <ProjectContentLinks project={project} insideInfo={true} />
           </div>
         </div>
       </CardContent>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { FileText, Mic, Image, Film, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -33,9 +32,19 @@ const phaseIcons: Record<string, React.ReactNode> = {
 interface ProjectTimelineProps {
   currentPhase: string;
   status?: string;
+  hasVoiceOver?: boolean;
 }
 
-const ProjectTimeline = ({ currentPhase, status = '' }: ProjectTimelineProps) => {
+const ProjectTimeline = ({ currentPhase, status = '', hasVoiceOver = true }: ProjectTimelineProps) => {
+  // Déclaration dynamique des phases (doit être en haut)
+  const phases: ProjectPhase[] = [
+    '📝 Copywriting',
+    ...(hasVoiceOver ? ['🎙️Voice-over'] : []),
+    '🖼️ Storyboard',
+    '🎞️ Animation',
+    '📦 Variations'
+  ];
+
   // Function to normalize phase names for comparison
   const normalizePhase = (phase: string): ProjectPhase => {
     // Map of possible phase variations to standardized phase names with emojis
